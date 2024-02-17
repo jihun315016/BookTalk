@@ -1,0 +1,19 @@
+@charset "UTF-8";
+
+html, body {
+    height: 100%;
+}
+
+.container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+}
+
+.form-container {
+    width: 700px;
+    border: 1px #ddd solid;
+    padding: 25px;
+    border-radius: 50px;
+}
