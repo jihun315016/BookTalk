@@ -6,4 +6,8 @@
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\BookTalk.Shared\BookTalk.Shared.csproj" />
+  </ItemGroup>
+
 </Project>

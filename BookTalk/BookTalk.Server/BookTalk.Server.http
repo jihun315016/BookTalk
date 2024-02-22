@@ -1,0 +1,6 @@
+@BookTalk.Server_HostAddress = http://localhost:5283
+
+GET {{BookTalk.Server_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
