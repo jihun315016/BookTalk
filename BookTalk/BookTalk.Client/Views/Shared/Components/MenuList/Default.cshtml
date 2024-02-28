@@ -1,0 +1,29 @@
+﻿@using BookTalk.Shared.Temps
+@model IEnumerable<Menu>
+
+@if (Model != null)
+{
+    var groupedMenu = Model.GroupBy(m => m.ParentMenuID);
+
+    foreach (var parentMenu in Model.Where(m => m.Level == 0).OrderBy(m => m.ID)) 
+    {
+        var targetId = $"collapseLayouts{parentMenu.ID}"; 
+
+        <!-- 상위 메뉴 -->
+        <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#@targetId" aria-expanded="false" aria-controls="@targetId">
+            <div class="sb-nav-link-icon"><i class="fas fa-columns"></i></div>
+            @parentMenu.MenuName
+            <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+        </a>
+
+        <div class="collapse" id="@targetId" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
+            <nav class="sb-sidenav-menu-nested nav">
+                <!-- 상위 메뉴에 대한 하위 메뉴 순회 -->
+                @foreach (var childMenu in groupedMenu.FirstOrDefault(g => g.Key == parentMenu.ID))
+                {
+                    <a class="nav-link" asp-area="" asp-controller="@childMenu.ControllerName" asp-action="@childMenu.ActionName">@childMenu.MenuName</a>
+                }
+            </nav>
+        </div>
+    }
+}
