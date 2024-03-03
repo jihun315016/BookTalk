@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,17 +9,22 @@ namespace BookTalk.Shared.Temps;
 
 public class ResponseMessage
 {
+    [JsonProperty("errorCode")]
     public int ErrorCode { get; set; }
 
+    [JsonProperty("errorMessage")]
     public string ErrorMessage { get; set; }
 }
 
 
 public class ResponseMessage<T>
 {
+    [JsonProperty("errorCode")]
     public int ErrorCode { get; set; }
 
+    [JsonProperty("errorMessage")]
     public string ErrorMessage { get; set; }
 
+    [JsonProperty("data")]
     public T Data { get; set; }
 }
