@@ -5,16 +5,16 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BookTalk.Shared.Temps.Aladin;
+namespace BookTalk.Shared.Aladin;
 
 public class AladinBookQuery
 {
     #region 검색 조건
     [JsonProperty("title")]
-    public String Title { get; set; }
+    public string Title { get; set; }
 
     [JsonProperty("author")]
-    public String Author { get; set; }
+    public string Author { get; set; }
 
     // 조회 유형(신간 전체 리스트, 베스트 셀러 ...)
     [JsonProperty("queryType")]
@@ -30,7 +30,7 @@ public class AladinBookQuery
 
     // 응답 형식 -> JSON
     [JsonProperty("output")]
-    public string Output { get; set; } = "js";
+    public string Output { get; set; }
 
     [JsonProperty("start")]
     public int Start { get; set; }

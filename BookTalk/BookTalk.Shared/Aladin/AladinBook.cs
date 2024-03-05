@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BookTalk.Shared.Temps.Aladin;
+namespace BookTalk.Shared.Aladin;
 
 public class AladinBook
 {
