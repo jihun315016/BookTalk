@@ -1,11 +1,24 @@
-﻿@{
+﻿@using BookTalk.Shared.Common
+@using BookTalk.Shared.Aladin
+
+@model ResponseMessage<AladinBookQuery>?
+
+@{
     ViewData["Title"] = "Home Page";
 }
 
 <div class="form-container">
     <div class="row vh-100">
-        
+        <!-- TODO : 검색 조건 컨트롤 배치 -->
+        @*@Html.DropDownList("SelectedCode")*@
+
+
+        @if (Model != null) 
+        {
+            <!-- TODO : 모델 데이터 표시 -->
+        }
     </div>
+</div>
 
 
     @*<form class="px-4 py-3">
@@ -30,4 +43,3 @@
     <div class="dropdown-divider"></div>
     <a class="dropdown-item" href="#">New around here? Sign up</a>
     <a class="dropdown-item" href="#">Forgot password?</a>*@
-</div>

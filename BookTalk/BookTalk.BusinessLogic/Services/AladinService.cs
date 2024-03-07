@@ -1,6 +1,6 @@
 ﻿using BookTalk.BusinessLogic.Interfaces;
 using BookTalk.Shared.Aladin;
-using BookTalk.Shared.Temps;
+using BookTalk.Shared.Common;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;

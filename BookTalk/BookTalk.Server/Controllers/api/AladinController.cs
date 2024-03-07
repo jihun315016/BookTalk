@@ -1,6 +1,6 @@
 ﻿using BookTalk.BusinessLogic.Services;
 using BookTalk.Shared.Aladin;
-using BookTalk.Shared.Temps;
+using BookTalk.Shared.Common;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 

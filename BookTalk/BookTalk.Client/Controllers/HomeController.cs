@@ -1,8 +1,11 @@
-using BookTalk.Shared.Temps;
-using BookTalk.Shared.Temps.Aladin;
+using BookTalk.Shared.Aladin;
+using BookTalk.Shared.Common;
+using BookTalk.Shared.Utility;
 using BookTalk.Web.Models;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using System.Diagnostics;
+using System.Net.Http.Json;
 
 namespace BookTalk.Web.Controllers
 {
@@ -18,41 +21,43 @@ namespace BookTalk.Web.Controllers
         [HttpGet]
         public async Task<IActionResult> Index()
         {
-            AladinBookQuery aladinBookQuery = new AladinBookQuery()
-            {
-                Start = 1,
-                QueryType = "",
-                CategoryId = "0",
-            };
-
-            ResponseMessage<AladinBookQuery> data = new ResponseMessage<AladinBookQuery>()
-            {
-                Data = aladinBookQuery
-            };
-
-
             try
             {
+                AladinBookQuery aladinBookQuery = new AladinBookQuery()
+                {
+                    Start = 1,
+                    QueryType = "",
+                    CategoryId = "0",
+                };
 
                 HttpClient client = new HttpClient();
-                var response = await client.PostAsJsonAsync<ResponseMessage<AladinBookQuery>>("", data);
+                var response = await client.PostAsJsonAsync<AladinBookQuery>("url", aladinBookQuery);
+                ResponseMessage<AladinBookQuery> responseData = new ResponseMessage<AladinBookQuery>();
 
                 if (response.IsSuccessStatusCode) 
                 {
-
+                    string content = await response.Content.ReadAsStringAsync();
+                    responseData = JsonConvert.DeserializeObject<ResponseMessage<AladinBookQuery>>(content);
                 }
                 else
                 {
-                    data.ErrorCode = Convert.ToInt32(response.StatusCode);
-                    data.ErrorMessage = "";
+                    if (responseData.ErrorCode == default(int))
+                    {
+                        responseData.ErrorCode = Convert.ToInt32(response.StatusCode);
+                    }
+
+                    if (string.IsNullOrWhiteSpace(responseData.ErrorMessage)) 
+                    {
+                        responseData.ErrorMessage = Utility.GetMessage("Msg01");
+                    }
+
+                    throw new Exception($"[{responseData.ErrorCode}] {responseData.ErrorMessage}");
                 }
 
-                return View();
+                return View(responseData);
             }
             catch (Exception ex)
             {
-                data.ErrorCode = -1;
-                data.ErrorMessage = ex.Message;
                 return View();
             }
         }
@@ -62,11 +67,6 @@ namespace BookTalk.Web.Controllers
         [HttpPost]
         public IActionResult Index(AladinBookQuery aladinBookQuery)
         {
-            if (aladinBookQuery != null)
-            {
-                aladinBookQuery.CategoryId = "0"; // 카테고리 전체 조회
-            }
-
             return View();
         }
 
