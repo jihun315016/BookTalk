@@ -1,6 +1,7 @@
 ﻿using BookTalk.BusinessLogic.Interfaces;
 using BookTalk.Shared.Aladin;
 using BookTalk.Shared.Common;
+using BookTalk.Shared.Utility;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -25,6 +26,13 @@ public class AladinService : IAladinService
             {
                 var content = await response.Content.ReadAsStringAsync();
                 AladinBookQuery data = JsonConvert.DeserializeObject<AladinBookQuery>(content);
+
+                for (int i = 0; i < data.Item.Count; i++)
+                {
+                    // TODO : 개발 예정
+                    data.Item[i].CategoryName = "[임시] 카테고리 이름";
+                }
+
                 result.Data = data;
             }
             else

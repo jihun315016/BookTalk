@@ -39,9 +39,11 @@ public class AladinBookQuery
     public int MaxResult { get; set; }
     #endregion
 
+    [JsonProperty("cover")]
+    public string Cover { get; set; }
 
     #region 응답 정보
     [JsonProperty("item")]
-    public List<AladinBook> Items { get; set; }
+    public List<AladinBook> Item { get; set; }
     #endregion
 }

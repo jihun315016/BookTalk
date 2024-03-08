@@ -22,11 +22,24 @@ namespace BookTalk.Server.Controllers.api
         /// </summary>
         /// <param name="aladinBookQuery"></param>
         /// <returns></returns>
+        /*
+        {
+            "title": "",
+            "author": "",
+            "queryType": "ItemNewAll",
+            "categoryId": "0",
+            "searchTarget": "Book",
+            "output": "js",
+            "start": 1,
+            "maxResult": 5,
+            "item": []
+        }
+         */
         [Route("DefaultDisplay")]
         [HttpPost]
         public async Task<IActionResult> DefaultDisplay([FromBody] AladinBookQuery aladinBookQuery)
         {
-            string url;
+            string url; 
             string key;
 
             try
@@ -39,7 +52,7 @@ namespace BookTalk.Server.Controllers.api
 
                 string query = $"ttbkey={key}&QueryType={aladinBookQuery.QueryType}&CategoryId={aladinBookQuery.CategoryId}" +
                     $"&MaxResults={aladinBookQuery.MaxResult}&start={aladinBookQuery.Start}&SearchTarget={aladinBookQuery.SearchTarget}" +
-                    $"&output={aladinBookQuery.Output}&Version=20131101";
+                    $"&cover={aladinBookQuery.Cover}&output={aladinBookQuery.Output}&Version=20131101";
                 url = _configuration["Aladin:ListUrl"] + query;
 
                 AladinService aladinService = new AladinService();

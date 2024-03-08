@@ -25,13 +25,20 @@ namespace BookTalk.Web.Controllers
             {
                 AladinBookQuery aladinBookQuery = new AladinBookQuery()
                 {
-                    Start = 1,
-                    QueryType = "",
+                    Title = "",
+                    Author = "",
+                    QueryType = "ItemNewAll",
                     CategoryId = "0",
+                    SearchTarget = "Book",
+                    Output = "js",
+                    Start = 1,
+                    MaxResult = 5,
+                    Cover= "Big",
+                    Item = new List<AladinBook>()
                 };
 
                 HttpClient client = new HttpClient();
-                var response = await client.PostAsJsonAsync<AladinBookQuery>("url", aladinBookQuery);
+                var response = await client.PostAsJsonAsync<AladinBookQuery>("https://localhost:7033/api/Aladin/DefaultDisplay", aladinBookQuery);
                 ResponseMessage<AladinBookQuery> responseData = new ResponseMessage<AladinBookQuery>();
 
                 if (response.IsSuccessStatusCode) 
