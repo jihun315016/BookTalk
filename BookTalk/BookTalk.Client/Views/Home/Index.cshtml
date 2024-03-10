@@ -1,13 +1,56 @@
-﻿@*@{
-    Layout = "_AccountLayout";
-}*@
+﻿@using BookTalk.Shared.Common
+@using BookTalk.Shared.Aladin
+
+@model ResponseMessage<AladinBookQuery>?
 
 @{
     ViewData["Title"] = "Home Page";
 }
 
 <div class="form-container">
-    <form class="px-4 py-3">
+    <div class="row">
+        <!-- TODO : 검색 조건 컨트롤 배치 -->
+        @* <div class="container custom-container row" style="background-color: antiquewhite">
+            <div class="col-md-4">
+                a
+            </div>
+            <div class="col-md-4">
+                b
+            </div>
+            <div class="col-md-4">
+                c
+            </div>
+        </div> *@
+
+        @if (Model != null)
+        {
+            <div class="container custom-container">
+                <div class="row">
+                    @foreach (var book in Model.Data.Item)
+                    {
+                        <div class="col-md-4">
+                            <div class="card book-card">
+                                <img src="@book.Cover" class="book-card-img-top" alt="book cover">
+                                <div class="book-card-title-container">
+                                    <h5 class="book-card-title">@book.Title</h5>
+                                </div>
+                                <div class="book-card-text-container">
+                                    <p><div class="book-card-text text-truncate">@book.Author</div></p>
+                                    <p><div class="book-card-text text-truncate">@book.CategoryName</div></p>
+                                </div>                                
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        }
+        </div>
+</div>
+
+
+
+
+@*<form class="px-4 py-3">
         <div class="form-group">
             <label for="exampleDropdownFormEmail1">Email address</label>
             <input type="email" class="form-control" id="exampleDropdownFormEmail1" placeholder="email@example.com">
@@ -28,5 +71,4 @@
     </form>
     <div class="dropdown-divider"></div>
     <a class="dropdown-item" href="#">New around here? Sign up</a>
-    <a class="dropdown-item" href="#">Forgot password?</a>
-</div>
+    <a class="dropdown-item" href="#">Forgot password?</a>*@
