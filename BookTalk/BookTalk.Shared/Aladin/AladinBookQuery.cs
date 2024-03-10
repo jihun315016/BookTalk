@@ -11,10 +11,10 @@ public class AladinBookQuery
 {
     #region 검색 조건
     [JsonProperty("title")]
-    public string Title { get; set; }
+    public string Title { get; set; } = "";
 
     [JsonProperty("author")]
-    public string Author { get; set; }
+    public string Author { get; set; } = "";
 
     // 조회 유형(신간 전체 리스트, 베스트 셀러 ...)
     [JsonProperty("queryType")]
@@ -37,10 +37,10 @@ public class AladinBookQuery
 
     [JsonProperty("maxResult")]
     public int MaxResult { get; set; }
-    #endregion
 
     [JsonProperty("cover")]
     public string Cover { get; set; }
+    #endregion
 
     #region 응답 정보
     [JsonProperty("item")]

@@ -25,8 +25,6 @@ namespace BookTalk.Web.Controllers
             {
                 AladinBookQuery aladinBookQuery = new AladinBookQuery()
                 {
-                    Title = "",
-                    Author = "",
                     QueryType = "ItemNewAll",
                     CategoryId = "0",
                     SearchTarget = "Book",

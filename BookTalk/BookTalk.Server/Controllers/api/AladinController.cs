@@ -46,14 +46,14 @@ namespace BookTalk.Server.Controllers.api
             {
                 key = _configuration["Aladin:Key"];
 
-                aladinBookQuery.MaxResult = Convert.ToInt32(_configuration["Aladin:MaxResult"]);
-                aladinBookQuery.SearchTarget = _configuration["Aladin:SearchTarget"];
-                aladinBookQuery.Output = _configuration["Aladin:Output"];
+                aladinBookQuery.MaxResult = Convert.ToInt32(_configuration["Aladin:List:MaxResult"]);
+                aladinBookQuery.SearchTarget = _configuration["Aladin:List:SearchTarget"];
+                aladinBookQuery.Output = _configuration["Aladin:List:Output"];
 
                 string query = $"ttbkey={key}&QueryType={aladinBookQuery.QueryType}&CategoryId={aladinBookQuery.CategoryId}" +
                     $"&MaxResults={aladinBookQuery.MaxResult}&start={aladinBookQuery.Start}&SearchTarget={aladinBookQuery.SearchTarget}" +
                     $"&cover={aladinBookQuery.Cover}&output={aladinBookQuery.Output}&Version=20131101";
-                url = _configuration["Aladin:ListUrl"] + query;
+                url = _configuration["Aladin:List:Url"] + query;
 
                 AladinService aladinService = new AladinService();
                 ResponseMessage<AladinBookQuery> resData = await aladinService.GetBooks(url);
