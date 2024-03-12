@@ -57,13 +57,4 @@ body {
     margin-top: 10px;
     margin-bottom: 10px;
 }
-
-@media screen and (max-height: 740px) {
-    .custom-container {
-        /*margin-bottom: 300px;*/ /* 필요한 마진 크기로 조절하세요 */
-        color: olivedrab;
-        overflow: scroll;
-    }
-}
-
 /* 사용자 정의 속성 END */

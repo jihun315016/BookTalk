@@ -6,6 +6,7 @@
 # User Setting START ############################################################
 BookTalk/BookTalk.Server/appsettings.Development.json
 BookTalk/BookTalk.Server/appsettings.json
+BookTalk/BookTalk.Shared/appsettings.json
 # User Setting END ##############################################################
 
 # dotenv files

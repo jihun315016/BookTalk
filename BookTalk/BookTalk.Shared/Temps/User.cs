@@ -8,7 +8,7 @@ namespace BookTalk.Shared.Temps;
 
 public class User
 {
-    public string UserId { get; set; }
+    public string Id { get; set; }
 
     public string Password { get; set; }
 
@@ -16,5 +16,6 @@ public class User
 
     public string ProfileImagePath { get; set; }
 
-    public int FollowerCount { get; set; }
+    public int Following { get; set; }
+    public int Follower { get; set; }
 }
