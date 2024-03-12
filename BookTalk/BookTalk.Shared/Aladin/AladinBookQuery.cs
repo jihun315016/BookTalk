@@ -22,15 +22,15 @@ public class AladinBookQuery
 
     // 카테고리 ID
     [JsonProperty("categoryId")]
-    public string CategoryId { get; set; }
+    public string CategoryId { get; set; } = "0";
 
     // Mall
     [JsonProperty("searchTarget")]
-    public string SearchTarget { get; set; }
+    public string SearchTarget { get; set; } = "Book";
 
     // 응답 형식 -> JSON
     [JsonProperty("output")]
-    public string Output { get; set; }
+    public string Output { get; set; } = "js";
 
     [JsonProperty("start")]
     public int Start { get; set; }
@@ -39,11 +39,17 @@ public class AladinBookQuery
     public int MaxResult { get; set; }
 
     [JsonProperty("cover")]
-    public string Cover { get; set; }
+    public string Cover { get; set; } = "Big";
     #endregion
 
     #region 응답 정보
     [JsonProperty("item")]
     public List<AladinBook> Item { get; set; }
+
+    [JsonProperty("errorCode")]
+    public string ErrorCode { get; set; } = "";
+
+    [JsonProperty("errorMessage")]
+    public string ErrorMessage { get; set; } = "";
     #endregion
 }

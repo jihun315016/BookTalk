@@ -117,8 +117,8 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="Msg01" xml:space="preserve">
-    <value>서버에서 오류가 발생했습니다.</value>
-    <comment>서버 오류 메시지</comment>
+  <data name="msg01" xml:space="preserve">
+    <value>요청 처리 중 오류가 발생했습니다. 관리자에게 문의하세요.</value>
+    <comment>요청 중 오류 메시지</comment>
   </data>
 </root>

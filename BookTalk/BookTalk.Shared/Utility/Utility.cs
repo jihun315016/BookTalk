@@ -7,4 +7,9 @@ public class Utility
         var resourceManager = Properties.Resources.ResourceManager;
         return resourceManager.GetString(code) ?? string.Empty;
     }
+
+    public static string GetEndpointUrl(string baseUrl, string controllerName, string actionName)
+    {
+        return $"{baseUrl}/api/{controllerName}/{actionName}";
+    }
 }

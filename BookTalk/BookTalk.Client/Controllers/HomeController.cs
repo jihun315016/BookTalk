@@ -3,6 +3,7 @@ using BookTalk.Shared.Common;
 using BookTalk.Shared.Utility;
 using BookTalk.Web.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using System.Diagnostics;
 using System.Net.Http.Json;
@@ -12,59 +13,62 @@ namespace BookTalk.Web.Controllers
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
+        private readonly string _baseApiUrl;
 
-        public HomeController(ILogger<HomeController> logger)
+        public HomeController(ILogger<HomeController> logger, IConfiguration configuration)
         {
             _logger = logger;
+            _baseApiUrl = configuration.GetValue<string>("ApiSettings:BaseUrl");
         }
 
         [HttpGet]
         public async Task<IActionResult> Index()
         {
+            ResponseMessage<IEnumerable<AladinBookQuery>> responseData = new ResponseMessage<IEnumerable<AladinBookQuery>>();
+            string url;
+
             try
             {
                 AladinBookQuery aladinBookQuery = new AladinBookQuery()
                 {
-                    QueryType = "ItemNewAll",
-                    CategoryId = "0",
-                    SearchTarget = "Book",
-                    Output = "js",
+                    QueryType = "",
                     Start = 1,
-                    MaxResult = 5,
-                    Cover= "Big",
+                    MaxResult = 6,
                     Item = new List<AladinBook>()
                 };
 
+                url = Utility.GetEndpointUrl(_baseApiUrl, "Aladin", "DefaultDisplay");
                 HttpClient client = new HttpClient();
-                var response = await client.PostAsJsonAsync<AladinBookQuery>("https://localhost:7033/api/Aladin/DefaultDisplay", aladinBookQuery);
-                ResponseMessage<AladinBookQuery> responseData = new ResponseMessage<AladinBookQuery>();
-
-                if (response.IsSuccessStatusCode) 
+                var response = await client.PostAsJsonAsync<AladinBookQuery>(url, aladinBookQuery);
+                string content = await response.Content.ReadAsStringAsync();
+                
+                if(response.IsSuccessStatusCode)
                 {
-                    string content = await response.Content.ReadAsStringAsync();
-                    responseData = JsonConvert.DeserializeObject<ResponseMessage<AladinBookQuery>>(content);
+                    responseData = JsonConvert.DeserializeObject<ResponseMessage<IEnumerable<AladinBookQuery>>>(content);
                 }
                 else
                 {
-                    if (responseData.ErrorCode == default(int))
-                    {
-                        responseData.ErrorCode = Convert.ToInt32(response.StatusCode);
-                    }
-
-                    if (string.IsNullOrWhiteSpace(responseData.ErrorMessage)) 
-                    {
-                        responseData.ErrorMessage = Utility.GetMessage("Msg01");
-                    }
-
-                    throw new Exception($"[{responseData.ErrorCode}] {responseData.ErrorMessage}");
+                    responseData.ErrorCode = response.StatusCode.ToString();
+                    throw new Exception(responseData.DeveloperErrorMessage);
                 }
-
-                return View(responseData);
             }
             catch (Exception ex)
             {
-                return View();
+                responseData.ErrorMessage = Utility.GetMessage("msg01");
+                responseData.DeveloperErrorMessage = ex.Message;
+                responseData.Data = null;
+
+                // responseData.DeveloperErrorMessage ·Î±ë
             }
+            finally
+            {
+                if (responseData == null) 
+                {
+                    responseData = new ResponseMessage<IEnumerable<AladinBookQuery>>();
+                }    
+            }
+
+            return View(responseData);
         }
 
 

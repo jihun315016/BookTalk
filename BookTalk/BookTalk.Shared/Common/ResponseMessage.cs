@@ -10,7 +10,7 @@ namespace BookTalk.Shared.Common;
 public class ResponseMessage
 {
     [JsonProperty("errorCode")]
-    public int ErrorCode { get; set; }
+    public string ErrorCode { get; set; }
 
     [JsonProperty("errorMessage")]
     public string ErrorMessage { get; set; }
@@ -20,7 +20,10 @@ public class ResponseMessage
 public class ResponseMessage<T>
 {
     [JsonProperty("errorCode")]
-    public int ErrorCode { get; set; }
+    public string ErrorCode { get; set; }
+
+    [JsonProperty("developerErrorMessage")]
+    public string DeveloperErrorMessage { get; set; }
 
     [JsonProperty("errorMessage")]
     public string ErrorMessage { get; set; }

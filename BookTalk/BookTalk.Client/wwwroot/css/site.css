@@ -22,6 +22,10 @@ body {
 }
 
 /* 사용자 정의 속성 START */
+.custom-base-container {
+    margin: 30px 50px; /* 가로 세로 */
+}
+
 .custom-container {
     width: 80%;
     margin-right: auto;
@@ -29,10 +33,9 @@ body {
 }
 
 .book-card-img-top {
-    /* 뷰포트 높이의 20%로 설정 */
     height: 20vh;
-    /* 이미지 비율을 유지하면서 지정한 높이에 맞춤 */
     object-fit: contain;
+    margin-bottom: 20px;
 }
 
 .book-card-title-container {
@@ -41,8 +44,8 @@ body {
     -webkit-box-orient: vertical;
     overflow: hidden;
     text-overflow: ellipsis;
-    line-height: 1.5em; /* 한 줄의 높이 설정 */
-    height: 3em;
+    line-height: 1.5em;
+    height: 3.2em;
 }
 
 .book-card-text-container {
@@ -56,14 +59,18 @@ body {
 .book-card {
     margin-top: 10px;
     margin-bottom: 10px;
+    padding: 15px;
 }
 
-@media screen and (max-height: 740px) {
-    .custom-container {
-        /*margin-bottom: 300px;*/ /* 필요한 마진 크기로 조절하세요 */
-        color: olivedrab;
-        overflow: scroll;
-    }
+.nav-tabs .nav-link {
+    font-size: 1.25rem; 
 }
 
+.nav-link {
+    color: #909090; /* 검정색으로 변경 */
+}
+
+.nav-link.active {
+    color: #000000 !important; /* 활성 탭의 색상을 부트스트랩 기본 파란색으로 유지 */
+}
 /* 사용자 정의 속성 END */

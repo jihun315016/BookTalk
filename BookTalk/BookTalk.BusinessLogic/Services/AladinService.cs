@@ -2,50 +2,51 @@
 using BookTalk.Shared.Aladin;
 using BookTalk.Shared.Common;
 using BookTalk.Shared.Utility;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Threading.Tasks.Dataflow;
 
 namespace BookTalk.BusinessLogic.Services;
 
 public class AladinService : IAladinService
 {
-    public async Task<ResponseMessage<AladinBookQuery>> GetBooks(string url)
+    public async Task<AladinBookQuery> GetBooks(string url)
     {
-        ResponseMessage<AladinBookQuery> result = new ResponseMessage<AladinBookQuery>();
+        AladinBookQuery result = new AladinBookQuery();
         HttpClient client = new HttpClient();
+        AladinBookQuery data = new AladinBookQuery();
 
         try
         {
             var response = await client.GetAsync(url);
 
-            if (response.IsSuccessStatusCode)
-            {
-                var content = await response.Content.ReadAsStringAsync();
-                AladinBookQuery data = JsonConvert.DeserializeObject<AladinBookQuery>(content);
+            var content = await response.Content.ReadAsStringAsync();
+            data = JsonConvert.DeserializeObject<AladinBookQuery>(content);
 
-                for (int i = 0; i < data.Item.Count; i++)
-                {
-                    // TODO : 개발 예정
-                    data.Item[i].CategoryName = "[임시] 카테고리 이름";
-                }
-
-                result.Data = data;
-            }
-            else
+            for (int i = 0; i < data.Item.Count; i++)
             {
-                result.ErrorCode = Convert.ToInt32(response.StatusCode);
+                // TODO : 개발 예정
+                data.Item[i].CategoryName = "[임시] 카테고리 이름";
             }
-            return result;
+            return data;
         }
         catch (Exception ex)
         {
-            result.ErrorCode = -1;
-            result.ErrorMessage = ex.Message;
-            return result;
+            throw new Exception($"[{data.ErrorCode}] {data.ErrorMessage}");
         }
+    }
+
+    public string GetUrlBookList(string baseUrl, string key, AladinBookQuery aladinBookQuery)
+    {
+        string query = $"ttbkey={key}&QueryType={aladinBookQuery.QueryType}&CategoryId={aladinBookQuery.CategoryId}" +
+                $"&MaxResults={aladinBookQuery.MaxResult}&start={aladinBookQuery.Start}&SearchTarget={aladinBookQuery.SearchTarget}" +
+                $"&cover={aladinBookQuery.Cover}&output={aladinBookQuery.Output}&Version=20131101";
+
+        return baseUrl + query;        
     }
 }

@@ -61,11 +61,11 @@ namespace BookTalk.Shared.Properties {
         }
         
         /// <summary>
-        ///   서버에서 오류가 발생했습니다.과(와) 유사한 지역화된 문자열을 찾습니다.
+        ///   요청 처리 중 오류가 발생했습니다. 관리자에게 문의하세요.과(와) 유사한 지역화된 문자열을 찾습니다.
         /// </summary>
-        internal static string Msg01 {
+        internal static string msg01 {
             get {
-                return ResourceManager.GetString("Msg01", resourceCulture);
+                return ResourceManager.GetString("msg01", resourceCulture);
             }
         }
     }

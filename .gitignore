@@ -4,8 +4,12 @@
 ## Get latest from `dotnet new gitignore`
 
 # User Setting START ############################################################
-BookTalk/BookTalk.Server/appsettings.Development.json
+BookTalk/BookTalk.Client/appsettings.json
+BookTalk/BookTalk.Client/appsettings.Development.json
 BookTalk/BookTalk.Server/appsettings.json
+BookTalk/BookTalk.Server/appsettings.Development.json
+BookTalk/BookTalk.Shared/appsettings.json
+BookTalk/BookTalk.Shared/appsettings.Development.json
 # User Setting END ##############################################################
 
 # dotenv files
