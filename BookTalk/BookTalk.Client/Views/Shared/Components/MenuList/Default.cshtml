@@ -1,13 +1,13 @@
-﻿@using BookTalk.Shared.Temps
-@model IEnumerable<Menu>
+﻿@using BookTalk.Shared.Models
+@model BookTalk.Shared.Common.ResponseMessage<IEnumerable<Menu>>
 
-@if (Model != null)
+@if (Model.Data != null)
 {
-    var groupedMenu = Model.GroupBy(m => m.ParentMenuID);
+    var groupedMenu = Model.Data.GroupBy(m => m.ParentMenuId);
 
-    foreach (var parentMenu in Model.Where(m => m.Level == 0).OrderBy(m => m.ID)) 
+    foreach (var parentMenu in Model.Data.Where(m => m.Level == 0).OrderBy(m => m.Id))
     {
-        var targetId = $"collapseLayouts{parentMenu.ID}"; 
+        var targetId = $"collapseLayouts{parentMenu.Id}";
 
         <!-- 상위 메뉴 -->
         <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#@targetId" aria-expanded="false" aria-controls="@targetId">
@@ -19,7 +19,7 @@
         <div class="collapse" id="@targetId" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
             <nav class="sb-sidenav-menu-nested nav">
                 <!-- 상위 메뉴에 대한 하위 메뉴 순회 -->
-                @foreach (var childMenu in groupedMenu.FirstOrDefault(g => g.Key == parentMenu.ID))
+                @foreach (var childMenu in groupedMenu.FirstOrDefault(g => g.Key == parentMenu.Id))
                 {
                     <a class="nav-link" asp-area="" asp-controller="@childMenu.ControllerName" asp-action="@childMenu.ActionName">@childMenu.MenuName</a>
                 }
@@ -27,3 +27,19 @@
         </div>
     }
 }
+else
+{
+    <script>
+        // _Layout.cshtml에서 호출하는 ViewComponent는 onload 이벤트를 갖지 않아 여기서 동작하도록 구현한다.
+        function CheckError() {
+            var sErrorMessage = "@Html.Raw(Model.ErrorMessage)"
+
+            if (sErrorMessage) {
+                alert(sErrorMessage);
+            }
+        }
+
+        CheckError()
+    </script>
+}
+

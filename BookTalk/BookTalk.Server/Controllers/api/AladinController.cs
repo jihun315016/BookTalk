@@ -44,7 +44,7 @@ namespace BookTalk.Server.Controllers.api
             string baseUrl;
             string key;
             string url;
-            ResponseMessage<IEnumerable<AladinBookQuery>> resData = new ResponseMessage<IEnumerable<AladinBookQuery>>();
+            ResponseMessage<IEnumerable<AladinBookQuery>> responseData = new ResponseMessage<IEnumerable<AladinBookQuery>>();
 
             try
             {
@@ -68,16 +68,16 @@ namespace BookTalk.Server.Controllers.api
                 AladinBookQuery resData2 = await aladinService.GetBooks(url);
 
                 
-                resData.Data = new List<AladinBookQuery>() { resData1, resData2 }; 
-                return Ok(resData);
+                responseData.Data = new List<AladinBookQuery>() { resData1, resData2 }; 
+                return Ok(responseData);
             }
             catch (Exception ex)
             {
-                resData.ErrorCode = "-1";
-                resData.DeveloperErrorMessage = ex.Message;
+                responseData.ErrorCode = "-1";
+                responseData.DeveloperErrorMessage = ex.Message;
             }
 
-            return StatusCode(StatusCodes.Status500InternalServerError, resData);
+            return StatusCode(StatusCodes.Status500InternalServerError, responseData);
         }
 
         [Route("SearchBooks")]

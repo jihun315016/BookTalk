@@ -68,5 +68,14 @@ namespace BookTalk.Shared.Properties {
                 return ResourceManager.GetString("msg01", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   메뉴 정보를 불러오는 데 문제가 발생했습니다. 잠시 후 다시 시도해 주세요.과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        internal static string msg02 {
+            get {
+                return ResourceManager.GetString("msg02", resourceCulture);
+            }
+        }
     }
 }

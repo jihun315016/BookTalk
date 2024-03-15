@@ -121,4 +121,8 @@
     <value>요청 처리 중 오류가 발생했습니다. 관리자에게 문의하세요.</value>
     <comment>요청 중 오류 메시지</comment>
   </data>
+  <data name="msg02" xml:space="preserve">
+    <value>메뉴 정보를 불러오는 데 문제가 발생했습니다. 잠시 후 다시 시도해 주세요.</value>
+    <comment>메뉴 리스트 호출 오류 메시지</comment>
+  </data>
 </root>

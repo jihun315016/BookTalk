@@ -1,8 +1,10 @@
 ﻿using BookTalk.BusinessLogic.Interfaces;
 using BookTalk.BusinessLogic.Services;
+using BookTalk.Shared.Common;
 using BookTalk.Shared.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Collections.Generic;
 
 namespace BookTalk.Server.Controllers.api
 {
@@ -21,9 +23,21 @@ namespace BookTalk.Server.Controllers.api
 
         [HttpGet]
         [Route("GetAll")]
-        public IEnumerable<Menu> GetAll()
+        public IActionResult GetAll()
         {
-            return _menuService.GetAll();
+            ResponseMessage<IEnumerable<Menu>> responseData = new ResponseMessage<IEnumerable<Menu>>();
+
+            try
+            {
+                responseData.Data = _menuService.GetAll();
+                return Ok(responseData);
+            }
+            catch (Exception ex)
+            {
+                responseData.ErrorCode = "-1";
+                responseData.DeveloperErrorMessage = ex.Message;
+                return StatusCode(StatusCodes.Status500InternalServerError, responseData);
+            }
         }
     }
 }
