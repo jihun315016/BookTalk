@@ -26,13 +26,11 @@ builder.Services.AddCors(options =>
 
 // DbContext 등록하기
 // BookTalk.Server 프로젝트의 API 컨트롤러에서 별도의 작업을 하지 않아도 DBContext 클래스가 주입된 Service 클래스를 생성자에서 주입받는다.
-builder.Services.AddDbContext<BookTalkDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("Server=127.0.0.1;Database=TestDb;User Id=sa;Password=1234;TrustServerCertificate=True")));
-builder.Services.AddDbContext<BookTalkDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("BookTalkDb")));
-
+builder.Services.AddDbContext<BookTalkDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("BookTalkDb")));
 
 // ========== 서비스 등록하기 START ==========
 builder.Services.AddScoped<MenuService>();
+builder.Services.AddScoped<AccountService>();
 // ==========  서비스 등록하기 END  ==========
 
 var app = builder.Build();

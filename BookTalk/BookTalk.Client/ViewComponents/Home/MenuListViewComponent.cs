@@ -30,29 +30,18 @@ namespace BookTalk.Client.ViewComponents.Home
                 HttpClient client = new HttpClient();
                 var response = client.GetAsync(url).Result;
                 var content = response.Content.ReadAsStringAsync().Result;
+                responseData = JsonConvert.DeserializeObject<ResponseMessage<IEnumerable<Menu>>>(content);
 
-                if (response.IsSuccessStatusCode) 
-                {
-                    responseData = JsonConvert.DeserializeObject<ResponseMessage<IEnumerable<Menu>>>(content);
-                }
-                else
+                if (!response.IsSuccessStatusCode) 
                 {
                     responseData.ErrorCode = response.StatusCode.ToString();
-                    throw new Exception(responseData.DeveloperErrorMessage);
+                    throw new Exception(responseData.ErrorMessage);
                 }
             }
             catch (Exception ex)
             {
-                responseData.ErrorMessage = Utility.GetMessage("msg02");
-                responseData.DeveloperErrorMessage = ex.Message;
-                responseData.Data = null;
-            }
-            finally
-            {
-                if (responseData == null)
-                {
-                    responseData= new ResponseMessage<IEnumerable<Menu>>();
-                }
+                ViewBag.ErrorMessage = Utility.GetMessage("msg02");
+                responseData.InitializeResponseMessage(ex.Message, null);
             }
 
             return View(responseData);

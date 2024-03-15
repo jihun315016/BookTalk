@@ -31,6 +31,16 @@
         <!-- Navbar-->
         <ul class="navbar-nav ms-auto me-3 me-lg-4">
             <li class="nav-item dropdown">
+                <a class="nav-link text-white" role="button" asp-area="" asp-controller="@nameof(AccountController).Replace("Controller", "")" asp-action="@nameof(AccountController.Signin)">
+                    로그인
+                </a>
+            </li>
+            <li class="nav-item dropdown">
+                <a class="nav-link text-white" role="button" asp-area="" asp-controller="@nameof(AccountController).Replace("Controller", "")" asp-action="@nameof(AccountController.Signup)">
+                    회원가입
+                </a>
+            </li>
+            <li class="nav-item dropdown">
                 <a class="nav-link" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false" asp-area="" asp-controller="@nameof(UserController).Replace("Controller", "")" asp-action="@nameof(UserController.Index)">
                     <i class="fas fa-user fa-fw"></i>
                 </a>
@@ -76,10 +86,10 @@
 
     <!-- Bootstrap START -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
-    <script src="js/bootstrap-js/scripts.js"></script>
+    <script src="~/js/bootstrap-js/scripts.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.js" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/umd/simple-datatables.min.js" crossorigin="anonymous"></script>
-    <script src="js/bootstrap-js/datatables-simple-demo.js"></script>
+    <script src="~/js/bootstrap-js/datatables-simple-demo.js"></script>
     <!-- Bootstrap END -->
 
     <script src="~/lib/jquery/dist/jquery.min.js"></script>

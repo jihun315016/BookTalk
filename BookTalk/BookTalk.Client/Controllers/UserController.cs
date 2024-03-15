@@ -1,12 +1,11 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 
-namespace BookTalk.Client.Controllers
+namespace BookTalk.Client.Controllers;
+
+public class UserController : Controller
 {
-    public class UserController : Controller
+    public IActionResult Index()
     {
-        public IActionResult Index()
-        {
-            return View();
-        }
+        return View();
     }
 }

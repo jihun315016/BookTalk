@@ -34,8 +34,15 @@ namespace BookTalk.Server.Controllers.api
             }
             catch (Exception ex)
             {
-                responseData.ErrorCode = "-1";
-                responseData.DeveloperErrorMessage = ex.Message;
+                if (ex.InnerException != null && !string.IsNullOrWhiteSpace(ex.InnerException.Message))
+                {
+                    responseData.ErrorMessage = ex.InnerException.Message;
+                }
+                else
+                {
+                    responseData.ErrorMessage = ex.Message;
+                }
+
                 return StatusCode(StatusCodes.Status500InternalServerError, responseData);
             }
         }

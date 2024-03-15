@@ -21,24 +21,17 @@ public class AladinService : IAladinService
         HttpClient client = new HttpClient();
         AladinBookQuery data = new AladinBookQuery();
 
-        try
-        {
-            var response = await client.GetAsync(url);
+        var response = await client.GetAsync(url);
 
-            var content = await response.Content.ReadAsStringAsync();
-            data = JsonConvert.DeserializeObject<AladinBookQuery>(content);
+        var content = await response.Content.ReadAsStringAsync();
+        data = JsonConvert.DeserializeObject<AladinBookQuery>(content);
 
-            for (int i = 0; i < data.Item.Count; i++)
-            {
-                // TODO : 개발 예정
-                data.Item[i].CategoryName = "[임시] 카테고리 이름";
-            }
-            return data;
-        }
-        catch (Exception ex)
+        for (int i = 0; i < data.Item.Count; i++)
         {
-            throw new Exception($"[{data.ErrorCode}] {data.ErrorMessage}");
+            // TODO : 개발 예정
+            data.Item[i].CategoryName = "[임시] 카테고리 이름";
         }
+        return data;        
     }
 
     public string GetUrlBookList(string baseUrl, string key, AladinBookQuery aladinBookQuery)
