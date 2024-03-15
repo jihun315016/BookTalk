@@ -125,4 +125,15 @@
     <value>메뉴 정보를 불러오는 데 문제가 발생했습니다. 잠시 후 다시 시도해 주세요.</value>
     <comment>메뉴 리스트 호출 오류 메시지</comment>
   </data>
+  <data name="msg03" xml:space="preserve">
+    <value>회원가입에 성공했습니다. 로그인해주세요.</value>
+    <comment>회원가입 성공 메시지</comment>
+  </data>
+  <data name="msg04" xml:space="preserve">
+    <value>회원가입 과정에서 문제가 발생했습니다. 잠시 후 다시 시도해주세요.</value>
+    <comment>회원가입 실패 메시지</comment>
+  </data>
+  <data name="msg05" xml:space="preserve">
+    <value>중복된 ID입니다.</value>
+  </data>
 </root>

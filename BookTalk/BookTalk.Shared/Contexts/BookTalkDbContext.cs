@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using BookTalk.Shared.Common;
 using BookTalk.Shared.Models;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 
 namespace BookTalk.Shared.Contexts;
 
@@ -27,16 +25,8 @@ public partial class BookTalkDbContext : DbContext
     public virtual DbSet<User> Users { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-    {
-
-        string connectionString = new ConfigurationBuilder()
-            .SetBasePath(Directory.GetCurrentDirectory()).AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
-            .Build()
-            .GetConnectionString("BookTalkDb");
-
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
-        => optionsBuilder.UseSqlServer(connectionString);
-    }
+        => optionsBuilder.UseSqlServer("Server=127.0.0.1;Database=TestDb;User Id=sa;Password=1234;TrustServerCertificate=True");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -135,7 +125,7 @@ public partial class BookTalkDbContext : DbContext
                 .HasMaxLength(30)
                 .HasColumnName("name");
             entity.Property(e => e.Password)
-                .HasMaxLength(30)
+                .HasMaxLength(300)
                 .HasColumnName("password");
             entity.Property(e => e.ProfileImagePath)
                 .HasMaxLength(500)

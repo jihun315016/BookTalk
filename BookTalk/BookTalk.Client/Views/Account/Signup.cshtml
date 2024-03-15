@@ -1,0 +1,47 @@
+﻿@{
+    Layout = "_AccountLayout";
+}
+
+@using BookTalk.Shared.ViewModels
+
+@model SignupViewModel?
+
+@using (Html.BeginForm("Signup", "Account", FormMethod.Post, new { @class = "form-container custom-base-container px-4 py-3" }))
+{
+    <h5 class="text-center">Sign up</h5>
+
+    <div class="form-group">
+        @Html.LabelFor(m => m.Id, new { @class = "control-label", @for = "exampleDropdownFormID" })
+        @Html.TextBoxFor(m => m.Id, new { @class = "form-control", @id = "exampleDropdownFormID", @placeholder = "Your ID" })
+        @Html.ValidationMessageFor(m => m.Id, "", new { @class = "text-danger" })
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(m => m.Password, new { @class = "control-label", @for = "exampleDropdownFormPassword1" })
+        @Html.PasswordFor(m => m.Password, new { @class = "form-control", @id = "exampleDropdownFormPassword1", @placeholder = "Password" })
+        @Html.ValidationMessageFor(m => m.Password, "", new { @class = "text-danger" })
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(m => m.Name, new { @class = "control-label", @for = "exampleDropdownFormName" })
+        @Html.TextBoxFor(m => m.Name, new { @class = "form-control", @id = "exampleDropdownFormName", @placeholder = "Your name" })
+        @Html.ValidationMessageFor(m => m.Name, "", new { @class = "text-danger" })
+    </div>
+
+    <button type="submit" class="btn btn-primary float-right">Sign up</button>
+}
+
+<script>
+    window.onload = function () {
+        OnLoadView();
+    }
+
+    function OnLoadView() {
+        var sErrorMessage = "@Html.Raw(ViewBag.ErrorMessage)";
+
+        if (sErrorMessage) {
+            alert(sErrorMessage);
+        }
+    }
+</script>
+

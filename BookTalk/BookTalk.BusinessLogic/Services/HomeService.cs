@@ -16,9 +16,4 @@ public class HomeService
     {
         _context = context;
     }
-
-    public void GetMenuGetMenuList()
-    {
-
-    }
 }

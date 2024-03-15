@@ -1,6 +1,7 @@
 ﻿using BookTalk.BusinessLogic.Services;
 using BookTalk.Shared.Aladin;
 using BookTalk.Shared.Common;
+using BookTalk.Shared.Utility;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -37,9 +38,9 @@ namespace BookTalk.Server.Controllers.api
             "ErrorCode": ""
         }
          */
-        [Route("DefaultDisplay")]
+        [Route("GetList")]
         [HttpPost]
-        public async Task<IActionResult> DefaultDisplay([FromBody] AladinBookQuery aladinBookQuery)
+        public async Task<IActionResult> GetList([FromBody] AladinBookQuery aladinBookQuery)
         {
             string baseUrl;
             string key;
@@ -73,8 +74,8 @@ namespace BookTalk.Server.Controllers.api
             }
             catch (Exception ex)
             {
-                responseData.ErrorCode = "-1";
-                responseData.DeveloperErrorMessage = ex.Message;
+                responseData.ErrorCode = Utility.GetUserStatusCodeNumber(UserStatusCode.UndefinedError);
+                responseData.ErrorMessage = ex.Message;
             }
 
             return StatusCode(StatusCodes.Status500InternalServerError, responseData);
