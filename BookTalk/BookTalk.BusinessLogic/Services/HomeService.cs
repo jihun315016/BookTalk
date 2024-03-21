@@ -16,4 +16,12 @@ public class HomeService
     {
         _context = context;
     }
+<<<<<<< HEAD
+=======
+
+    public void GetMenuGetMenuList()
+    {
+
+    }
+>>>>>>> main
 }

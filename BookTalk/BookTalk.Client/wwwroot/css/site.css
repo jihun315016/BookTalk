@@ -61,6 +61,7 @@ body {
     margin-bottom: 10px;
     padding: 15px;
 }
+<<<<<<< HEAD
 
 .nav-tabs .nav-link {
     font-size: 1.25rem; 
@@ -73,4 +74,6 @@ body {
 .nav-link.active {
     color: #000000 !important; /* 활성 탭의 색상을 부트스트랩 기본 파란색으로 유지 */
 }
+=======
+>>>>>>> main
 /* 사용자 정의 속성 END */

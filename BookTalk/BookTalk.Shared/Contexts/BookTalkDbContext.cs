@@ -2,6 +2,10 @@
 using System.Collections.Generic;
 using BookTalk.Shared.Models;
 using Microsoft.EntityFrameworkCore;
+<<<<<<< HEAD
+=======
+using Microsoft.Extensions.Configuration;
+>>>>>>> main
 
 namespace BookTalk.Shared.Contexts;
 
@@ -25,8 +29,19 @@ public partial class BookTalkDbContext : DbContext
     public virtual DbSet<User> Users { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+<<<<<<< HEAD
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
         => optionsBuilder.UseSqlServer("Server=127.0.0.1;Database=TestDb;User Id=sa;Password=1234;TrustServerCertificate=True");
+=======
+    {
+        var builder = new ConfigurationBuilder().SetBasePath(Directory.GetCurrentDirectory()).AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
+        IConfiguration configuration = builder.Build();
+        var connectionString = configuration.GetConnectionString("BookTalkDb");
+
+#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
+        => optionsBuilder.UseSqlServer(connectionString);
+    }
+>>>>>>> main
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -125,7 +140,11 @@ public partial class BookTalkDbContext : DbContext
                 .HasMaxLength(30)
                 .HasColumnName("name");
             entity.Property(e => e.Password)
+<<<<<<< HEAD
                 .HasMaxLength(300)
+=======
+                .HasMaxLength(30)
+>>>>>>> main
                 .HasColumnName("password");
             entity.Property(e => e.ProfileImagePath)
                 .HasMaxLength(500)
