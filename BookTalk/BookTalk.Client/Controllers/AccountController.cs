@@ -1,4 +1,5 @@
 ﻿using BookTalk.Shared.Common;
+using BookTalk.Shared.Exceptions;
 using BookTalk.Shared.Models;
 using BookTalk.Shared.Utility;
 using BookTalk.Shared.ViewModels;
@@ -39,7 +40,7 @@ public class AccountController : Controller
                 user = new User()
                 {
                     Id = viewModel.Id,
-                    Password = passwordHasher.HashPassword(viewModel, viewModel.Password), // 암호화
+                    Password = Utility.RunEncryption(viewModel.Password), // 암호화
                     Name = viewModel.Name
                 };
 
@@ -84,7 +85,7 @@ public class AccountController : Controller
             responseData.InitializeResponseMessage(ex.Message, viewModel);
         }
 
-        // 로그인 실패 시, 다시 회원가입 페이지로 이동
+        // 로그인 실패 시, 다시 기존 로그인 페이지로 이동
         return View(responseData.Data);
     }
 
@@ -97,7 +98,7 @@ public class AccountController : Controller
     [HttpPost]
     public IActionResult Signin(SigninViewModel viewModel)
     {
-        ResponseMessage<SigninViewModel> responseData = new ResponseMessage<SigninViewModel>();
+        ResponseMessage<User> responseData = new ResponseMessage<User>();
         var passwordHasher = new PasswordHasher<SigninViewModel>();
         User user = new User();
         string url;
@@ -109,14 +110,15 @@ public class AccountController : Controller
                 user = new User()
                 {
                     Id = viewModel.Id,
-                    Password = passwordHasher.HashPassword(viewModel, viewModel.Password)
+                    Password = Utility.RunEncryption(viewModel.Password),
+                    Name = ""
                 };
 
                 HttpClient client = new HttpClient();
                 url = Utility.GetEndpointUrl(_baseApiUrl, "Account", "Signin");
                 var response = client.PostAsJsonAsync(url, user).Result;
                 var content = response.Content.ReadAsStringAsync().Result;
-                responseData = JsonConvert.DeserializeObject<ResponseMessage<SigninViewModel>>(content);
+                responseData = JsonConvert.DeserializeObject<ResponseMessage<User>>(content);
 
                 if (response.IsSuccessStatusCode) 
                 {
@@ -126,8 +128,8 @@ public class AccountController : Controller
                 {
                     if (response.StatusCode == HttpStatusCode.BadRequest && responseData.ErrorCode == Utility.GetUserStatusCodeNumber(UserStatusCode.ValidationError))
                     {
-                        // 유효성 검사 실패
-                        ModelState.AddModelError(responseData.ValidationError.Key, responseData.ValidationError.Message);
+                        // 유효성 검사 실패                        
+                        throw new UserValidationException(responseData.ValidationError.Message);
                     }
                     else
                     {
@@ -138,15 +140,19 @@ public class AccountController : Controller
                 }
             }
         }
+        catch (UserValidationException ex)
+        {
+            ViewBag.ErrorMessage = ex.Message;
+            responseData.InitializeResponseMessage(ex.Message, null);
+        }
         catch (Exception ex)
         {
             // 실패 메세지
             ViewBag.ErrorMessage = Utility.GetMessage("msg01");
-            responseData.InitializeResponseMessage(ex.Message, viewModel);
+            responseData.InitializeResponseMessage(ex.Message, null);
         }
 
-
         // 로그인 실패 시, 다시 로그인 페이지로 이동
-        return View();
+        return View(viewModel);
     }
 }

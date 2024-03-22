@@ -26,4 +26,18 @@ public class Utility
     {
         return Convert.ToInt32(statusCode).ToString();
     }
+
+    public static string RunEncryption(string str)
+    {
+        SHA256 sha256 = SHA256.Create();
+        byte[] hash = sha256.ComputeHash(Encoding.UTF8.GetBytes(str));
+        StringBuilder sb = new StringBuilder();
+
+        foreach (byte b in hash)
+        {
+            sb.AppendFormat("{0:x2}", b);
+        }
+
+        return sb.ToString();
+    }
 }

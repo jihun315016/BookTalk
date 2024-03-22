@@ -1,10 +1,9 @@
 ﻿using BookTalk.BusinessLogic.Services;
 using BookTalk.Shared.Common;
-using BookTalk.Shared.Models;
 using BookTalk.Shared.Exceptions;
-using Microsoft.AspNetCore.Mvc;
-using System.ComponentModel.DataAnnotations;
+using BookTalk.Shared.Models;
 using BookTalk.Shared.Utility;
+using Microsoft.AspNetCore.Mvc;
 
 namespace BookTalk.Server.Controllers.api;
 
@@ -21,7 +20,7 @@ public class AccountController : ControllerBase
 
     [HttpPost]
     [Route("Signup")]
-    public IActionResult Signup(User user)
+    public IActionResult Signup([FromBody] User user)
     {
         ResponseMessage<User> responseData = new ResponseMessage<User>()
         {
@@ -36,7 +35,6 @@ public class AccountController : ControllerBase
         catch (UserValidationException ex)
         {
             responseData.ErrorCode = Utility.GetUserStatusCodeNumber(UserStatusCode.ValidationError);
-            responseData.ValidationError.Key = ex.Key;
             responseData.ValidationError.Message = ex.Message;
             return StatusCode(StatusCodes.Status400BadRequest, responseData);
         }
@@ -50,7 +48,7 @@ public class AccountController : ControllerBase
 
     [HttpPost]
     [Route("Signin")]
-    public IActionResult Signin(User user)
+    public IActionResult Signin([FromBody] User user)
     {
         ResponseMessage<User> responseData = new ResponseMessage<User>()
         {
@@ -65,7 +63,6 @@ public class AccountController : ControllerBase
         catch (UserValidationException ex)
         {
             responseData.ErrorCode = Utility.GetUserStatusCodeNumber(UserStatusCode.ValidationError);
-            responseData.ValidationError.Key = ex.Key;
             responseData.ValidationError.Message = ex.Message;
             return StatusCode(StatusCodes.Status400BadRequest, responseData);
         }

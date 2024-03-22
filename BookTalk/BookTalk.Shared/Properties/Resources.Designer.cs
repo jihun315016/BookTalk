@@ -95,5 +95,14 @@ namespace BookTalk.Shared.Properties {
                 return ResourceManager.GetString("msg04", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   잘못된 아이디 또는 비밀번호입니다.과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        internal static string msg05 {
+            get {
+                return ResourceManager.GetString("msg05", resourceCulture);
+            }
+        }
     }
 }
