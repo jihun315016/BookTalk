@@ -88,20 +88,11 @@ namespace BookTalk.Shared.Properties {
         }
         
         /// <summary>
-        ///   회원가입 과정에서 문제가 발생했습니다. 잠시 후 다시 시도해주세요.과(와) 유사한 지역화된 문자열을 찾습니다.
+        ///   중복된 ID입니다.과(와) 유사한 지역화된 문자열을 찾습니다.
         /// </summary>
         internal static string msg04 {
             get {
                 return ResourceManager.GetString("msg04", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   중복된 ID입니다.과(와) 유사한 지역화된 문자열을 찾습니다.
-        /// </summary>
-        internal static string msg05 {
-            get {
-                return ResourceManager.GetString("msg05", resourceCulture);
             }
         }
     }

@@ -4,7 +4,7 @@
 
 @using BookTalk.Shared.ViewModels
 
-@model SignupViewModel?
+@model SigninViewModel?
 
 @{
     ViewData["Title"] = "Login";
@@ -13,9 +13,9 @@
 @using (Html.BeginForm("Signin", "Account", FormMethod.Post, new { @class = "form-container custom-base-container px-4 py-3" }))
 {
     <div class="form-group">
-        @*@Html.LabelFor(m => m.InputId, new { @class = "control-label", @for = "exampleDropdownFormEmail1" })
-        @Html.TextBoxFor(m => m.Email, new { @class = "form-control", @id = "exampleDropdownFormEmail1", @placeholder = "email@example.com" })
-        @Html.ValidationMessageFor(m => m.Email, "", new { @class = "text-danger" })*@
+        @Html.LabelFor(m => m.Id, new { @class = "control-label", @for = "exampleDropdownFormID" })
+        @Html.TextBoxFor(m => m.Id, new { @class = "form-control", @id = "exampleDropdownFormID", @placeholder = "Your ID" })
+        @Html.ValidationMessageFor(m => m.Id, "", new { @class = "text-danger" })
     </div>
 
     <div class="form-group">
@@ -24,23 +24,12 @@
         @Html.ValidationMessageFor(m => m.Password, "", new { @class = "text-danger" })
     </div>
 
-    @*<div class="form-group">
-        <div class="form-check">
-            @Html.CheckBoxFor(m => m.RememberMe, new { @class = "form-check-input", @id = "dropdownCheck" })
-            @Html.LabelFor(m => m.RememberMe, new { @class = "form-check-label", @for = "dropdownCheck" })
-        </div>
-    </div>*@
+    <div class="dropdown-divider"></div>
+    <a class="dropdown-item" href="#">New around here? Sign up</a>
+    <a class="dropdown-item" href="#">Forgot password?</a>
 
-    <button type="submit" class="btn btn-primary">Sign in</button>
+    <button type="submit" class="btn btn-primary float-right">Sign in</button>
 }
-
-<div class="dropdown-divider"></div>
-<a class="dropdown-item" href="#">New around here? Sign up</a>
-<a class="dropdown-item" href="#">Forgot password?</a>
-
-
-
-
 
 <script>
     window.onload = function () {
@@ -48,7 +37,7 @@
     }
 
     function OnLoadView() {
-        var sSuccessMessage = "@Html.Raw(TempData["SuccessMessage"])"; // 회원가입 성공 메세지
+        var sSuccessMessage = "@Html.Raw(TempData["SuccessMessage"])"; // 로그인 성공 메세지
         var sErrorMessage = "@Html.Raw(ViewBag.ErrorMessage)"; // 오류 메세지
 
         if (sSuccessMessage) {
@@ -59,4 +48,3 @@
         }
     }
 </script>
-

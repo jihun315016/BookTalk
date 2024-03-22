@@ -45,14 +45,6 @@ public class ResponseMessage<T>
         }
 
         this.ErrorMessage = errorMessage;
-
-        if (data == null)
-        {
-            this.Data = default(T);
-        }
-        else
-        {
-            this.Data = data;
-        }
+        this.Data = data;
     }
 }

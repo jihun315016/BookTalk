@@ -42,6 +42,7 @@ public class AccountController : ControllerBase
         }
         catch (Exception ex)
         {
+            responseData.ErrorCode = Utility.GetUserStatusCodeNumber(UserStatusCode.UndefinedError);
             responseData.ErrorMessage = ex.Message;
             return StatusCode(StatusCodes.Status500InternalServerError, responseData);
         }
@@ -49,8 +50,30 @@ public class AccountController : ControllerBase
 
     [HttpPost]
     [Route("Signin")]
-    public IActionResult Signin()
+    public IActionResult Signin(User user)
     {
-        return Ok();
+        ResponseMessage<User> responseData = new ResponseMessage<User>()
+        {
+            Data = user
+        };
+
+        try
+        {
+            responseData.Data = _accountService.Signin(user);
+            return Ok(responseData);
+        }
+        catch (UserValidationException ex)
+        {
+            responseData.ErrorCode = Utility.GetUserStatusCodeNumber(UserStatusCode.ValidationError);
+            responseData.ValidationError.Key = ex.Key;
+            responseData.ValidationError.Message = ex.Message;
+            return StatusCode(StatusCodes.Status400BadRequest, responseData);
+        }
+        catch (Exception ex)
+        {
+            responseData.ErrorCode = Utility.GetUserStatusCodeNumber(UserStatusCode.UndefinedError);
+            responseData.ErrorMessage = ex.Message;
+            return StatusCode(StatusCodes.Status500InternalServerError, responseData) ;
+        }
     }
 }
