@@ -7,10 +7,6 @@ namespace BookTalk.Shared.Contexts;
 
 public partial class BookTalkDbContext : DbContext
 {
-    public BookTalkDbContext()
-    {
-    }
-
     public BookTalkDbContext(DbContextOptions<BookTalkDbContext> options)
         : base(options)
     {
@@ -23,10 +19,6 @@ public partial class BookTalkDbContext : DbContext
     public virtual DbSet<Review> Reviews { get; set; }
 
     public virtual DbSet<User> Users { get; set; }
-
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
-        => optionsBuilder.UseSqlServer("Server=127.0.0.1;Database=TestDb;User Id=sa;Password=1234;TrustServerCertificate=True");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -74,11 +66,11 @@ public partial class BookTalkDbContext : DbContext
 
         modelBuilder.Entity<Review>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__review__3213E83FB018C183");
+            entity.HasKey(e => e.Id).HasName("PK__review__3213E83F53F67E04");
 
             entity.ToTable("review");
 
-            entity.HasIndex(e => e.Isbn, "UQ__review__99F9D0A4FC77284E").IsUnique();
+            entity.HasIndex(e => e.Isbn, "UQ__review__99F9D0A4272D6484").IsUnique();
 
             entity.Property(e => e.Id).HasColumnName("id");
             entity.Property(e => e.Content)
@@ -98,22 +90,22 @@ public partial class BookTalkDbContext : DbContext
                 .HasColumnName("like_count");
             entity.Property(e => e.Rating).HasColumnName("rating");
             entity.Property(e => e.UserId)
-                .HasMaxLength(30)
+                .HasMaxLength(20)
                 .HasColumnName("user_id");
 
             entity.HasOne(d => d.User).WithMany(p => p.Reviews)
                 .HasForeignKey(d => d.UserId)
-                .HasConstraintName("FK__review__user_id__571DF1D5");
+                .HasConstraintName("FK__review__user_id__208CD6FA");
         });
 
         modelBuilder.Entity<User>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__users__3213E83F8F3D0599");
+            entity.HasKey(e => e.Id).HasName("PK__users__3213E83FA7B406A9");
 
             entity.ToTable("users");
 
             entity.Property(e => e.Id)
-                .HasMaxLength(30)
+                .HasMaxLength(20)
                 .HasColumnName("id");
             entity.Property(e => e.Follower)
                 .HasDefaultValue(0)
@@ -125,57 +117,8 @@ public partial class BookTalkDbContext : DbContext
                 .HasMaxLength(30)
                 .HasColumnName("name");
             entity.Property(e => e.Password)
-                .HasMaxLength(300)
-                .HasColumnName("password");
-            entity.Property(e => e.ProfileImagePath)
                 .HasMaxLength(500)
-                .HasColumnName("profile_image_path");
-
-            entity.HasMany(d => d.Followers).WithMany(p => p.Users)
-                .UsingEntity<Dictionary<string, object>>(
-                    "Follow",
-                    r => r.HasOne<User>().WithMany()
-                        .HasForeignKey("FollowerId")
-                        .OnDelete(DeleteBehavior.ClientSetNull)
-                        .HasConstraintName("FK__follow__follower__5070F446"),
-                    l => l.HasOne<User>().WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.ClientSetNull)
-                        .HasConstraintName("FK__follow__user_id__4F7CD00D"),
-                    j =>
-                    {
-                        j.HasKey("UserId", "FollowerId").HasName("PK__follow__5DFAD42D1744593E");
-                        j.ToTable("follow");
-                        j.IndexerProperty<string>("UserId")
-                            .HasMaxLength(30)
-                            .HasColumnName("user_id");
-                        j.IndexerProperty<string>("FollowerId")
-                            .HasMaxLength(30)
-                            .HasColumnName("follower_id");
-                    });
-
-            entity.HasMany(d => d.Users).WithMany(p => p.Followers)
-                .UsingEntity<Dictionary<string, object>>(
-                    "Follow",
-                    r => r.HasOne<User>().WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.ClientSetNull)
-                        .HasConstraintName("FK__follow__user_id__4F7CD00D"),
-                    l => l.HasOne<User>().WithMany()
-                        .HasForeignKey("FollowerId")
-                        .OnDelete(DeleteBehavior.ClientSetNull)
-                        .HasConstraintName("FK__follow__follower__5070F446"),
-                    j =>
-                    {
-                        j.HasKey("UserId", "FollowerId").HasName("PK__follow__5DFAD42D1744593E");
-                        j.ToTable("follow");
-                        j.IndexerProperty<string>("UserId")
-                            .HasMaxLength(30)
-                            .HasColumnName("user_id");
-                        j.IndexerProperty<string>("FollowerId")
-                            .HasMaxLength(30)
-                            .HasColumnName("follower_id");
-                    });
+                .HasColumnName("password");
         });
 
         OnModelCreatingPartial(modelBuilder);

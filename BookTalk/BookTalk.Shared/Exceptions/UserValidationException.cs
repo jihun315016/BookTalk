@@ -15,6 +15,11 @@ public class UserValidationException : Exception
         
     }
 
+    public UserValidationException(string message) : base(message)
+    {
+
+    }
+
     public UserValidationException(string key, string message) : base(message) 
     {
         Key = key;

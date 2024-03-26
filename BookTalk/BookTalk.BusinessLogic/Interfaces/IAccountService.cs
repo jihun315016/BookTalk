@@ -7,11 +7,18 @@ using System.Threading.Tasks;
 
 namespace BookTalk.BusinessLogic.Interfaces;
 
-public interface IMenuService
+public interface IAccountService
 {
     /// <summary>
-    /// 메뉴 리스트 조회
+    /// 회원가입
     /// </summary>
+    /// <param name="user"></param>
+    public void Signup(User user);
+
+    /// <summary>
+    /// 로그인
+    /// </summary>
+    /// <param name="user"></param>
     /// <returns></returns>
-    public IEnumerable<Menu> GetAll();
+    public User Signin(User user);    
 }

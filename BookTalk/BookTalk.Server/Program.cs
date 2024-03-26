@@ -1,5 +1,4 @@
 using BookTalk.BusinessLogic.Services;
-using BookTalk.Shared.Common;
 using BookTalk.Shared.Contexts;
 using Microsoft.EntityFrameworkCore;
 
@@ -28,7 +27,13 @@ builder.Services.AddCors(options =>
 // BookTalk.Server 프로젝트의 API 컨트롤러에서 별도의 작업을 하지 않아도 DBContext 클래스가 주입된 Service 클래스를 생성자에서 주입받는다.
 builder.Services.AddDbContext<BookTalkDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("BookTalkDb")));
 
+var mongoDBConfig = builder.Configuration.GetSection("ConnectionStrings:MongoDB");
+var connectionString = mongoDBConfig["ConnStr"];
+var database = mongoDBConfig["Database"];
+var collections = mongoDBConfig.GetSection("Collections").Get<string[]>();
+
 // ========== 서비스 등록하기 START ==========
+builder.Services.AddScoped<MongoDBService>(serviceProvider => new MongoDBService(connectionString, database, collections));
 builder.Services.AddScoped<MenuService>();
 builder.Services.AddScoped<AccountService>();
 // ==========  서비스 등록하기 END  ==========
@@ -47,7 +52,12 @@ app.UseCors(MyAllowSpecificOrigins);
 app.UseHttpsRedirection();
 
 app.UseAuthorization();
-
 app.MapControllers();
+
+// ========== 서버가 시작될 때 MongoDB에 저장된 세션 모두 삭제 START ==========
+using var scope = app.Services.CreateScope();
+var mongoDBService = scope.ServiceProvider.GetRequiredService<MongoDBService>();
+await mongoDBService.DeleteAllSessions();
+// ==========  서버가 시작될 때 MongoDB에 저장된 세션 모두 삭제 END  ==========
 
 app.Run();

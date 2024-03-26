@@ -1,20 +1,22 @@
-﻿using BookTalk.Shared.Common;
+﻿using BookTalk.BusinessLogic.Interfaces;
 using BookTalk.Shared.Contexts;
 using BookTalk.Shared.Exceptions;
 using BookTalk.Shared.Models;
 using BookTalk.Shared.Utility;
 using BookTalk.Shared.ViewModels;
-using Microsoft.EntityFrameworkCore;
+using MongoDB.Driver;
 
 namespace BookTalk.BusinessLogic.Services;
 
-public class AccountService
+public class AccountService : IAccountService
 {
     private readonly BookTalkDbContext _dbContext;
+    private readonly MongoDBService _mongoDBService;
 
-    public AccountService(BookTalkDbContext bookTalkDbContext)
+    public AccountService(BookTalkDbContext bookTalkDbContext, MongoDBService mongoDBService)
     {
         _dbContext = bookTalkDbContext;
+        _mongoDBService = mongoDBService;
     }
 
     public void Signup(User user)
@@ -32,14 +34,15 @@ public class AccountService
 
     public User Signin(User user)
     {
-        User responseUser = _dbContext.Users.Find(user.Id);
-        if (responseUser == null)
+        User responseUser = _dbContext.Users.FirstOrDefault(u => u.Id == user.Id && u.Password == user.Password);       
+        if (responseUser == default(User))
         {
             // 존재하지 않는 계정
-            throw new UserValidationException(nameof(SignupViewModel.Id), Utility.GetMessage("msg04")); // 이거 메시지 만들어 고쳐야
+            throw new UserValidationException(Utility.GetMessage("msg05")); 
         }
         else
         {
+            _mongoDBService.CreateOrUpdateSession(user.Id);
             return responseUser;
         }
     }

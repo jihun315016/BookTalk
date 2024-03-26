@@ -132,4 +132,7 @@
   <data name="msg04" xml:space="preserve">
     <value>중복된 ID입니다.</value>
   </data>
+  <data name="msg05" xml:space="preserve">
+    <value>잘못된 아이디 또는 비밀번호입니다.</value>
+  </data>
 </root>
