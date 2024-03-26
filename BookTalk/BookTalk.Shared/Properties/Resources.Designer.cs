@@ -104,5 +104,14 @@ namespace BookTalk.Shared.Properties {
                 return ResourceManager.GetString("msg05", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   일치하지 않는 정보입니다.과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        internal static string msg06 {
+            get {
+                return ResourceManager.GetString("msg06", resourceCulture);
+            }
+        }
     }
 }

@@ -3,6 +3,7 @@
 }
 
 @using BookTalk.Shared.ViewModels
+@using BookTalk.Client.Controllers
 
 @model SigninViewModel?
 
@@ -13,22 +14,65 @@
 @using (Html.BeginForm("Signin", "Account", FormMethod.Post, new { @class = "form-container custom-base-container px-4 py-3" }))
 {
     <div class="form-group">
-        @Html.LabelFor(m => m.Id, new { @class = "control-label", @for = "exampleDropdownFormID" })
-        @Html.TextBoxFor(m => m.Id, new { @class = "form-control", @id = "exampleDropdownFormID", @placeholder = "Your ID" })
+        @Html.LabelFor(m => m.Id, new { @class = "control-label", @for = "txtFormID" })
+        @Html.TextBoxFor(m => m.Id, new { @class = "form-control", @id = "txtFormID", @placeholder = "Your ID" })
         @Html.ValidationMessageFor(m => m.Id, "", new { @class = "text-danger" })
     </div>
 
     <div class="form-group">
-        @Html.LabelFor(m => m.Password, new { @class = "control-label", @for = "exampleDropdownFormPassword1" })
-        @Html.PasswordFor(m => m.Password, new { @class = "form-control", @id = "exampleDropdownFormPassword1", @placeholder = "Password" })
+        @Html.LabelFor(m => m.Password, new { @class = "control-label", @for = "txtFormPassword" })
+        @Html.PasswordFor(m => m.Password, new { @class = "form-control", @id = "txtFormPassword", @placeholder = "Password" })
         @Html.ValidationMessageFor(m => m.Password, "", new { @class = "text-danger" })
     </div>
 
     <div class="dropdown-divider"></div>
-    <a class="dropdown-item" href="#">New around here? Sign up</a>
-    <a class="dropdown-item" href="#">Forgot password?</a>
+    <a class="dropdown-item" asp-controller="@nameof(AccountController).Replace("Controller", "")" asp-action="@nameof(AccountController.Signup)">New around here? Sign up</a>
+    <a id="btnFindAccount" class="dropdown-item" href="#">Forgot password?</a>
     <button type="submit" class="btn btn-primary float-right">Sign in</button>
 }
+
+
+
+<!-- 사용자 유효성 검사 팝업 -->
+<div id="checkModal" class="modal">
+    <div class="modal-content">
+        <span class="closeCheck">&times;</span>
+        <div class="form-group">
+            @Html.LabelFor(m => m.FId, new { @class = "control-label", @for = "txtFID1" })
+            @Html.TextBoxFor(m => m.FId, new { @class = "form-control", @id = "txtFID1", @placeholder = "Your ID" })
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(m => m.FName, new { @class = "control-label", @for = "txtFName1" })
+            @Html.TextBoxFor(m => m.FName, new { @class = "form-control", @id = "txtFName1", @placeholder = "Your Name" })
+        </div>
+
+        <button id="btnCheckUser" class="btn btn-primary float-right" style="width: 100px; margin-left: auto;">확인</button>
+    </div>
+</div>
+
+
+
+<!-- 비밀번호 재설정 팝업 -->
+<div id="resetPasswordModal" class="modal">
+    <div class="modal-content">
+        <span class="closeResetPassword">&times;</span>
+        <div class="form-group">
+            @Html.LabelFor(m => m.FId, new { @class = "control-label", @for = "txtFID2" })
+            @Html.TextBoxFor(m => m.FId, new { @class = "form-control", @id = "txtFID2", @placeholder = "Your ID", @disabled = "disabled" })
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(m => m.FPassword, new { @class = "control-label", @for = "txtPassword" })
+            @Html.PasswordFor(m => m.FPassword, new { @class = "form-control", @id = "txtPassword", @placeholder = "Password" })
+            @Html.ValidationMessageFor(m => m.FPassword, "", new { @id = "passwordError", @class = "text-danger" })
+        </div>
+
+        <button id="btnResetPassword" class="btn btn-primary float-right">비밀번호 재설정</button>
+    </div>
+</div>
+
+
 
 <script>
     window.onload = function () {
@@ -44,6 +88,113 @@
         }
         else if (sErrorMessage) {
             alert(sErrorMessage);
+        }
+    }
+
+    // 모달 가져오기
+    var checkModal = document.getElementById("checkModal");
+    var resetPasswordModal = document.getElementById("resetPasswordModal");
+
+    // 버튼 가져오기
+    var btnFindAccount = document.getElementById("btnFindAccount");
+    var btnCheckUser = document.getElementById("btnCheckUser");
+    var btnResetPassword = document.getElementById("btnResetPassword");
+
+    // 닫기 버튼 가져오기
+    var spanCheck = document.getElementsByClassName("closeCheck")[0];
+    var spanResetPassword = document.getElementsByClassName("closeResetPassword")[0];
+
+
+    btnFindAccount.onclick = function () {
+        checkModal.style.display = "block";
+        document.getElementById("txtFID1").value = "";
+        document.getElementById("txtFName1").value = "";
+        document.getElementById("txtFID2").value = "";
+        document.getElementById("txtPassword").value = "";
+        document.getElementById("passwordError").innerText = "";
+    }
+
+
+    // 사용자 유효성 검사
+    btnCheckUser.onclick = function () {
+        var userId = document.getElementById("txtFID1").value;
+        var userName = document.getElementById("txtFName1").value;
+        
+        fetch("/Account/CheckValidUser", {
+            method: "POST", 
+            headers: {
+                'Content-Type': 'application/json' 
+            },
+            body: JSON.stringify({ 
+                FId: userId, 
+                FName: userName, 
+            })
+        })
+        .then(response => {
+            if (response.ok) {
+                return response.json();
+            }
+            return response.json().then(err => { throw new Error(err.message); });
+        })
+        .then(data => {
+            checkModal.style.display = "none";
+            resetPasswordModal.style.display = "block";
+            document.getElementById("txtFID2").value = userId
+        })
+        .catch(error => {
+            alert(error.message);
+        });
+    }
+
+
+    // 비밀번호 재설정
+    btnResetPassword.onclick = function () {
+        var userId = document.getElementById("txtFID2").value;
+        var userPassword = document.getElementById("txtPassword").value;
+
+        fetch("/Account/ResetPassword", {
+            method: "POST",
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                FId: userId,
+                FPassword: userPassword,
+            })
+        })
+        .then(response => {
+            if (response.ok) {
+                return response.json();
+            }
+            return response.json().then(err => { throw new Error(err.message); });
+        })
+        .then(data => {
+            alert(data.message)
+            window.location.href = '/Account/Signin';
+        })
+        .catch(error => {
+            document.getElementById("passwordError").innerText = error.validMessage;
+            alert(error.message);
+        });
+    }
+
+
+    // 사용자가 닫기 버튼(X)을 클릭하면 모달 닫기
+    spanCheck.onclick = function () {
+        checkModal.style.display = "none";
+    }
+
+
+    spanResetPassword.onclick = function () {
+        resetPasswordModal.style.display = "none";
+    }
+
+
+    // 사용자가 모달 외부를 클릭하면 모달 닫기
+    window.onclick = function (event) {
+        if (event.target == checkModal) {
+            checkModal.style.display = "none";
+            resetPasswordModal.style.display = "none";
         }
     }
 </script>

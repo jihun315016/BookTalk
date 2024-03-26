@@ -46,4 +46,21 @@ public class AccountService : IAccountService
             return responseUser;
         }
     }
+
+    public bool CheckValidUser(User user)
+    {
+        int iCount = _dbContext.Users.Count(u => u.Id == user.Id && u.Name == user.Name);
+        return iCount == 1;
+    }
+
+    public void ResetPassword(User user)
+    {
+        User updateUser = _dbContext.Users.FirstOrDefault(u => u.Id == user.Id);
+        if (updateUser != null) 
+        {
+            updateUser.Password = user.Password;
+            _dbContext.SaveChanges();
+        }
+
+    }
 }
