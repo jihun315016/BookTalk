@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace BookTalk.Shared.Aladin;
 
-public class AladinBook
+public class Book
 {
     // 제목
     public string Title { get; set; }

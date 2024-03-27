@@ -6,7 +6,6 @@ using BookTalk.Shared.ViewModels;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
-using System.Diagnostics.Eventing.Reader;
 using System.Net;
 
 namespace BookTalk.Client.Controllers;
@@ -234,7 +233,7 @@ public class AccountController : Controller
 
                 if (response.IsSuccessStatusCode)
                 {
-                    return Ok(new { message = Utility.GetMessage("msg011") });
+                    return Ok(new { message = Utility.GetMessage("msg011"), validMessage  = ""});
                 }
                 else
                 {
@@ -246,12 +245,12 @@ public class AccountController : Controller
             {
                 // 재설정할 비밀번호 유효설 검사 실패
                 var message = ModelState.Values.SelectMany(m => m.Errors).Select(m => m.ErrorMessage).FirstOrDefault();
-                return Json(new {validMessage = message});
+                return Json(new { message = "", validMessage = message});
             }
         }
         catch (Exception ex)
         {
-            return StatusCode(StatusCodes.Status500InternalServerError, new { message = Utility.GetMessage("msg01") });
+            return StatusCode(StatusCodes.Status500InternalServerError, new { message = Utility.GetMessage("msg01"), validMessage = "" });
         }
     }
 }

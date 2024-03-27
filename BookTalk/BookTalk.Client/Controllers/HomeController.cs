@@ -22,27 +22,20 @@ public class HomeController : Controller
     [HttpGet]
     public async Task<IActionResult> Index()
     {
-        ResponseMessage<IEnumerable<AladinBookQuery>> responseData = new ResponseMessage<IEnumerable<AladinBookQuery>>();
+        ResponseMessage<IEnumerable<BookQuery>> responseData = new ResponseMessage<IEnumerable<BookQuery>>();
+        BookQuery bookQuery = new BookQuery();
         string url;
 
         try
         {
-            AladinBookQuery aladinBookQuery = new AladinBookQuery()
-            {
-                QueryType = "",
-                Start = 1,
-                MaxResult = 6,
-                Item = new List<AladinBook>()
-            };
-
-            url = Utility.GetEndpointUrl(_baseApiUrl, "Aladin", "GetList");
+            url = Utility.GetEndpointUrl(_baseApiUrl, "Book", "GetList");
             HttpClient client = new HttpClient();
-            var response = await client.PostAsJsonAsync<AladinBookQuery>(url, aladinBookQuery);
+            var response = await client.PostAsJsonAsync<BookQuery>(url, bookQuery);
             string content = await response.Content.ReadAsStringAsync();
             
             if(response.IsSuccessStatusCode)
             {
-                responseData = JsonConvert.DeserializeObject<ResponseMessage<IEnumerable<AladinBookQuery>>>(content);
+                responseData = JsonConvert.DeserializeObject<ResponseMessage<IEnumerable<BookQuery>>>(content);
             }
             else
             {
@@ -59,25 +52,5 @@ public class HomeController : Controller
         }
 
         return View(responseData.Data);
-    }
-
-
-
-    [HttpPost]
-    public IActionResult Index(AladinBookQuery aladinBookQuery)
-    {
-        return View();
-    }
-
-
-    public IActionResult Privacy()
-    {
-        return View();
-    }
-
-    [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-    public IActionResult Error()
-    {
-        return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
     }
 }

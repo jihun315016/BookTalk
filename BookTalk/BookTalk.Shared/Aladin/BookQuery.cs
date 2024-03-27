@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace BookTalk.Shared.Aladin;
 
-public class AladinBookQuery
+public class BookQuery
 {
     #region 검색 조건
     [JsonProperty("query")]
@@ -18,7 +18,7 @@ public class AladinBookQuery
 
     // 조회 유형(신간 전체 리스트, 베스트 셀러, 제목 ...)
     [JsonProperty("queryType")]
-    public string QueryType { get; set; }
+    public string QueryType { get; set; } = "";
 
     // 카테고리 ID
     [JsonProperty("categoryId")]
@@ -33,10 +33,10 @@ public class AladinBookQuery
     public string Output { get; set; } = "js";
 
     [JsonProperty("start")]
-    public int Start { get; set; }
+    public int Start { get; set; } = 1;
 
     [JsonProperty("maxResult")]
-    public int MaxResult { get; set; }
+    public int MaxResult { get; set; } = 0;
 
     [JsonProperty("cover")]
     public string Cover { get; set; } = "Big";
@@ -44,7 +44,7 @@ public class AladinBookQuery
 
     #region 응답 정보
     [JsonProperty("item")]
-    public List<AladinBook> Item { get; set; }
+    public List<Book> Item { get; set; } = new List<Book>();
 
     [JsonProperty("errorCode")]
     public string ErrorCode { get; set; } = "";

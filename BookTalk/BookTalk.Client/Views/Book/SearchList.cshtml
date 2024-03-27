@@ -1,0 +1,68 @@
+﻿@using BookTalk.Shared.Aladin
+
+@model BookQuery?
+
+<div class="form-container custom-base-container">
+    <div class="row">
+        <div class="container custom-container">
+            <div class="row">
+                <!-- 검색 관련 컨트롤 -->
+                <div class="col-md-12">
+                    <div class="d-flex justify-content-center">
+                        <input type="text" class="form-control mr-2" id="searchText" placeholder="도서 검색">
+                        <button type="submit" class="btn btn-primary">검색</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <hr />
+    </div>
+
+    <div class="row">
+        @if (Model != null)
+        {
+            <div class="container custom-container">
+                <div class="row">
+                    <div class="tab-content" id="bookTabContent">
+
+                        <div class="tab-pane fade show active" id="new-books" role="tabpanel" aria-labelledby="new-books-tab">
+                            <!-- 검색결과 -->
+                            <div class="row">
+                                @foreach (var book in Model.Item)
+                                {
+                                    <div class="col-md-4">
+                                        <div class="card book-card">
+                                            <img src="@book.Cover" class="book-card-img-top" alt="book cover">
+                                            <div class="book-card-title-container">
+                                                <h5 class="book-card-title">@book.Title</h5>
+                                            </div>
+                                            <div class="book-card-text-container">
+                                                <p><div class="book-card-text text-truncate">@book.Author</div></p>
+                                                <p><div class="book-card-text text-truncate">@book.CategoryName</div></p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+<script>
+    window.onload = function () {
+        OnLoadView();
+    }
+
+    function OnLoadView() {
+        var errorMessage = "@Html.Raw(ViewBag.ErrorMessage)";
+        if (errorMessage) {
+            alert(errorMessage);
+        }
+    }
+</script>
+

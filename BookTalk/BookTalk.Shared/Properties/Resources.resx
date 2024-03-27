@@ -139,4 +139,8 @@
     <value>일치하지 않는 정보입니다.</value>
     <comment>비밀번호 재설정 유효성 검사</comment>
   </data>
+  <data name="msg07" xml:space="preserve">
+    <value>비밀번호가 재설정되었습니다. 로그인해주세요.</value>
+    <comment>비밀번호 재설정 성공 메시지</comment>
+  </data>
 </root>
