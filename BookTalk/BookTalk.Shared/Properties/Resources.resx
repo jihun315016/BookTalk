@@ -135,4 +135,8 @@
   <data name="msg05" xml:space="preserve">
     <value>잘못된 아이디 또는 비밀번호입니다.</value>
   </data>
+  <data name="msg06" xml:space="preserve">
+    <value>일치하지 않는 정보입니다.</value>
+    <comment>비밀번호 재설정 유효성 검사</comment>
+  </data>
 </root>

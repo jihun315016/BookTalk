@@ -73,4 +73,46 @@ public class AccountController : ControllerBase
             return StatusCode(StatusCodes.Status500InternalServerError, responseData) ;
         }
     }
+
+    [HttpPost]
+    [Route("CheckValidUser")]
+    public IActionResult CheckValidUser([FromBody] User user)
+    {
+        ResponseMessage responseData = new ResponseMessage();
+
+        try
+        {
+            if (_accountService.CheckValidUser(user)) 
+            {
+                return Ok();
+            }
+            else
+            {
+                return StatusCode(StatusCodes.Status400BadRequest, responseData);
+            }
+        }
+        catch (Exception ex )
+        {
+            responseData.ErrorMessage = ex.Message;
+            return StatusCode(StatusCodes.Status400BadRequest, responseData);
+        }
+    }
+
+    [HttpPost]
+    [Route("ResetPassword")]
+    public IActionResult ResetPassword([FromBody] User user)
+    {
+        ResponseMessage responseData = new ResponseMessage();
+
+        try
+        {
+            _accountService.ResetPassword(user);
+            return Ok();
+        }
+        catch (Exception ex)
+        {
+            responseData.ErrorMessage = ex.Message;
+            return StatusCode(StatusCodes.Status400BadRequest, responseData);
+        }
+    }
 }

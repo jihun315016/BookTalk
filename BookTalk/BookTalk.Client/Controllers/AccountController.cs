@@ -6,6 +6,7 @@ using BookTalk.Shared.ViewModels;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using System.Diagnostics.Eventing.Reader;
 using System.Net;
 
 namespace BookTalk.Client.Controllers;
@@ -105,6 +106,8 @@ public class AccountController : Controller
 
         try
         {
+            ModelState.Remove("FPassword");            
+
             if (ModelState.IsValid)
             {
                 user = new User()
@@ -122,7 +125,7 @@ public class AccountController : Controller
 
                 if (response.IsSuccessStatusCode) 
                 {
-                    return RedirectToAction("Index", "Home"); // 모델도 넘겨야
+                    return RedirectToAction("Index", "Home");
                 }
                 else
                 {
@@ -154,5 +157,101 @@ public class AccountController : Controller
 
         // 로그인 실패 시, 다시 로그인 페이지로 이동
         return View(viewModel);
+    }
+
+    
+    [HttpPost]
+    public async Task<IActionResult> CheckValidUserAsync([FromBody] SigninViewModel viewModel)
+    {
+        ResponseMessage responseData = new ResponseMessage();
+        User user = new User();
+        string url;
+
+        try
+        {
+            user = new User()
+            {
+                Id = viewModel.FId,
+                Password = "",
+                Name = viewModel.FName
+            };
+
+            HttpClient client = new HttpClient();
+            url = Utility.GetEndpointUrl(_baseApiUrl, "Account", "CheckValidUser");
+            var response = client.PostAsJsonAsync(url, user).Result;
+            var content = response.Content.ReadAsStringAsync().Result;
+            responseData = JsonConvert.DeserializeObject<ResponseMessage>(content);
+
+            if (response.IsSuccessStatusCode) 
+            {
+                return Ok(viewModel);
+            }
+            else
+            {
+                if (response.StatusCode == HttpStatusCode.BadRequest)
+                {
+                    return StatusCode((int)response.StatusCode, new { message = Utility.GetMessage("msg06") });
+                }
+                else
+                {
+                    responseData.ErrorCode = response.StatusCode.ToString();
+                    throw new Exception(responseData.ErrorMessage);
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(StatusCodes.Status500InternalServerError, new { message = Utility.GetMessage("msg01") });
+        }
+    }
+
+    [HttpPost]
+    public IActionResult ResetPassword([FromBody] SigninViewModel viewModel)
+    {
+        ResponseMessage responseData = new ResponseMessage();
+        User user = new User();
+        string url;
+
+        try
+        {
+            ModelState.Remove("Id");
+            ModelState.Remove("Password");
+
+            if (ModelState.IsValid) 
+            {
+                user = new User()
+                {
+                    Id = viewModel.FId,
+                    Password = Utility.RunEncryption(viewModel.FPassword),
+                    Name = ""
+                };
+
+                HttpClient client = new HttpClient();
+                url = Utility.GetEndpointUrl(_baseApiUrl, "Account", "ResetPassword");
+                var response = client.PostAsJsonAsync(url, user).Result;
+                var content = response.Content.ReadAsStringAsync().Result;
+                responseData = JsonConvert.DeserializeObject<ResponseMessage>(content);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    return Ok(new { message = Utility.GetMessage("msg011") });
+                }
+                else
+                {
+                    responseData.ErrorCode = response.StatusCode.ToString();
+                    throw new Exception(responseData.ErrorMessage);
+                }
+            }
+            else
+            {
+                // 재설정할 비밀번호 유효설 검사 실패
+                var message = ModelState.Values.SelectMany(m => m.Errors).Select(m => m.ErrorMessage).FirstOrDefault();
+                return Json(new {validMessage = message});
+            }
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(StatusCodes.Status500InternalServerError, new { message = Utility.GetMessage("msg01") });
+        }
     }
 }
