@@ -4,6 +4,7 @@ using BookTalk.Shared.Common;
 using BookTalk.Shared.Utility;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace BookTalk.Server.Controllers.api
 {
@@ -25,7 +26,7 @@ namespace BookTalk.Server.Controllers.api
         /// <returns></returns>
         /*
         {
-            "title": "",
+            "query": "",
             "author": "",
             "queryType": "ItemNewAll",
             "categoryId": "0",
@@ -40,7 +41,7 @@ namespace BookTalk.Server.Controllers.api
          */
         [Route("GetList")]
         [HttpPost]
-        public async Task<IActionResult> GetList([FromBody] AladinBookQuery aladinBookQuery)
+        public IActionResult GetList([FromBody] AladinBookQuery aladinBookQuery)
         {
             string baseUrl;
             string key;
@@ -57,16 +58,16 @@ namespace BookTalk.Server.Controllers.api
                 aladinBookQuery.Output = _configuration["Aladin:List:Output"];
 
                 AladinService aladinService = new AladinService();
-                url = aladinService.GetUrlBookList(baseUrl, key, aladinBookQuery);
+                url = aladinService.GetUrlForNewOrBestSellerBooks(baseUrl, key, aladinBookQuery);
 
                 // 주목할 만한 신간 리스트
-                AladinBookQuery resData1 = await aladinService.GetBooks(url);
+                AladinBookQuery resData1 = aladinService.GetBooks(url);
 
                 // 베스트셀러
                 aladinBookQuery.QueryType = "BlogBest";
                 aladinBookQuery.Item = new List<AladinBook>();
-                url = aladinService.GetUrlBookList(baseUrl, key, aladinBookQuery);
-                AladinBookQuery resData2 = await aladinService.GetBooks(url);
+                url = aladinService.GetUrlForNewOrBestSellerBooks(baseUrl, key, aladinBookQuery);
+                AladinBookQuery resData2 = aladinService.GetBooks(url);
 
                 
                 responseData.Data = new List<AladinBookQuery>() { resData1, resData2 }; 
@@ -76,16 +77,41 @@ namespace BookTalk.Server.Controllers.api
             {
                 responseData.ErrorCode = Utility.GetUserStatusCodeNumber(UserStatusCode.UndefinedError);
                 responseData.ErrorMessage = ex.Message;
+                return StatusCode(StatusCodes.Status500InternalServerError, responseData);
             }
 
-            return StatusCode(StatusCodes.Status500InternalServerError, responseData);
         }
 
-        [Route("SearchBooks")]
+        [Route("SearchList")]
         [HttpPost]
-        public IActionResult SearchBooks()
+        public IActionResult SearchList([FromBody] AladinBookQuery aladinBookQuery)
         {
-            return null;
+            string baseUrl;
+            string key;
+            string url;
+            ResponseMessage<AladinBookQuery> responseData = new ResponseMessage<AladinBookQuery>();
+
+            try
+            {
+                key = _configuration["Aladin:Key"];
+                baseUrl = _configuration["Aladin:Search:Url"];
+                aladinBookQuery.QueryType = "Title";
+                aladinBookQuery.MaxResult = Convert.ToInt32(_configuration["Aladin:List:MaxResult"]);
+                aladinBookQuery.SearchTarget = _configuration["Aladin:List:SearchTarget"];
+                aladinBookQuery.Output = _configuration["Aladin:List:Output"];
+
+                AladinService aladinService = new AladinService();
+                url = aladinService.GetUrlForBookSearch(baseUrl, key, aladinBookQuery);
+                responseData.Data = aladinService.GetBooks(url);
+
+                return Ok(responseData);
+            }
+            catch (Exception ex)
+            {
+                responseData.ErrorCode = Utility.GetUserStatusCodeNumber(UserStatusCode.UndefinedError);
+                responseData.ErrorMessage = ex.Message;
+                return StatusCode(StatusCodes.Status500InternalServerError, responseData);
+            }
         }
     }
 }
