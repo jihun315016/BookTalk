@@ -9,7 +9,6 @@ public class BookService : IBookService
 {
     public BookQuery GetBooks(string url)
     {
-        BookQuery result = new BookQuery();
         HttpClient client = new HttpClient();
         BookQuery data = new BookQuery();
 

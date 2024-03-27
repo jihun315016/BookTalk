@@ -233,7 +233,7 @@ public class AccountController : Controller
 
                 if (response.IsSuccessStatusCode)
                 {
-                    return Ok(new { message = Utility.GetMessage("msg011"), validMessage  = ""});
+                    return Ok(new { message = Utility.GetMessage("msg07"), validMessage  = ""});
                 }
                 else
                 {

@@ -40,6 +40,13 @@ public class BookQuery
 
     [JsonProperty("cover")]
     public string Cover { get; set; } = "Big";
+
+    // 검색어 
+    [JsonProperty("keyword")]
+    public string Keyword { get; set; } = "";
+
+    [JsonProperty("page")]
+    public int Page { get; set; } = 1;
     #endregion
 
     #region 응답 정보

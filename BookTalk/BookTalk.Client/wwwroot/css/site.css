@@ -73,4 +73,13 @@ body {
 .nav-link.active {
     color: #000000 !important; /* 활성 탭의 색상을 부트스트랩 기본 파란색으로 유지 */
 }
+
+.input-text-search {
+    
+}
+
+.btn-search {
+    width: 100px;
+    margin-left: 20px;
+}
 /* 사용자 정의 속성 END */

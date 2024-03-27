@@ -70,17 +70,33 @@ namespace BookTalk.Server.Controllers.api
 
             try
             {
-                key = _configuration["Aladin:Key"];
-                baseUrl = _configuration["Aladin:Search:Url"];
-                bookQuery.QueryType = "Title";
-                bookQuery.MaxResult = Convert.ToInt32(_configuration["Aladin:List:MaxResult"]);
-                bookQuery.SearchTarget = _configuration["Aladin:List:SearchTarget"];
-                bookQuery.Output = _configuration["Aladin:List:Output"];
-
                 BookService bookService = new BookService();
-                url = bookService.GetUrlForBookSearch(baseUrl, key, bookQuery);
-                responseData.Data = bookService.GetBooks(url);
 
+                key = _configuration["Aladin:Key"];
+
+                // 검색어가 없으면 검색 API 호출 시 오류 -> 검색어 없으면 베스트 셀러 조회
+                if (string.IsNullOrWhiteSpace(bookQuery.Query))
+                {
+                    baseUrl = _configuration["Aladin:List:Url"];
+                    bookQuery.MaxResult = Convert.ToInt32(_configuration["Aladin:List:MaxResult"]);
+                    bookQuery.Start = bookQuery.MaxResult * (bookQuery.Page - 1) + 1;
+                    bookQuery.SearchTarget = _configuration["Aladin:List:SearchTarget"];
+                    bookQuery.Output = _configuration["Aladin:List:Output"];
+                    bookQuery.QueryType = "BlogBest";
+                    url = bookService.GetUrlForNewOrBestSellerBooks(baseUrl, key, bookQuery);
+                }
+                else
+                {
+                    baseUrl = _configuration["Aladin:Search:Url"];
+                    bookQuery.MaxResult = Convert.ToInt32(_configuration["Aladin:Search:MaxResult"]);
+                    bookQuery.Start = bookQuery.MaxResult * (bookQuery.Page - 1) + 1;
+                    bookQuery.SearchTarget = _configuration["Aladin:Search:SearchTarget"];
+                    bookQuery.Output = _configuration["Aladin:Search:Output"];
+                    bookQuery.QueryType = "Title";
+                    url = bookService.GetUrlForBookSearch(baseUrl, key, bookQuery);
+                }
+
+                responseData.Data = bookService.GetBooks(url);
                 return Ok(responseData);
             }
             catch (Exception ex)

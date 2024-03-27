@@ -16,27 +16,30 @@ namespace BookTalk.Client.Controllers
         }
 
         [HttpGet]
-        public IActionResult SearchList()
-        {
-            return View();
-        }
-
-        [HttpPost]
-        public async Task<IActionResult> SearchListAsync(BookQuery bookQuery)
+        public IActionResult SearchList(string? keyword, int page = 1)
         {
             ResponseMessage<BookQuery> responseData = new ResponseMessage<BookQuery>();
             string url;
 
             try
             {
+                BookQuery bookQuery = new BookQuery()
+                {
+                    Query = string.IsNullOrWhiteSpace(keyword) ? "" : keyword,
+                    Keyword = string.IsNullOrWhiteSpace(keyword) ? "" : keyword,
+                    Page = page
+                };
+
                 url = Utility.GetEndpointUrl(_baseApiUrl, "Book", "SearchList");
                 HttpClient client = new HttpClient();
-                var response = await client.PostAsJsonAsync<BookQuery>(url, bookQuery);
-                string content = await response.Content.ReadAsStringAsync();
+                var response = client.PostAsJsonAsync<BookQuery>(url, bookQuery).Result;
+                string content = response.Content.ReadAsStringAsync().Result;
 
                 if (response.IsSuccessStatusCode)
                 {
                     responseData = JsonConvert.DeserializeObject<ResponseMessage<BookQuery>>(content);
+                    responseData.Data.Keyword = bookQuery.Keyword;
+                    responseData.Data.Page = bookQuery.Page;
                 }
                 else
                 {
@@ -46,12 +49,11 @@ namespace BookTalk.Client.Controllers
             }
             catch (Exception ex)
             {
-                responseData.ErrorCode = Utility.GetUserStatusCodeNumber(UserStatusCode.UndefinedError);
-                responseData.ErrorMessage = ex.Message;
+                ViewBag.ErrorMessage = Utility.GetMessage("msg01");
                 return StatusCode(StatusCodes.Status500InternalServerError, responseData);
             }
 
-            return View();
+            return View(responseData.Data);
         }
     }
 }
