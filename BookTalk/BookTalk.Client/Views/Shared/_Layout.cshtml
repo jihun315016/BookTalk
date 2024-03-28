@@ -1,6 +1,4 @@
-﻿@using BookTalk.Client.Controllers
-
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -17,35 +15,8 @@
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
 </head>
 <body>
-
     <!-- Bootstrap START -->
-    <nav class="sb-topnav navbar navbar-expand navbar-dark bg-dark">
-
-        <!-- Navbar Brand-->
-        <a class="navbar-brand ps-3" href="index.html">Start Bootstrap</a>
-
-        <!-- Sidebar Toggle-->
-        <button class="btn btn-link btn-sm order-1 order-lg-0 me-4 me-lg-0" id="sidebarToggle" href="#!"><i class="fas fa-bars"></i></button>
-
-        <!-- Navbar-->
-        <ul class="navbar-nav ms-auto me-3 me-lg-4">
-            <li class="nav-item dropdown">
-                <a class="nav-link text-white" role="button" asp-area="" asp-controller="@nameof(AccountController).Replace("Controller", "")" asp-action="@nameof(AccountController.Signin)">
-                    로그인
-                </a>
-            </li>
-            <li class="nav-item dropdown">
-                <a class="nav-link text-white" role="button" asp-area="" asp-controller="@nameof(AccountController).Replace("Controller", "")" asp-action="@nameof(AccountController.Signup)">
-                    회원가입
-                </a>
-            </li>
-            <li class="nav-item dropdown">
-                <a class="nav-link" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false" asp-area="" asp-controller="@nameof(UserController).Replace("Controller", "")" asp-action="@nameof(UserController.Index)">
-                    <i class="fas fa-user fa-fw"></i>
-                </a>
-            </li>
-        </ul>
-    </nav>
+    @await Component.InvokeAsync("Nav")
 
     <div id="layoutSidenav">
         <div id="layoutSidenav_nav">
@@ -88,7 +59,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.js" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/umd/simple-datatables.min.js" crossorigin="anonymous"></script>
     <script src="~/js/bootstrap-js/datatables-simple-demo.js"></script>
-    <!-- Bootstrap END -->    
+    <!-- Bootstrap END -->
 
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>

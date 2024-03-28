@@ -50,10 +50,7 @@ public class AccountController : ControllerBase
     [Route("Signin")]
     public IActionResult Signin([FromBody] User user)
     {
-        ResponseMessage<User> responseData = new ResponseMessage<User>()
-        {
-            Data = user
-        };
+        ResponseMessage<Session> responseData = new ResponseMessage<Session>();
 
         try
         {
@@ -112,7 +109,26 @@ public class AccountController : ControllerBase
         catch (Exception ex)
         {
             responseData.ErrorMessage = ex.Message;
-            return StatusCode(StatusCodes.Status400BadRequest, responseData);
+            return StatusCode(StatusCodes.Status500InternalServerError, responseData);
+        }
+    }
+
+    [HttpPost]
+    [Route("Signout")]
+    public IActionResult Signout([FromBody] Session session)
+    {
+        ResponseMessage responseData = new ResponseMessage();
+
+        try
+        {
+            _accountService.Signout(session.Id);
+            return Ok(responseData);
+        }
+        catch (Exception ex)
+        {
+            responseData.ErrorCode = Utility.GetUserStatusCodeNumber(UserStatusCode.UndefinedError);
+            responseData.ErrorMessage = ex.Message;
+            return StatusCode(StatusCodes.Status500InternalServerError, responseData);
         }
     }
 }

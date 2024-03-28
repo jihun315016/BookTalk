@@ -1,4 +1,5 @@
 ﻿using BookTalk.BusinessLogic.Interfaces;
+using BookTalk.Shared.Common;
 using BookTalk.Shared.Contexts;
 using BookTalk.Shared.Exceptions;
 using BookTalk.Shared.Models;
@@ -32,7 +33,7 @@ public class AccountService : IAccountService
         _dbContext.SaveChanges();
     }
 
-    public User Signin(User user)
+    public Session Signin(User user)
     {
         User responseUser = _dbContext.Users.FirstOrDefault(u => u.Id == user.Id && u.Password == user.Password);       
         if (responseUser == default(User))
@@ -42,9 +43,13 @@ public class AccountService : IAccountService
         }
         else
         {
-            _mongoDBService.CreateOrUpdateSession(user.Id);
-            return responseUser;
+            return _mongoDBService.CreateOrUpdateSession(user.Id);
         }
+    }
+
+    public void Signout(string sessionId)
+    {
+        _mongoDBService.DeleteSession(sessionId);
     }
 
     public bool CheckValidUser(User user)
@@ -62,5 +67,5 @@ public class AccountService : IAccountService
             _dbContext.SaveChanges();
         }
 
-    }
+    }    
 }

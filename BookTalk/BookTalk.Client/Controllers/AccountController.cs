@@ -5,17 +5,21 @@ using BookTalk.Shared.Utility;
 using BookTalk.Shared.ViewModels;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Newtonsoft.Json;
+using System;
 using System.Net;
 
 namespace BookTalk.Client.Controllers;
 
 public class AccountController : Controller
 {
+    private readonly IConfiguration _configuration;
     private readonly string _baseApiUrl;
 
     public AccountController(IConfiguration configuration)
     {
+        _configuration = configuration;
         _baseApiUrl = configuration.GetValue<string>("ApiSettings:BaseUrl");
     }
 
@@ -98,7 +102,7 @@ public class AccountController : Controller
     [HttpPost]
     public IActionResult Signin(SigninViewModel viewModel)
     {
-        ResponseMessage<User> responseData = new ResponseMessage<User>();
+        ResponseMessage<Session> responseData = new ResponseMessage<Session>();
         var passwordHasher = new PasswordHasher<SigninViewModel>();
         User user = new User();
         string url;
@@ -120,10 +124,24 @@ public class AccountController : Controller
                 url = Utility.GetEndpointUrl(_baseApiUrl, "Account", "Signin");
                 var response = client.PostAsJsonAsync(url, user).Result;
                 var content = response.Content.ReadAsStringAsync().Result;
-                responseData = JsonConvert.DeserializeObject<ResponseMessage<User>>(content);
+                responseData = JsonConvert.DeserializeObject<ResponseMessage<Session>>(content);
 
                 if (response.IsSuccessStatusCode) 
                 {
+                    string sessionId = _configuration.GetValue<string>("Session:id");
+                    int sessionMinute = Convert.ToInt32(_configuration.GetValue<string>("Session:SessionMinute"));
+
+                    // 클라이언트에 쿠키 설정
+                    HttpContext.Response.Cookies.Append(
+                        sessionId, 
+                        responseData.Data.Id.ToString(),
+                        new CookieOptions
+                        {
+                            HttpOnly = true,
+                            Expires = DateTimeOffset.Now.AddMinutes(sessionMinute)
+                        }
+                    );
+
                     return RedirectToAction("Index", "Home");
                 }
                 else
@@ -252,5 +270,43 @@ public class AccountController : Controller
         {
             return StatusCode(StatusCodes.Status500InternalServerError, new { message = Utility.GetMessage("msg01"), validMessage = "" });
         }
+    }
+
+
+    [HttpPost]
+    public IActionResult Signout()
+    {
+        ResponseMessage responseData = new ResponseMessage();
+        string url;
+        string sessionKey;
+
+        try
+        {
+            sessionKey = _configuration.GetValue<string>("Session:id");
+            if (HttpContext.Request.Cookies.TryGetValue(sessionKey, out string sessionId))
+            {
+                // 쿠키 삭제
+                HttpContext.Response.Cookies.Delete(sessionKey);
+
+                Session session = new Session() { Id = sessionId };
+                HttpClient client = new HttpClient();
+                url = Utility.GetEndpointUrl(_baseApiUrl, "Account", "Signout");
+                var response = client.PostAsJsonAsync(url, session).Result;
+                var content = response.Content.ReadAsStringAsync().Result;
+                responseData = JsonConvert.DeserializeObject<ResponseMessage>(content);
+
+                if (!response.IsSuccessStatusCode)
+                {
+                    responseData.ErrorCode = response.StatusCode.ToString();
+                    throw new Exception(responseData.ErrorMessage);
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(StatusCodes.Status500InternalServerError, new { message = Utility.GetMessage("msg01") });
+        }
+
+        return Ok(new { message = Utility.GetMessage("msg08") });
     }
 }

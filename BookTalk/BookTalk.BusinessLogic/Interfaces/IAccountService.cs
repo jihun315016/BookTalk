@@ -1,4 +1,5 @@
-﻿using BookTalk.Shared.Models;
+﻿using BookTalk.Shared.Common;
+using BookTalk.Shared.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,7 +21,7 @@ public interface IAccountService
     /// </summary>
     /// <param name="user"></param>
     /// <returns></returns>
-    public User Signin(User user);
+    public Session Signin(User user);
 
     /// <summary>
     /// 비밀번호 재설정 처리 전 사용자 유효성 검사
