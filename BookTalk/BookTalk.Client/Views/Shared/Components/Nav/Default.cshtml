@@ -1,0 +1,100 @@
+﻿@using BookTalk.Client.Controllers
+@using BookTalk.Shared.Models
+@model BookTalk.Shared.Common.ResponseMessage<User>
+
+@if (Model.Data == null)
+{
+    <nav class="sb-topnav navbar navbar-expand navbar-dark bg-dark">
+
+        <!-- Navbar Brand-->
+        <a class="navbar-brand ps-3" href="index.html">Start Bootstrap</a>
+
+        <!-- Sidebar Toggle-->
+        <button class="btn btn-link btn-sm order-1 order-lg-0 me-4 me-lg-0" id="sidebarToggle" href="#!"><i class="fas fa-bars"></i></button>
+
+        <!-- Navbar-->
+        <ul class="navbar-nav ms-auto me-3 me-lg-4">
+            <li class="nav-item dropdown">
+                <a class="nav-link text-white" role="button" asp-area="" asp-controller="@nameof(AccountController).Replace("Controller", "")" asp-action="@nameof(AccountController.Signin)">
+                    로그인
+                </a>
+            </li>
+            <li class="nav-item dropdown">
+                <a class="nav-link text-white" role="button" asp-area="" asp-controller="@nameof(AccountController).Replace("Controller", "")" asp-action="@nameof(AccountController.Signup)">
+                    회원가입
+                </a>
+            </li>
+            <li class="nav-item dropdown">
+                <a class="nav-link" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false" asp-area="" asp-controller="@nameof(UserController).Replace("Controller", "")" asp-action="@nameof(UserController.Index)">
+                    <i class="fas fa-user fa-fw"></i>
+                </a>
+            </li>
+        </ul>
+    </nav>
+}
+else
+{
+    <nav class="sb-topnav navbar navbar-expand navbar-dark bg-dark">
+
+        <!-- Navbar Brand-->
+        <a class="navbar-brand ps-3" href="index.html">Start Bootstrap</a>
+
+        <!-- Sidebar Toggle-->
+        <button class="btn btn-link btn-sm order-1 order-lg-0 me-4 me-lg-0" id="sidebarToggle" href="#!"><i class="fas fa-bars"></i></button>
+
+        <!-- Navbar-->
+        <ul class="navbar-nav ms-auto me-3 me-lg-4">
+            <li class="nav-item dropdown">
+                <a class="nav-link text-white" role="button" asp-area="" asp-controller="@nameof(AccountController).Replace("Controller", "")" asp-action="@nameof(AccountController.Signin)">
+                    [@(Model.Data.Id)] @(Model.Data.Name)
+                </a>
+            </li>
+            <li class="nav-item dropdown">
+                <a id="btnSignout" class="nav-link text-white" role="button" onclick="signOut()">
+                    로그아웃
+                </a>
+            </li>
+            <li class="nav-item dropdown">
+                <a class="nav-link" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false" asp-area="" asp-controller="@nameof(UserController).Replace("Controller", "")" asp-action="@nameof(UserController.Index)">
+                    <i class="fas fa-user fa-fw"></i>
+                </a>
+            </li>
+        </ul>
+    </nav>
+}
+
+<script>
+    // _Layout.cshtml에서 호출하는 ViewComponent는 onload 이벤트를 갖지 않아 여기서 동작하도록 구현한다.
+    function CheckError() {
+        var errorMessage = "@Html.Raw(ViewBag.ErrorMessage)";
+        if (errorMessage) {
+            alert(errorMessage);
+        }
+    }
+
+    CheckError()
+
+
+    function signOut() {
+        fetch("/Account/Signout", {
+            method: "POST",
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({})
+        })
+        .then(response => {
+            if (response.ok) {
+                return;
+            }
+            return response.json().then(err => { throw new Error(err.message); });
+        })
+        .then(data => {
+            window.location.href = '/Home/Index';
+        })
+        .catch(error => {
+            alert(error.message);
+        });
+    }
+</script>
+

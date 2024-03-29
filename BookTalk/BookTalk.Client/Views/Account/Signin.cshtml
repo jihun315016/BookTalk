@@ -47,7 +47,9 @@
             @Html.TextBoxFor(m => m.FName, new { @class = "form-control", @id = "txtFName1", @placeholder = "Your Name" })
         </div>
 
-        <button id="btnCheckUser" class="btn btn-primary float-right" style="width: 100px; margin-left: auto;">확인</button>
+        <div class="form-group"">
+            <button id="btnCheckUser" class="btn btn-primary">확인</button>
+        </div>
     </div>
 </div>
 
@@ -68,7 +70,9 @@
             @Html.ValidationMessageFor(m => m.FPassword, "", new { @id = "passwordError", @class = "text-danger" })
         </div>
 
-        <button id="btnResetPassword" class="btn btn-primary float-right">비밀번호 재설정</button>
+        <div class="form-group button-container">
+            <button id="btnResetPassword" class="btn btn-primary">비밀번호 재설정</button>
+        </div>
     </div>
 </div>
 
@@ -80,14 +84,14 @@
     }
 
     function OnLoadView() {
-        var sSuccessMessage = "@Html.Raw(TempData["SuccessMessage"])"; // 로그인 성공 메세지
-        var sErrorMessage = "@Html.Raw(ViewBag.ErrorMessage)"; // 오류 메세지
+        var successMessage = "@Html.Raw(TempData["SuccessMessage"])"; // 로그인 성공 메세지
+        var errorMessage = "@Html.Raw(ViewBag.ErrorMessage)"; // 오류 메세지
 
-        if (sSuccessMessage) {
-            alert(sSuccessMessage);
+        if (successMessage) {
+            alert(successMessage);
         }
-        else if (sErrorMessage) {
-            alert(sErrorMessage);
+        else if (errorMessage) {
+            alert(errorMessage);
         }
     }
 
@@ -119,15 +123,15 @@
     btnCheckUser.onclick = function () {
         var userId = document.getElementById("txtFID1").value;
         var userName = document.getElementById("txtFName1").value;
-        
+
         fetch("/Account/CheckValidUser", {
-            method: "POST", 
+            method: "POST",
             headers: {
-                'Content-Type': 'application/json' 
+                'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ 
-                FId: userId, 
-                FName: userName, 
+            body: JSON.stringify({
+                FId: userId,
+                FName: userName,
             })
         })
         .then(response => {
@@ -169,11 +173,16 @@
             return response.json().then(err => { throw new Error(err.message); });
         })
         .then(data => {
-            alert(data.message)
-            window.location.href = '/Account/Signin';
+            if (data.validMessage) {
+                // 유효성 검사 실패
+                document.getElementById("passwordError").innerText = data.validMessage;
+            }
+            else {
+                alert(data.message)
+                window.location.href = '/Account/Signin';
+            }
         })
         .catch(error => {
-            document.getElementById("passwordError").innerText = error.validMessage;
             alert(error.message);
         });
     }
@@ -192,7 +201,7 @@
 
     // 사용자가 모달 외부를 클릭하면 모달 닫기
     window.onclick = function (event) {
-        if (event.target == checkModal) {
+        if (event.target == checkModal || event.target == resetPasswordModal) {
             checkModal.style.display = "none";
             resetPasswordModal.style.display = "none";
         }

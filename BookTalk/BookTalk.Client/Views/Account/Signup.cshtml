@@ -37,10 +37,10 @@
     }
 
     function OnLoadView() {
-        var sErrorMessage = "@Html.Raw(ViewBag.ErrorMessage)";
+        var errorMessage = "@Html.Raw(ViewBag.ErrorMessage)";
 
-        if (sErrorMessage) {
-            alert(sErrorMessage);
+        if (errorMessage) {
+            alert(errorMessage);
         }
     }
 </script>

@@ -1,10 +1,6 @@
-﻿using BookTalk.Shared.Aladin;
-using BookTalk.Shared.Common;
+﻿using BookTalk.Shared.Common;
 using BookTalk.Shared.Models;
-//using BookTalk.Shared.Temps;
 using BookTalk.Shared.Utility;
-
-//using BookTalk.Shared.Temps;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 

@@ -1,0 +1,110 @@
+﻿@using BookTalk.Shared.Aladin
+@using BookTalk.Client.Controllers
+
+@model BookQuery?
+
+<div class="form-container custom-base-container">
+    @using (Html.BeginForm("SearchList", "Book", FormMethod.Get, new { @class = "form-container custom-base-container px-4 py-3" }))
+    {
+        <div class="row">
+            <div class="container custom-container">
+                <div class="row">
+                    <!-- 검색 관련 컨트롤 -->
+                    <div class="col-md-12">
+                        <div class="d-flex justify-content-center">
+                            @Html.TextBoxFor(m => m.Keyword, new { @class = "form-control input-text-search", @id = "txtSearch", @placeholder = "도서 검색" })
+                            <button type="submit" class="btn btn-primary btn-search">검색</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+
+    @if (Model != null)
+    {
+        <div class="row">
+            <div class="container custom-container">
+                <div class="row">
+                    <div class="tab-content" id="bookTabContent">
+                        <div class="tab-pane fade show active" id="new-books" role="tabpanel" aria-labelledby="new-books-tab">
+                            <div class="row">
+                                <!-- 결과 리스트 조회 -->
+                                @foreach (var book in Model.Item)
+                                {
+                                    <div class="col-md-4">
+                                        <div class="card book-card">
+                                            <img src="@book.Cover" class="book-card-img-top" alt="book cover">
+                                            <div class="book-card-title-container">
+                                                <h5 class="book-card-title">@book.Title</h5>
+                                            </div>
+                                            <div class="book-card-text-container">
+                                                <p><div class="book-card-text text-truncate">@book.Author</div></p>
+                                                <p><div class="book-card-text text-truncate">@book.CategoryName</div></p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <nav aria-label="Page navigation example">
+                <ul id="pagination-container" class="pagination">
+                    <!-- Previous -->
+                    @if (Model.Page > 1)
+                    {
+                        <li class="page-item">
+                            <a class="page-link"
+                               asp-controller="@nameof(BookController).Replace("Controller", "")"
+                               asp-action="@nameof(BookController.SearchList)"
+                               asp-route-page="@(Model.Page - 1)"
+                               data-page="@(Model.Page - 1)">Previous</a>
+                        </li>
+                    }
+                    <!-- Page - 2 ~ Page + 2 -->
+                    @for (int i = Model.Page - 2; i < Model.Page + 3; i++)
+                    {
+                        if (i > 0)
+                        {
+                            <li class="page-item">
+                                <a class="page-link"
+                                   asp-controller="@nameof(BookController).Replace("Controller", "")"
+                                   asp-action="@nameof(BookController.SearchList)"
+                                   asp-route-page="@i"
+                                   data-page="@i">@i</a>
+                            </li>
+                        }
+                    }
+                    <!-- Next -->
+                    <li class="page-item">
+                        <a class="page-link"
+                           asp-controller="@nameof(BookController).Replace("Controller", "")"
+                           asp-action="@nameof(BookController.SearchList)"
+                           asp-route-page="@(Model.Page + 1)"
+                           data-page="@(Model.Page + 1)">Next</a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    }
+</div>
+
+
+
+<script>
+    window.onload = function () {
+        OnLoadView();
+    }
+
+    function OnLoadView() {
+        var errorMessage = "@Html.Raw(ViewBag.ErrorMessage)";
+        if (errorMessage) {
+            alert(errorMessage);
+        }
+    }
+</script>

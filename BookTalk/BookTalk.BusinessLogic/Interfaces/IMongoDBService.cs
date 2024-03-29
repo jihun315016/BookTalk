@@ -24,6 +24,12 @@ public interface IMongoDBService
     public void CreateOrUpdateSession(string userId);
 
     /// <summary>
+    /// 세션 삭제
+    /// </summary>
+    /// <param name="sessionId"></param>
+    public void DeleteSession(string sessionId);
+
+    /// <summary>
     /// 모든 세션 삭제
     /// </summary>
     public void DeleteAllSessions();

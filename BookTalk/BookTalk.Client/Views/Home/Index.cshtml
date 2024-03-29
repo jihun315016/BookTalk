@@ -1,10 +1,9 @@
-﻿@using BookTalk.Shared.Common
-@using BookTalk.Shared.Aladin
+﻿@using BookTalk.Shared.Aladin
 
-@model IEnumerable<AladinBookQuery>
+@model IEnumerable<BookQuery>
 
 @{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "Home";
 }
 
 <div class="form-container custom-base-container">
@@ -85,9 +84,9 @@
     }
 
     function OnLoadView() {
-        var sErrorMessage = "@Html.Raw(ViewBag.ErrorMessage)";
-        if (sErrorMessage) {
-            alert(sErrorMessage);
+        var errorMessage = "@Html.Raw(ViewBag.ErrorMessage)";
+        if (errorMessage) {
+            alert(errorMessage);
         }
     }
 </script>

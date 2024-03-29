@@ -1,5 +1,7 @@
 ﻿using BookTalk.Shared.Common;
+using BookTalk.Shared.Models;
 using MongoDB.Driver;
+using System.Net.Http;
 
 namespace BookTalk.BusinessLogic.Services;
 
@@ -23,20 +25,35 @@ public class MongoDBService
         return _database.GetCollection<T>(_collections[index]);
     }
 
-    public void CreateOrUpdateSession(string userId)
+    public Session CreateOrUpdateSession(string userId)
     {
         IMongoCollection<Session> sessions = GetCollection<Session>(0); // 세션 컬렉션
         var session = sessions.Find(s => s.UserId == userId).FirstOrDefault();
         if (session == null)
         {
             sessions.InsertOne(new Session { UserId = userId });
+            return sessions.Find(s => s.UserId == userId).FirstOrDefault();
         }
         else
         {
-            // 이미 세션이 존재하면 세션 접근 날짜만 업데이트
+            // 이미 세션이 존재하면 세션 접근 날짜만 업데이트 
             var update = Builders<Session>.Update.Set(s => s.LastAccessed, DateTime.UtcNow);
             sessions.UpdateOne(s => s.UserId == userId, update);
+            return session;
         }
+    }
+
+    public void DeleteSession(string sessionId)
+    {
+        IMongoCollection<Session> sessions = GetCollection<Session>(0);
+        var filter = Builders<Session>.Filter.Eq(s => s.Id, sessionId);
+        sessions.DeleteOne(filter);
+    }
+
+    public Session GetSession(string sessionId)
+    {
+        IMongoCollection<Session> sessions = GetCollection<Session>(0); 
+        return sessions.Find(s => s.Id == sessionId).FirstOrDefault();
     }
 
     public async Task DeleteAllSessions()

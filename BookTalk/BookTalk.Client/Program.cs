@@ -29,6 +29,31 @@ app.UseAuthorization();
 
 app.UseSession();
 
+// 세션 만료 시간 갱신
+app.Use(async (context, next) =>
+{
+    var sessionConfig = builder.Configuration.GetSection("Session");
+    string sessionId = sessionConfig["id"];
+    int sessionMinute = Convert.ToInt32(sessionConfig["SessionMinute"]);
+
+    var sessionIdCookie = context.Request.Cookies[sessionId];
+    if (sessionIdCookie != null)
+    {
+        // 쿠키가 존재하는 경우 만료 시간을 갱신
+        context.Response.Cookies.Append(
+            sessionId,
+            sessionIdCookie,
+            new CookieOptions
+            {
+                HttpOnly = true,
+                Expires = DateTimeOffset.Now.AddMinutes(sessionMinute)
+            }
+        );
+    }
+
+    await next.Invoke();
+});
+
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
