@@ -29,9 +29,6 @@ public class Book
     // 카테고리 ID
     public string CategoryId { get; set; }
 
-    // 카테고리 이름
-    public string CategoryName { get; set; }
-
     // 출판사
     public string Publisher { get; set; }
 }

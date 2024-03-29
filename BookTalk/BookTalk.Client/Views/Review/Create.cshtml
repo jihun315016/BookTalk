@@ -1,0 +1,109 @@
+﻿@using BookTalk.Shared.ViewModels
+@model ReviewCreateViewModel
+
+@using (Html.BeginForm("ActionMethodName", "ControllerName", FormMethod.Post, new { @class = "container mt-4" }))
+{
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-body">
+                    <div class="mb-3">
+                        @Html.LabelFor(m => m.ReviewTitle, new { @class = "control-label", @for = "txtFormReviewTitle" })
+                        @Html.TextBoxFor(m => m.ReviewTitle, new { @class = "form-control", @id = "txtFormReviewTitle", @placeholder = "Review Title" })
+                        @Html.ValidationMessageFor(m => m.ReviewTitle, "", new { @class = "text-danger" })
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <div class="mb-3">
+                                @Html.LabelFor(m => m.Rate, new { @class = "control-label", @for = "cboFormRate" })
+                                @Html.DropDownListFor(m => m.Rate, Model.Rates, new { @class = "form-select", @id = "cboFormRate" })
+                                @Html.ValidationMessageFor(m => m.Rate, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="mb-3">
+                                @Html.LabelFor(m => m.BookTitle, new { @class = "control-label", @for = "txtFormBookTitle" })
+                                @Html.TextBoxFor(m => m.BookTitle, new { @class = "form-control", @id = "txtFormBookTitle", @placeholder = "Book Title" })
+                                @Html.ValidationMessageFor(m => m.BookTitle, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body">
+                    <img src="#" class="img-fluid" alt="도서 이미지">
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card mt-3">
+                <div class="card-body">
+                    @Html.LabelFor(m => m.Content, new { @class = "control-label", @for = "txaFormContent" })
+                    @Html.TextAreaFor(m => m.Content, new { @class = "form-control review-content", @id = "txaFormContent", placeholder = "여기에 리뷰 내용을 작성하세요.", style = "height: calc(85vh);" })
+                    @Html.ValidationMessageFor(m => m.Content, "", new { @class = "text-danger" })
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-3">
+                        <button class="btn btn-primary" type="submit">리뷰 제출하기</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+
+
+<div id="bookModal" class="modal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+		<h2>도서 검색</h2>
+		
+        <!-- 검색 폼 -->
+		<input type="text" id="searchBox" placeholder="도서 검색...">
+		<button id="searchBtn">검색</button>
+		<!-- 검색 결과를 여기에 표시 -->
+		<div id="searchResults"></div>
+		
+        <div class="form-group">
+            <button id="btnCheck" class="btn btn-primary">확인</button>
+        </div>
+    </div>
+</div>
+
+
+
+<div class="overlay"></div>
+@if (!string.IsNullOrEmpty(ViewBag.TinyMCEApiKey))
+{
+    <script src="https://cdn.tiny.cloud/1/@ViewBag.TinyMCEApiKey/tinymce/5/tinymce.min.js" referrerpolicy="origin"></script>
+    <script>
+        tinymce.init({
+            selector: '#txaFormContent',
+            statusbar: false
+        });
+    </script>
+}
+
+<script>
+    var txtFormBookTitle = document.getElementById("txtFormBookTitle");
+
+    txtFormBookTitle.onclick = function () {
+        alert("도서 제목 선택 팝업을 여기에 구현하세요.2");
+    }
+</script>
+
+
+<!--
+[이거 참고]
+이렇게 클라이언트 측에서 텍스트 편집을 마친 후, 서버로 전송하면 서버 측에서는 HTML 태그가 포함된 텍스트를 받게 됩니다.
+이 텍스트는 그대로 데이터베이스에 저장하면 됩니다.
+다만, 이때 주의해야 할 점이 있는데, 사용자가 입력한 텍스트에는 HTML 태그가 포함되어 있기 때문에, 이를 그대로 출력하면 XSS(Cross-Site Scripting) 공격에 취약해질 수 있습니다.
+따라서, 서버에서 받은 텍스트를 그대로 출력하기 전에 반드시 필터링 과정을 거쳐야 합니다.
+.NET 환경에서는 System.Web.HttpUtility.HtmlEncode 메소드를 사용하여 이런 필터링을 수행할 수 있습니다.
+이 메소드는 특수문자를 HTML 엔터티로 변환하여 XSS 공격을 방어할 수 있습니다.
+string safeText = HttpUtility.HtmlEncode(unsafeText);
+-->

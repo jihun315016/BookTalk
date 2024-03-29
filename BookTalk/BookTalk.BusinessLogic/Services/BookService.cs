@@ -16,12 +16,6 @@ public class BookService : IBookService
 
         var content = response.Content.ReadAsStringAsync().Result;
         data = JsonConvert.DeserializeObject<BookQuery>(content);
-
-        for (int i = 0; i < data.Item.Count; i++)
-        {
-            // TODO : 개발 예정
-            data.Item[i].CategoryName = "[임시] 카테고리 이름";
-        }
         return data;        
     }
 
