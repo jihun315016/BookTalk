@@ -2,11 +2,12 @@
     Layout = "_AccountLayout";
 }
 
+@using BookTalk.Client.Controllers
 @using BookTalk.Shared.ViewModels
 
 @model SignupViewModel?
 
-@using (Html.BeginForm("Signup", "Account", FormMethod.Post, new { @class = "form-container custom-base-container px-4 py-3" }))
+@using (Html.BeginForm(nameof(AccountController.Signup), nameof(AccountController).Replace("Controller", ""), FormMethod.Post, new { @class = "form-container custom-base-container px-4 py-3" }))
 {
     <h5 class="text-center">Sign up</h5>
 

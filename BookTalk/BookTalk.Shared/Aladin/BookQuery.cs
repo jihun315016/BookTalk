@@ -36,7 +36,7 @@ public class BookQuery
     public int Start { get; set; } = 1;
 
     [JsonProperty("maxResult")]
-    public int MaxResult { get; set; } = 0;
+    public int MaxResult { get; set; } = default(int);
 
     [JsonProperty("cover")]
     public string Cover { get; set; } = "Big";
@@ -47,6 +47,12 @@ public class BookQuery
 
     [JsonProperty("page")]
     public int Page { get; set; } = 1;
+
+    [JsonProperty("minPage")]
+    public int MinPage { get; set; } = 1;
+
+    [JsonProperty("maxPage")]
+    public int MaxPage { get; set; } = default(int);
     #endregion
 
     #region 응답 정보

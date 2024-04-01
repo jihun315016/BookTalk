@@ -1,30 +1,38 @@
 ﻿@using BookTalk.Shared.ViewModels
+@using BookTalk.Client.Controllers
 @model ReviewCreateViewModel
 
-@using (Html.BeginForm("ActionMethodName", "ControllerName", FormMethod.Post, new { @class = "container mt-4" }))
+@using (Html.BeginForm(nameof(ReviewController.Create), nameof(ReviewController).Replace("Controller", ""), FormMethod.Post, new { @class = "container mt-4" }))
 {
-    <div class="row">
+    @Html.HiddenFor(model => model.Isbn13, new { @id = "hidIsbn13", @readonly = "readonly" })
+
+    <div class="row d-flex align-items-stretch">
         <div class="col-md-8">
-            <div class="card">
+            <div class="card h-100">
                 <div class="card-body">
                     <div class="mb-3">
                         @Html.LabelFor(m => m.ReviewTitle, new { @class = "control-label", @for = "txtFormReviewTitle" })
                         @Html.TextBoxFor(m => m.ReviewTitle, new { @class = "form-control", @id = "txtFormReviewTitle", @placeholder = "Review Title" })
                         @Html.ValidationMessageFor(m => m.ReviewTitle, "", new { @class = "text-danger" })
                     </div>
+                    <div class="mb-3">
+                        @Html.LabelFor(m => m.BookTitle, new { @class = "control-label", @for = "txtFormBookTitle" })
+                        @Html.TextBoxFor(m => m.BookTitle, new { @class = "form-control", @id = "txtFormBookTitle", @placeholder = "Book Title", @readonly = "readonly", @style = "background-color: white;" })
+                        @Html.ValidationMessageFor(m => m.BookTitle, "", new { @class = "text-danger" })
+                    </div>
                     <div class="row">
                         <div class="col-sm-6">
                             <div class="mb-3">
-                                @Html.LabelFor(m => m.Rate, new { @class = "control-label", @for = "cboFormRate" })
-                                @Html.DropDownListFor(m => m.Rate, Model.Rates, new { @class = "form-select", @id = "cboFormRate" })
-                                @Html.ValidationMessageFor(m => m.Rate, "", new { @class = "text-danger" })
+                                @Html.LabelFor(m => m.Author, new { @class = "control-label", @for = "txtFormAuthor" })
+                                @Html.TextBoxFor(m => m.Author, new { @class = "form-control", @id = "txtFormAuthor", @placeholder = "Book Author", @readonly = "readonly", @style = "background-color: white;" })
+                                @Html.ValidationMessageFor(m => m.Rating, "", new { @class = "text-danger" })
                             </div>
                         </div>
                         <div class="col-sm-6">
                             <div class="mb-3">
-                                @Html.LabelFor(m => m.BookTitle, new { @class = "control-label", @for = "txtFormBookTitle" })
-                                @Html.TextBoxFor(m => m.BookTitle, new { @class = "form-control", @id = "txtFormBookTitle", @placeholder = "Book Title" })
-                                @Html.ValidationMessageFor(m => m.BookTitle, "", new { @class = "text-danger" })
+                                @Html.LabelFor(m => m.Rating, new { @class = "control-label", @for = "cboFormRate" })
+                                @Html.DropDownListFor(m => m.Rating, Model.Rates, new { @class = "form-select", @id = "cboFormRate" })
+                                @Html.ValidationMessageFor(m => m.Rating, "", new { @class = "text-danger" })
                             </div>
                         </div>
                     </div>
@@ -32,9 +40,9 @@
             </div>
         </div>
         <div class="col-md-4">
-            <div class="card">
-                <div class="card-body">
-                    <img src="#" class="img-fluid" alt="도서 이미지">
+            <div class="card h-100 d-flex justify-content-center align-items-center">
+                <div class="card-body d-flex justify-content-center align-items-center">
+                    <img src="#" id="bookImg" class="img-fluid user-image" style="max-width: 100%; max-height: 100%;" alt="">
                 </div>
             </div>
         </div>
@@ -43,8 +51,7 @@
         <div class="col-md-12">
             <div class="card mt-3">
                 <div class="card-body">
-                    @Html.LabelFor(m => m.Content, new { @class = "control-label", @for = "txaFormContent" })
-                    @Html.TextAreaFor(m => m.Content, new { @class = "form-control review-content", @id = "txaFormContent", placeholder = "여기에 리뷰 내용을 작성하세요.", style = "height: calc(85vh);" })
+                    @Html.TextAreaFor(m => m.Content, new { @class = "form-control review-content", @id = "txaFormContent", placeholder = "리뷰 내용을 작성하세요.", style = "height: calc(85vh);" })
                     @Html.ValidationMessageFor(m => m.Content, "", new { @class = "text-danger" })
                     <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-3">
                         <button class="btn btn-primary" type="submit">리뷰 제출하기</button>
@@ -59,24 +66,44 @@
 
 <div id="bookModal" class="modal">
     <div class="modal-content">
-        <span class="close">&times;</span>
-		<h2>도서 검색</h2>
-		
+        <span id="close" class="close">&times;</span>
+
         <!-- 검색 폼 -->
-		<input type="text" id="searchBox" placeholder="도서 검색...">
-		<button id="searchBtn">검색</button>
-		<!-- 검색 결과를 여기에 표시 -->
-		<div id="searchResults"></div>
-		
         <div class="form-group">
-            <button id="btnCheck" class="btn btn-primary">확인</button>
+            <div class="form-group">
+                @Html.LabelFor(m => m.Keyword, new { @class = "control-label", @for = "txtSearch" })
+                @Html.TextBoxFor(m => m.Keyword, new { @class = "form-control", @id = "txtSearch", @placeholder = "도서 검색..." })
+            </div>
+        </div>
+
+        <div class="form-group mt-2">
+            <button id="btnPopSearch" class="btn btn-primary">검색</button>
+        </div>
+
+        <!-- 검색 결과를 여기에 표시 -->
+        <div id="searchResults" class="mt-4"></div>
+
+        <div class="row">
+            <nav id="popPage" class="user-page" aria-label="Page navigation example" ">
+                <ul id="pagination-container" class="pagination">
+                    <!-- Page - 2 ~ Page + 2 -->
+                    @for (int i = Model.Page - 2; i < Model.Page + 3; i++)
+                    {
+                        if (i > 0)
+                        {
+                            <li class="page-item">
+                                <a class="page-link" data-page="@i">@i</a>
+                            </li>
+                        }
+                    }
+                </ul>
+            </nav>
         </div>
     </div>
 </div>
 
 
 
-<div class="overlay"></div>
 @if (!string.IsNullOrEmpty(ViewBag.TinyMCEApiKey))
 {
     <script src="https://cdn.tiny.cloud/1/@ViewBag.TinyMCEApiKey/tinymce/5/tinymce.min.js" referrerpolicy="origin"></script>
@@ -89,21 +116,180 @@
 }
 
 <script>
-    var txtFormBookTitle = document.getElementById("txtFormBookTitle");
+    window.onload = function () {
+        OnLoadView();
+    }
 
+    function OnLoadView() {
+        var errorMessage = "@Html.Raw(ViewBag.ErrorMessage)";
+
+        if (errorMessage) {
+            alert(errorMessage);
+        }
+    }
+
+
+
+    var txtFormBookTitle = document.getElementById("txtFormBookTitle");
+    var bookModal = document.getElementById("bookModal");
+    var spanClose = document.getElementById("close");
+    var btnPopSearch = document.getElementById("btnPopSearch");
+    var popPpage = document.getElementById("popPage");
+    var searchResults = document.getElementById("searchResults");
+    var keyword = "";
+
+
+    //  도서 텍스트 박스 클릭
     txtFormBookTitle.onclick = function () {
-        alert("도서 제목 선택 팝업을 여기에 구현하세요.2");
+        bookModal.style.display = "block";
+        popPpage.style.display = "none";
+    }
+
+
+    // 팝업창 검색 버튼 클릭
+    btnPopSearch.onclick = function () {
+        keyword = document.getElementById("txtSearch").value;
+        getRequestBooks(1)
+    }
+
+
+    // 팝업창에서 페이지 버튼 클릭 이벤트
+    document.addEventListener('DOMContentLoaded', function () {
+        // pagination-container 안에 있는 클래스가 page-link인 a 태그
+        var pageLinks = document.querySelectorAll('#pagination-container a.page-link');
+
+        // 각 요소에 대해 클릭 이벤트 리스너 추가
+        pageLinks.forEach(function (link) {
+            link.addEventListener('click', function (event) {
+                // 페이지 이동(기본 동작) 방지
+                event.preventDefault();
+
+                // 클릭된 요소의 'data-page' 속성 값
+                var selectedPage = this.getAttribute('data-page');
+
+                getRequestBooks(selectedPage)
+            });
+        });
+    });
+
+
+    // 사용자가 닫기 버튼(X)을 클릭하면 모달 닫기
+    spanClose.onclick = function () {
+        closePopup();
+    }
+
+
+    // 사용자가 모달 외부를 클릭하면 모달 닫기
+    window.onclick = function (event) {
+        if (event.target == bookModal) {
+            closePopup();
+        }
+    }
+
+
+    searchResults.onclick = function (event) {
+        // event.target : 이벤트가 발생한 요소
+        // 이벤트가 발생한 요소로부터 clickable 클래스를 가지는 가장 가까운 조상을 찾는다.
+        var clickedElement = event.target.closest(".book-title");
+        if (clickedElement) {
+            txtFormBookTitle.value = clickedElement.getAttribute("data-title");
+            document.getElementById("txtFormAuthor").value = clickedElement.getAttribute("data-author");
+            document.getElementById("hidIsbn13").value = clickedElement.getAttribute("data-isbn");
+            document.getElementById("bookImg").src = clickedElement.getAttribute("data-cover");
+            closePopup();
+        }
+    }
+
+
+    function getRequestBooks(page) {
+        var query = `keyword=${keyword}&page=${page}`
+
+        fetch(`/Book/SearchListJson?${query}`, {
+            method: "GET",
+        })
+            .then(response => {
+                if (response.ok) {
+                    return response.json();
+                }
+                return response.json().then(err => { throw new Error(err.message); });
+            })
+            .then(data => {
+                if (data.item && data.item.length > 0) {
+                    searchResults.innerHTML = data.item.map(book => {
+                        return `
+                        <div class="book-item" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                            <div class="book-title" data-title="${book.title}" data-cover="${book.cover}" data-author="${book.author}" data-isbn="${book.isbn13}" onmouseover="this.style.textDecoration='underline'; this.style.color='blue';" onmouseout="this.style.textDecoration='none'; this.style.color='black';">
+                                <a href="javascript:void(0);" style="color: inherit; text-decoration: none;">
+                                    <p>${book.title}</p>
+                                </a>
+                            </div>
+                            <div class="book-author" style="flex: 1; text-align: right; max-height: 3em; overflow: hidden; text-overflow: ellipsis; white-space: normal; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;">
+                                <p>${book.author}</p>
+                            </div>
+                        </div>
+                        <hr style="margin-top: 0;">`;
+                    }).join('');
+                    // * javascript:void(0) : 링크 기본 동작 방지
+
+                    popPpage.style.display = "block"
+                    if (page >= 1) {
+                        updatePagination(page, data.minPage, data.maxPage);
+                    }
+                }
+                else {
+                    searchResults.innerHTML = '<p>검색 결과가 없습니다.</p>';
+                }
+            })
+            .catch(error => {
+                alert(error.message);
+            });
+    }
+
+
+    function closePopup() {
+        bookModal.style.display = "none";
+        keyword = "";
+        searchResults.innerHTML = "";
+        document.getElementById("txtSearch").value = "";
+    }
+
+
+    function updatePagination(selectedPage, minPage, maxPage) {
+        var paginationContainer = document.getElementById('pagination-container');
+        paginationContainer.innerHTML = '';
+        selectedPage = parseInt(selectedPage);
+
+        for (let i = selectedPage - 2; i <= selectedPage + 2; i++) {
+            if (i >= minPage && i <= maxPage) {
+                let pageItem = document.createElement('li');
+                pageItem.className = 'page-item';
+
+                let pageLink = document.createElement('a');
+                pageLink.className = 'page-link';
+
+                pageLink.href = '#';
+                pageLink.setAttribute('data-page', i);
+                pageLink.textContent = i;
+
+                if (i === selectedPage) {
+                    pageLink.style.color = "black";
+                    pageLink.style.backgroundColor = "transparent";
+                    pageLink.style.pointerEvents = "none";
+                }
+
+                pageItem.appendChild(pageLink);
+                paginationContainer.appendChild(pageItem);
+
+                // 각 페이지 번호에 이벤트 리스너를 추가해야해서 함수로 따로 뺐음
+                pageLink.addEventListener('click', function (event) {
+                    event.preventDefault();
+                    var selectedPage = this.getAttribute('data-page');
+                    getRequestBooks(selectedPage)
+                })
+            }
+        }
     }
 </script>
 
 
-<!--
-[이거 참고]
-이렇게 클라이언트 측에서 텍스트 편집을 마친 후, 서버로 전송하면 서버 측에서는 HTML 태그가 포함된 텍스트를 받게 됩니다.
-이 텍스트는 그대로 데이터베이스에 저장하면 됩니다.
-다만, 이때 주의해야 할 점이 있는데, 사용자가 입력한 텍스트에는 HTML 태그가 포함되어 있기 때문에, 이를 그대로 출력하면 XSS(Cross-Site Scripting) 공격에 취약해질 수 있습니다.
-따라서, 서버에서 받은 텍스트를 그대로 출력하기 전에 반드시 필터링 과정을 거쳐야 합니다.
-.NET 환경에서는 System.Web.HttpUtility.HtmlEncode 메소드를 사용하여 이런 필터링을 수행할 수 있습니다.
-이 메소드는 특수문자를 HTML 엔터티로 변환하여 XSS 공격을 방어할 수 있습니다.
-string safeText = HttpUtility.HtmlEncode(unsafeText);
--->
+

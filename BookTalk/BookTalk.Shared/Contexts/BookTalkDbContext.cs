@@ -44,11 +44,11 @@ public partial class BookTalkDbContext : DbContext
 
         modelBuilder.Entity<Menu>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__menu__3213E83FF82038E2");
+            entity.HasKey(e => e.Id).HasName("PK__menu__3213E83F99A90DDD");
 
             entity.ToTable("menu");
 
-            entity.HasIndex(e => e.MenuName, "UQ__menu__4505407D18724636").IsUnique();
+            entity.HasIndex(e => e.MenuName, "UQ__menu__4505407DF6BE12F0").IsUnique();
 
             entity.Property(e => e.Id).HasColumnName("id");
             entity.Property(e => e.ActionName)
@@ -70,7 +70,7 @@ public partial class BookTalkDbContext : DbContext
 
             entity.ToTable("review");
 
-            entity.HasIndex(e => e.Isbn, "UQ__review__99F9D0A4272D6484").IsUnique();
+            entity.HasIndex(e => e.Isbn13, "UQ__review__99F9D0A4272D6484").IsUnique();
 
             entity.Property(e => e.Id).HasColumnName("id");
             entity.Property(e => e.Content)
@@ -82,9 +82,9 @@ public partial class BookTalkDbContext : DbContext
             entity.Property(e => e.DislikeCount)
                 .HasDefaultValue(0)
                 .HasColumnName("dislike_count");
-            entity.Property(e => e.Isbn)
+            entity.Property(e => e.Isbn13)
                 .HasMaxLength(13)
-                .HasColumnName("isbn");
+                .HasColumnName("isbn13");
             entity.Property(e => e.LikeCount)
                 .HasDefaultValue(0)
                 .HasColumnName("like_count");

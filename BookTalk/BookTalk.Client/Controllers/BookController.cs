@@ -23,6 +23,45 @@ namespace BookTalk.Client.Controllers
 
             try
             {
+                responseData = GetSearchBooks(keyword, page);
+            }
+            catch (Exception ex)
+            {
+                ViewBag.ErrorMessage = Utility.GetMessage("msg01");
+                return StatusCode(StatusCodes.Status500InternalServerError, responseData);
+            }
+
+            return View(responseData.Data);
+        }
+
+
+        [HttpGet]
+        public async Task<IActionResult> SearchListJson(string? keyword, int page = 1)
+        {
+            ResponseMessage<BookQuery> responseData = new ResponseMessage<BookQuery>();
+            string url;
+
+            try
+            {
+                responseData = GetSearchBooks(keyword, page);
+            }
+            catch (Exception ex)
+            {
+                ViewBag.ErrorMessage = Utility.GetMessage("msg01");
+                return StatusCode(StatusCodes.Status500InternalServerError, responseData);
+            }
+
+            return Json(responseData.Data);
+        }
+
+
+        private ResponseMessage<BookQuery> GetSearchBooks(string keyword, int page)
+        {
+            ResponseMessage<BookQuery> responseData = new ResponseMessage<BookQuery>();
+            string url;
+
+            try
+            {
                 BookQuery bookQuery = new BookQuery()
                 {
                     Query = string.IsNullOrWhiteSpace(keyword) ? "" : keyword,
@@ -50,10 +89,9 @@ namespace BookTalk.Client.Controllers
             catch (Exception ex)
             {
                 ViewBag.ErrorMessage = Utility.GetMessage("msg01");
-                return StatusCode(StatusCodes.Status500InternalServerError, responseData);
             }
 
-            return View(responseData.Data);
+            return responseData;
         }
     }
 }

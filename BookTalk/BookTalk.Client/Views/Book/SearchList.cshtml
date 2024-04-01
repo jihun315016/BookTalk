@@ -4,7 +4,7 @@
 @model BookQuery?
 
 <div class="form-container custom-base-container">
-    @using (Html.BeginForm("SearchList", "Book", FormMethod.Get, new { @class = "form-container custom-base-container px-4 py-3" }))
+    @using (Html.BeginForm(nameof(BookController.SearchList), nameof(BookController).Replace("Controller", ""), FormMethod.Get, new { @class = "form-container custom-base-container px-4 py-3" }))
     {
         <div class="row">
             <div class="container custom-container">
@@ -54,39 +54,36 @@
         <div class="row">
             <nav aria-label="Page navigation example">
                 <ul id="pagination-container" class="pagination">
-                    <!-- Previous -->
-                    @if (Model.Page > 1)
-                    {
-                        <li class="page-item">
-                            <a class="page-link"
-                               asp-controller="@nameof(BookController).Replace("Controller", "")"
-                               asp-action="@nameof(BookController.SearchList)"
-                               asp-route-page="@(Model.Page - 1)"
-                               data-page="@(Model.Page - 1)">Previous</a>
-                        </li>
-                    }
                     <!-- Page - 2 ~ Page + 2 -->
                     @for (int i = Model.Page - 2; i < Model.Page + 3; i++)
                     {
-                        if (i > 0)
+                        if (i >= Model.MinPage && i <= Model.MaxPage)
                         {
-                            <li class="page-item">
-                                <a class="page-link"
-                                   asp-controller="@nameof(BookController).Replace("Controller", "")"
-                                   asp-action="@nameof(BookController.SearchList)"
-                                   asp-route-page="@i"
-                                   data-page="@i">@i</a>
-                            </li>
+                            if (i == Model.Page)
+                            {
+                                <li class="page-item">
+                                    <a class="page-link"
+                                       asp-controller="@nameof(BookController).Replace("Controller", "")"
+                                       asp-action="@nameof(BookController.SearchList)"
+                                       asp-route-keyword="@Model.Keyword"
+                                       asp-route-page="@i"
+                                       data-page="@i"
+                                       style="color:black; background-color:transparent; pointer-events:none;">@i</a>
+                                </li>
+                            }
+                            else
+                            {
+                                <li class="page-item">
+                                    <a class="page-link"
+                                       asp-controller="@nameof(BookController).Replace("Controller", "")"
+                                       asp-action="@nameof(BookController.SearchList)"
+                                       asp-route-keyword="@Model.Keyword"
+                                       asp-route-page="@i"
+                                       data-page="@i">@i</a>
+                                </li>
+                            }
                         }
                     }
-                    <!-- Next -->
-                    <li class="page-item">
-                        <a class="page-link"
-                           asp-controller="@nameof(BookController).Replace("Controller", "")"
-                           asp-action="@nameof(BookController.SearchList)"
-                           asp-route-page="@(Model.Page + 1)"
-                           data-page="@(Model.Page + 1)">Next</a>
-                    </li>
                 </ul>
             </nav>
         </div>
