@@ -37,6 +37,7 @@ builder.Services.AddScoped<MongoDBService>(serviceProvider => new MongoDBService
 builder.Services.AddScoped<MenuService>();
 builder.Services.AddScoped<AccountService>();
 builder.Services.AddScoped<UserService>();
+builder.Services.AddScoped<ReviewService>();
 // ==========  서비스 등록하기 END  ==========
 
 var app = builder.Build();

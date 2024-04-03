@@ -45,8 +45,7 @@ app.Use(async (context, next) =>
             sessionIdCookie,
             new CookieOptions
             {
-                HttpOnly = true,
-                Expires = DateTimeOffset.Now.AddMinutes(sessionMinute)
+                HttpOnly = true
             }
         );
     }

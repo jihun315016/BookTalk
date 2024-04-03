@@ -82,4 +82,9 @@ body {
     width: 100px;
     margin-left: 20px;
 }
+
+.user-image {
+    height: 100%;
+    object-fit: contain;
+}
 /* 사용자 정의 속성 END */

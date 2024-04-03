@@ -30,10 +30,7 @@ namespace BookTalk.Server.Controllers.api
             {
                 key = _configuration["Aladin:Key"];
                 baseUrl = _configuration["Aladin:List:Url"];
-                bookQuery.QueryType = "ItemNewAll";
-                bookQuery.MaxResult = Convert.ToInt32(_configuration["Aladin:List:MaxResult"]);
-                bookQuery.SearchTarget = _configuration["Aladin:List:SearchTarget"];
-                bookQuery.Output = _configuration["Aladin:List:Output"];
+                bookQuery = SetBookListQuery(bookQuery, "ItemNewAll");
 
                 BookService bookService = new BookService();
                 url = bookService.GetUrlForNewOrBestSellerBooks(baseUrl, key, bookQuery);
@@ -42,8 +39,7 @@ namespace BookTalk.Server.Controllers.api
                 BookQuery resData1 = bookService.GetBooks(url);
 
                 // 베스트셀러
-                bookQuery.QueryType = "BlogBest";
-                bookQuery.Item = new List<Book>();
+                bookQuery = SetBookListQuery(bookQuery, "BlogBest");
                 url = bookService.GetUrlForNewOrBestSellerBooks(baseUrl, key, bookQuery);
                 BookQuery resData2 = bookService.GetBooks(url);
 
@@ -78,25 +74,19 @@ namespace BookTalk.Server.Controllers.api
                 if (string.IsNullOrWhiteSpace(bookQuery.Query))
                 {
                     baseUrl = _configuration["Aladin:List:Url"];
-                    bookQuery.MaxResult = Convert.ToInt32(_configuration["Aladin:List:MaxResult"]);
-                    bookQuery.Start = bookQuery.MaxResult * (bookQuery.Page - 1) + 1;
-                    bookQuery.SearchTarget = _configuration["Aladin:List:SearchTarget"];
-                    bookQuery.Output = _configuration["Aladin:List:Output"];
-                    bookQuery.QueryType = "BlogBest";
+                    bookQuery = SetBookListQuery(bookQuery, "BlogBest");
                     url = bookService.GetUrlForNewOrBestSellerBooks(baseUrl, key, bookQuery);
                 }
                 else
                 {
                     baseUrl = _configuration["Aladin:Search:Url"];
-                    bookQuery.MaxResult = Convert.ToInt32(_configuration["Aladin:Search:MaxResult"]);
-                    bookQuery.Start = bookQuery.MaxResult * (bookQuery.Page - 1) + 1;
-                    bookQuery.SearchTarget = _configuration["Aladin:Search:SearchTarget"];
-                    bookQuery.Output = _configuration["Aladin:Search:Output"];
-                    bookQuery.QueryType = "Title";
+                    bookQuery = SetBookSearchQuery(bookQuery);
                     url = bookService.GetUrlForBookSearch(baseUrl, key, bookQuery);
                 }
 
                 responseData.Data = bookService.GetBooks(url);
+                responseData.Data.MinPage = Convert.ToInt32(_configuration["Aladin:Common:MinPage"]);
+                responseData.Data.MaxPage = Convert.ToInt32(_configuration["Aladin:Common:MaxPage"]);
                 return Ok(responseData);
             }
             catch (Exception ex)
@@ -105,6 +95,43 @@ namespace BookTalk.Server.Controllers.api
                 responseData.ErrorMessage = ex.Message;
                 return StatusCode(StatusCodes.Status500InternalServerError, responseData);
             }
+        }
+
+
+        /// <summary>
+        /// 신간 도서 or 베스트 셀러 리스트를 요청하기 위한 객체 값 세팅
+        /// </summary>
+        /// <param name="bookQuery"></param>
+        /// <param name="queryType"></param>
+        /// <returns></returns>
+        private BookQuery SetBookListQuery(BookQuery bookQuery, string queryType)
+        {
+            bookQuery.MaxResult = Convert.ToInt32(_configuration["Aladin:Common:MaxResult"]);
+            bookQuery.Start = bookQuery.MaxResult * (bookQuery.Page - 1) + 1;
+            bookQuery.SearchTarget = _configuration["Aladin:Common:SearchTarget"];
+            bookQuery.Output = _configuration["Aladin:Common:Output"];
+            bookQuery.QueryType = queryType;
+            bookQuery.Item = new List<Book>();
+
+            return bookQuery;
+        }
+
+
+        /// <summary>
+        /// 도서 검색을 위한 객체 값 세팅
+        /// </summary>
+        /// <param name="bookQuery"></param>
+        /// <returns></returns>
+        private BookQuery SetBookSearchQuery(BookQuery bookQuery)
+        {
+            bookQuery.MaxResult = Convert.ToInt32(_configuration["Aladin:Common:MaxResult"]);
+            bookQuery.Start = bookQuery.MaxResult * (bookQuery.Page - 1) + 1;
+            bookQuery.SearchTarget = _configuration["Aladin:Common:SearchTarget"];
+            bookQuery.Output = _configuration["Aladin:Common:Output"];
+            bookQuery.QueryType = _configuration["Aladin:Search:QueryType"];
+            bookQuery.Item = new List<Book>();
+
+            return bookQuery;
         }
     }
 }
