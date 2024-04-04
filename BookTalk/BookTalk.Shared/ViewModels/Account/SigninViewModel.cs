@@ -2,7 +2,7 @@
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
-namespace BookTalk.Shared.ViewModels;
+namespace BookTalk.Shared.ViewModels.Account;
 
 public class SigninViewModel
 {

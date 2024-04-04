@@ -3,6 +3,7 @@ using BookTalk.Shared.Common;
 using BookTalk.Shared.Utility;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using System.Net.Http.Json;
 
 namespace BookTalk.Client.Controllers
 {
@@ -18,7 +19,7 @@ namespace BookTalk.Client.Controllers
         [HttpGet]
         public IActionResult SearchList(string? keyword, int page = 1)
         {
-            ResponseMessage<BookQuery> responseData = new ResponseMessage<BookQuery>();
+            ResponseMessage<BookListQuery> responseData = new ResponseMessage<BookListQuery>();
             string url;
 
             try
@@ -28,7 +29,6 @@ namespace BookTalk.Client.Controllers
             catch (Exception ex)
             {
                 ViewBag.ErrorMessage = Utility.GetMessage("msg01");
-                return StatusCode(StatusCodes.Status500InternalServerError, responseData);
             }
 
             return View(responseData.Data);
@@ -38,7 +38,7 @@ namespace BookTalk.Client.Controllers
         [HttpGet]
         public async Task<IActionResult> SearchListJson(string? keyword, int page = 1)
         {
-            ResponseMessage<BookQuery> responseData = new ResponseMessage<BookQuery>();
+            ResponseMessage<BookListQuery> responseData = new ResponseMessage<BookListQuery>();
             string url;
 
             try
@@ -55,14 +55,54 @@ namespace BookTalk.Client.Controllers
         }
 
 
-        private ResponseMessage<BookQuery> GetSearchBooks(string keyword, int page)
+        [HttpGet]
+        public IActionResult GetOne(string type, string isbn)
         {
-            ResponseMessage<BookQuery> responseData = new ResponseMessage<BookQuery>();
+            ResponseMessage<BookDetailQuery> responseData = new ResponseMessage<BookDetailQuery>();
             string url;
 
             try
             {
-                BookQuery bookQuery = new BookQuery()
+                BookDetailQuery bookQuery = new BookDetailQuery()
+                {
+                    ItemIdType = type,
+                    ItemId = isbn
+                };
+
+                url = Utility.GetEndpointUrl(_baseApiUrl, "Book", "GetOne");
+                HttpClient client = new HttpClient();
+                var response = client.PostAsJsonAsync<BookDetailQuery>(url, bookQuery).Result;
+                string content = response.Content.ReadAsStringAsync().Result;
+
+                if (response.IsSuccessStatusCode)
+                {
+                    responseData = JsonConvert.DeserializeObject<ResponseMessage<BookDetailQuery>>(content);
+                    responseData.Data.ItemIdType = bookQuery.ItemIdType;
+                    responseData.Data.ItemId = bookQuery.ItemId;
+                }
+                else
+                {
+                    responseData.ErrorCode = response.StatusCode.ToString();
+                    throw new Exception(responseData.ErrorMessage);
+                }
+            }
+            catch (Exception ex)
+            {
+                ViewBag.ErrorMessage = Utility.GetMessage("msg01");
+            }
+
+            return View(responseData.Data);
+        }
+
+
+        private ResponseMessage<BookListQuery> GetSearchBooks(string keyword, int page)
+        {
+            ResponseMessage<BookListQuery> responseData = new ResponseMessage<BookListQuery>();
+            string url;
+
+            try
+            {
+                BookListQuery bookQuery = new BookListQuery()
                 {
                     Query = string.IsNullOrWhiteSpace(keyword) ? "" : keyword,
                     Keyword = string.IsNullOrWhiteSpace(keyword) ? "" : keyword,
@@ -71,12 +111,12 @@ namespace BookTalk.Client.Controllers
 
                 url = Utility.GetEndpointUrl(_baseApiUrl, "Book", "SearchList");
                 HttpClient client = new HttpClient();
-                var response = client.PostAsJsonAsync<BookQuery>(url, bookQuery).Result;
+                var response = client.PostAsJsonAsync<BookListQuery>(url, bookQuery).Result;
                 string content = response.Content.ReadAsStringAsync().Result;
 
                 if (response.IsSuccessStatusCode)
                 {
-                    responseData = JsonConvert.DeserializeObject<ResponseMessage<BookQuery>>(content);
+                    responseData = JsonConvert.DeserializeObject<ResponseMessage<BookListQuery>>(content);
                     responseData.Data.Keyword = bookQuery.Keyword;
                     responseData.Data.Page = bookQuery.Page;
                 }

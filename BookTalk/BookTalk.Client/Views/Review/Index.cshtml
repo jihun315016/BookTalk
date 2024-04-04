@@ -1,1 +1,66 @@
-﻿<h1>Hello Review Index</h1>
+﻿@using BookTalk.Client.Controllers
+@using BookTalk.Shared.ViewModels.Review
+@model ReviewIndexViewModel
+
+@{
+    ViewBag.Title = "도서 리뷰 목록";
+}
+
+
+<div class="form-container custom-base-container">
+    @if (Model != null)
+    {
+        <div class="row">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>글 제목</th>
+                        <th>도서명</th>
+                        <th>작성자</th>
+                        <th>작성 날짜</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.Items)
+                    {
+                        <tr>
+                            <td>
+                                <div class="text-truncate max-width50">
+                                    @Html.ActionLink(item.Title, "Details", new { id = item.Id }, new { @class = "custom-link" })
+                                </div>
+                            </td>
+                            <td>
+                                <div class="text-truncate max-width40">
+                                    @Html.DisplayFor(modelItem => item.BookName)
+                                </div>
+                            </td>
+                            <td>
+                                <div class="text-truncate max-width30">
+                                    @Html.DisplayFor(modelItem => item.UserId)
+                                </div>
+                            </td>
+                            <td>
+                                <div class="text-truncate max-width30">
+                                    @Html.DisplayFor(modelItem => item.CreateDate)
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <div class="row">
+            @using (Html.BeginForm(nameof(ReviewController.Index), nameof(ReviewController).Replace("Controller", ""), FormMethod.Get, new { @class = "form-container custom-base-container px-4 py-3" }))
+            {
+                <div class="col-md-12">
+                    <div class="d-flex justify-content-center">
+                            @Html.DropDownListFor(m => m.QueryType, Model.SearchTypeCombo, new { @class = "form-control", style = "width: 150px;" })
+                            @Html.TextBoxFor(m => m.Keyword, new { @class = "form-control input-text-search", @id = "txtSearch", @placeholder = "검색", style = "width: 300px; display: inline-block; margin-left: 10px;" })
+                        <button type="submit" class="btn btn-primary btn-search">검색</button>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>

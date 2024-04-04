@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace BookTalk.Shared.Aladin;
+﻿namespace BookTalk.Shared.Aladin;
 
 public class Book
 {
@@ -31,4 +25,7 @@ public class Book
 
     // 출판사
     public string Publisher { get; set; }
+
+    // 줄거리
+    public string Description { get; set; }
 }

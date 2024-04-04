@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BookTalk.Shared.ViewModels;
+namespace BookTalk.Shared.ViewModels.Account;
 
 public class SignupViewModel
 {

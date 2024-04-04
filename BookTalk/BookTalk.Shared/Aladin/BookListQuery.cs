@@ -1,15 +1,13 @@
 ﻿using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace BookTalk.Shared.Aladin;
 
-public class BookQuery
+public class BookListQuery
 {
-    #region 검색 조건
+    #region 검색 조건 / 세팅 값
+    [JsonProperty("baseUrl")]
+    public string BaseUrl { get; set; } = "";
+
     [JsonProperty("query")]
     public string Query { get; set; } = "";
 

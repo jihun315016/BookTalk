@@ -2,7 +2,7 @@
 using BookTalk.Shared.Exceptions;
 using BookTalk.Shared.Models;
 using BookTalk.Shared.Utility;
-using BookTalk.Shared.ViewModels;
+using BookTalk.Shared.ViewModels.Account;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;

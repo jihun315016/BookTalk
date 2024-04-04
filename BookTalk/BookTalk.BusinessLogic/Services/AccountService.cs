@@ -4,7 +4,7 @@ using BookTalk.Shared.Contexts;
 using BookTalk.Shared.Exceptions;
 using BookTalk.Shared.Models;
 using BookTalk.Shared.Utility;
-using BookTalk.Shared.ViewModels;
+using BookTalk.Shared.ViewModels.Account;
 using MongoDB.Driver;
 
 namespace BookTalk.BusinessLogic.Services;

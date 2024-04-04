@@ -1,28 +1,28 @@
 ﻿@using BookTalk.Shared.Aladin
 @using BookTalk.Client.Controllers
 
-@model BookQuery?
+@model BookListQuery?
 
 <div class="form-container custom-base-container">
-    @using (Html.BeginForm(nameof(BookController.SearchList), nameof(BookController).Replace("Controller", ""), FormMethod.Get, new { @class = "form-container custom-base-container px-4 py-3" }))
+    @if (Model != null)
     {
-        <div class="row">
-            <div class="container custom-container">
-                <div class="row">
-                    <!-- 검색 관련 컨트롤 -->
-                    <div class="col-md-12">
-                        <div class="d-flex justify-content-center">
-                            @Html.TextBoxFor(m => m.Keyword, new { @class = "form-control input-text-search", @id = "txtSearch", @placeholder = "도서 검색" })
-                            <button type="submit" class="btn btn-primary btn-search">검색</button>
+        @using (Html.BeginForm(nameof(BookController.SearchList), nameof(BookController).Replace("Controller", ""), FormMethod.Get, new { @class = "form-container custom-base-container px-4 py-3" }))
+        {
+            <div class="row">
+                <div class="container custom-container">
+                    <div class="row">
+                        <!-- 검색 관련 컨트롤 -->
+                        <div class="col-md-12">
+                            <div class="d-flex justify-content-center">
+                                @Html.TextBoxFor(m => m.Keyword, new { @class = "form-control input-text-search", @id = "txtSearch", @placeholder = "도서 검색" })
+                                <button type="submit" class="btn btn-primary btn-search">검색</button>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
-    }
+        }
 
-    @if (Model != null)
-    {
         <div class="row">
             <div class="container custom-container">
                 <div class="row">
@@ -33,7 +33,7 @@
                                 @foreach (var book in Model.Item)
                                 {
                                     <div class="col-md-4">
-                                        <div class="card book-card">
+                                        <div class="card book-card" onclick="redirectDetail('@book.Isbn13', '@book.Isbn10')">
                                             <img src="@book.Cover" class="book-card-img-top" alt="book cover">
                                             <div class="book-card-title-container">
                                                 <h5 class="book-card-title">@book.Title</h5>
@@ -101,6 +101,18 @@
         var errorMessage = "@Html.Raw(ViewBag.ErrorMessage)";
         if (errorMessage) {
             alert(errorMessage);
+        }
+    }
+
+
+
+    function redirectDetail(isbn13, isbn10) {
+        // isbn13 이것만 하려고 했는데, isbn10이랑 isbn13 중 하나만 있는 경우가 있음
+        if (isbn13) {
+            alert('isbn13 : ' + isbn13)
+        }
+        else if (isbn10) {
+            alert('isbn10 : ' + isbn10)
         }
     }
 </script>

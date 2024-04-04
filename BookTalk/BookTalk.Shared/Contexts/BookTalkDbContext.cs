@@ -24,19 +24,16 @@ public partial class BookTalkDbContext : DbContext
     {
         modelBuilder.Entity<CommonCode>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__common_c__3213E83FB996CE39");
+            entity.HasKey(e => new { e.Type, e.Code }).HasName("PK__common_c__70AF8686A848196A");
 
             entity.ToTable("common_code");
 
-            entity.HasIndex(e => e.Tp, "UQ__common_c__3213E04E46835275").IsUnique();
-
-            entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.Type)
+                .HasMaxLength(20)
+                .HasColumnName("type");
             entity.Property(e => e.Code)
                 .HasMaxLength(10)
                 .HasColumnName("code");
-            entity.Property(e => e.Tp)
-                .HasMaxLength(20)
-                .HasColumnName("tp");
             entity.Property(e => e.Value)
                 .HasMaxLength(30)
                 .HasColumnName("value");
@@ -66,13 +63,14 @@ public partial class BookTalkDbContext : DbContext
 
         modelBuilder.Entity<Review>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__review__3213E83F53F67E04");
+            entity.HasKey(e => e.Id).HasName("PK__review__3213E83F90987EAF");
 
             entity.ToTable("review");
 
-            entity.HasIndex(e => e.Isbn13, "UQ__review__99F9D0A4272D6484").IsUnique();
-
             entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.BookName)
+                .HasMaxLength(200)
+                .HasColumnName("book_name");
             entity.Property(e => e.Content)
                 .HasColumnType("text")
                 .HasColumnName("content");
@@ -89,13 +87,16 @@ public partial class BookTalkDbContext : DbContext
                 .HasDefaultValue(0)
                 .HasColumnName("like_count");
             entity.Property(e => e.Rating).HasColumnName("rating");
+            entity.Property(e => e.Title)
+                .HasMaxLength(200)
+                .HasColumnName("title");
             entity.Property(e => e.UserId)
                 .HasMaxLength(20)
                 .HasColumnName("user_id");
 
             entity.HasOne(d => d.User).WithMany(p => p.Reviews)
                 .HasForeignKey(d => d.UserId)
-                .HasConstraintName("FK__review__user_id__208CD6FA");
+                .HasConstraintName("FK__review__user_id__59C55456");
         });
 
         modelBuilder.Entity<User>(entity =>

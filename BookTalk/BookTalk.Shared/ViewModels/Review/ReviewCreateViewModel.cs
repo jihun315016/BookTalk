@@ -3,7 +3,7 @@ using Newtonsoft.Json;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
-namespace BookTalk.Shared.ViewModels;
+namespace BookTalk.Shared.ViewModels.Review;
 
 public class ReviewCreateViewModel
 {
@@ -16,7 +16,7 @@ public class ReviewCreateViewModel
 
     [DisplayName("평점")]
     [Required(ErrorMessage = "평점을 입력해주세요.")]
-    public int Rating { get; set; } 
+    public int Rating { get; set; }
 
     public IEnumerable<SelectListItem>? Rates { get; set; }
 

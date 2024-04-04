@@ -5,11 +5,9 @@ namespace BookTalk.Shared.Models;
 
 public partial class CommonCode
 {
-    public int Id { get; set; }
+    public string Type { get; set; } = null!;
 
-    public string Tp { get; set; } = null!;
-
-    public string? Code { get; set; }
+    public string Code { get; set; } = null!;
 
     public string? Value { get; set; }
 }

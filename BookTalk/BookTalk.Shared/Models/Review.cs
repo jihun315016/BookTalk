@@ -7,7 +7,11 @@ public partial class Review
 {
     public int Id { get; set; }
 
+    public string Title { get; set; } = null!;
+
     public string Isbn13 { get; set; } = null!;
+
+    public string BookName { get; set; } = null!;
 
     public string? UserId { get; set; }
 
