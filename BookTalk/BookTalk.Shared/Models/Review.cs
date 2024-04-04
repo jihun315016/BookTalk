@@ -9,6 +9,8 @@ public partial class Review
 
     public string Title { get; set; } = null!;
 
+    public string Isbn10 { get; set; } = null!;
+
     public string Isbn13 { get; set; } = null!;
 
     public string BookName { get; set; } = null!;

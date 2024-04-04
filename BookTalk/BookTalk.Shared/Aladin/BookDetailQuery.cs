@@ -16,14 +16,17 @@ public class BookDetailQuery
 
     // 응답 형식 -> JSON
     [JsonProperty("output")]
-    public string Output { get; set; } = "js";
+    public string Output { get; set; } = "";
 
     [JsonProperty("optResult")]
-    public string OptResult { get; set; } = "ebookList,usedList,reviewList";
+    public string OptResult { get; set; } = "";
 
+    [JsonProperty("cover")]
+    public string Cover { get; set; } = "";
     #endregion
 
     #region 응답 정보
-    public Book Book { get; set; }
+    [JsonProperty("item")]
+    public List<Book> Item { get; set; } = new List<Book>();
     #endregion
 }

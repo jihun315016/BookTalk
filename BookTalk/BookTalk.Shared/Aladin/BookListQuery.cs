@@ -24,11 +24,11 @@ public class BookListQuery
 
     // Mall
     [JsonProperty("searchTarget")]
-    public string SearchTarget { get; set; } = "Book";
+    public string SearchTarget { get; set; } = "";
 
     // 응답 형식 -> JSON
     [JsonProperty("output")]
-    public string Output { get; set; } = "js";
+    public string Output { get; set; } = "";
 
     [JsonProperty("start")]
     public int Start { get; set; } = 1;
@@ -37,7 +37,7 @@ public class BookListQuery
     public int MaxResult { get; set; } = default(int);
 
     [JsonProperty("cover")]
-    public string Cover { get; set; } = "Big";
+    public string Cover { get; set; } = "";
 
     // 검색어 
     [JsonProperty("keyword")]

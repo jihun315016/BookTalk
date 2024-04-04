@@ -35,12 +35,12 @@ namespace BookTalk.Server.Controllers.api
                 url = _bookService.GetUrlForNewOrBestSellerBooks(bookQuery.BaseUrl, key, bookQuery);
 
                 // 주목할 만한 신간 리스트
-                BookListQuery resData1 = _bookService.GetBooks(url);
+                BookListQuery resData1 = _bookService.GetBookData< BookListQuery>(url);
 
                 // 베스트셀러
                 _bookService.SetBookList(bookQuery, _configuration["Aladin:ListType"], "BlogBest");
                 url = _bookService.GetUrlForNewOrBestSellerBooks(bookQuery.BaseUrl, key, bookQuery);
-                BookListQuery resData2 = _bookService.GetBooks(url);
+                BookListQuery resData2 = _bookService.GetBookData<BookListQuery>(url);
 
                 
                 responseData.Data = new List<BookListQuery>() { resData1, resData2 }; 
@@ -78,7 +78,7 @@ namespace BookTalk.Server.Controllers.api
                     url = _bookService.GetUrlForBookSearch(bookQuery.BaseUrl, key, bookQuery);
                 }
 
-                responseData.Data = _bookService.GetBooks(url);
+                responseData.Data = _bookService.GetBookData<BookListQuery>(url);
                 responseData.Data.MinPage = bookQuery.MinPage;
                 responseData.Data.MaxPage = bookQuery.MaxPage;
                 return Ok(responseData);
@@ -92,18 +92,23 @@ namespace BookTalk.Server.Controllers.api
         }
 
 
-        [Route("GetOne")]
+        [Route("Detail")]
         [HttpPost]
-        public IActionResult GetOne([FromBody] BookListQuery bookQuery)
+        public IActionResult Detail([FromBody] BookDetailQuery bookQuery)
         {
-            ResponseMessage<BookListQuery> responseData = new ResponseMessage<BookListQuery>();
+            ResponseMessage<BookDetailQuery> responseData = new ResponseMessage<BookDetailQuery>();
             string key;
             string url;
 
             try
             {
                 key = _configuration["Aladin:Key"];
-                // DetailType
+                _bookService.SetBookDetail(bookQuery, _configuration["Aladin:DetailType"]);
+                url = _bookService.GetUrlForOneBook(bookQuery.BaseUrl, key, bookQuery);
+                responseData.Data = _bookService.GetBookData<BookDetailQuery>(url);
+                responseData.Data.Item[0].CategoryName = _bookService.GetCategoryName(responseData.Data.Item[0].CategoryId);
+                responseData.Data.Item[0].Rating = _bookService.GetRating(responseData.Data.Item[0].Isbn13, responseData.Data.Item[0].Isbn10);
+
                 return Ok(responseData);
             }
             catch (Exception ex)

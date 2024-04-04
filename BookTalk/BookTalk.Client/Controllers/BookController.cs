@@ -56,7 +56,7 @@ namespace BookTalk.Client.Controllers
 
 
         [HttpGet]
-        public IActionResult GetOne(string type, string isbn)
+        public IActionResult Detail(string type, string isbn)
         {
             ResponseMessage<BookDetailQuery> responseData = new ResponseMessage<BookDetailQuery>();
             string url;
@@ -69,7 +69,7 @@ namespace BookTalk.Client.Controllers
                     ItemId = isbn
                 };
 
-                url = Utility.GetEndpointUrl(_baseApiUrl, "Book", "GetOne");
+                url = Utility.GetEndpointUrl(_baseApiUrl, "Book", "Detail");
                 HttpClient client = new HttpClient();
                 var response = client.PostAsJsonAsync<BookDetailQuery>(url, bookQuery).Result;
                 string content = response.Content.ReadAsStringAsync().Result;
@@ -79,6 +79,7 @@ namespace BookTalk.Client.Controllers
                     responseData = JsonConvert.DeserializeObject<ResponseMessage<BookDetailQuery>>(content);
                     responseData.Data.ItemIdType = bookQuery.ItemIdType;
                     responseData.Data.ItemId = bookQuery.ItemId;
+                    return View(responseData.Data.Item[0]);
                 }
                 else
                 {
@@ -91,7 +92,7 @@ namespace BookTalk.Client.Controllers
                 ViewBag.ErrorMessage = Utility.GetMessage("msg01");
             }
 
-            return View(responseData.Data);
+            return RedirectToAction("Index");
         }
 
 

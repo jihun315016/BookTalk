@@ -107,12 +107,18 @@
 
 
     function redirectDetail(isbn13, isbn10) {
-        // isbn13 이것만 하려고 했는데, isbn10이랑 isbn13 중 하나만 있는 경우가 있음
+        let type = "";
+        let isbn = "";
+
+        // isbn13 우선으로 조회하는데, isbn10이랑 isbn13 중 하나만 있는 경우가 있어서 검사
         if (isbn13) {
-            alert('isbn13 : ' + isbn13)
+            type = "ISBN";
+            isbn = isbn13;
         }
         else if (isbn10) {
-            alert('isbn10 : ' + isbn10)
+            type = "ISBN13";
+            isbn = isbn10;
         }
+        window.location.href = `/Book/Detail?type=${type}&isbn=${isbn}`;
     }
 </script>

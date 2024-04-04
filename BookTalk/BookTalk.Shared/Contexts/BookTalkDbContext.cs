@@ -12,6 +12,8 @@ public partial class BookTalkDbContext : DbContext
     {
     }
 
+    public virtual DbSet<BookCategory> BookCategories { get; set; }
+
     public virtual DbSet<CommonCode> CommonCodes { get; set; }
 
     public virtual DbSet<Menu> Menus { get; set; }
@@ -22,20 +24,35 @@ public partial class BookTalkDbContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        modelBuilder.Entity<BookCategory>(entity =>
+        {
+            entity
+                .HasNoKey()
+                .ToTable("book_category");
+
+            entity.Property(e => e.CategoryId).HasColumnName("category_id");
+            entity.Property(e => e.CategoryName)
+                .HasMaxLength(255)
+                .HasColumnName("category_name");
+            entity.Property(e => e.Mall)
+                .HasMaxLength(255)
+                .HasColumnName("mall");
+        });
+
         modelBuilder.Entity<CommonCode>(entity =>
         {
-            entity.HasKey(e => new { e.Type, e.Code }).HasName("PK__common_c__70AF8686A848196A");
+            entity.HasKey(e => new { e.Type, e.Code }).HasName("PK__common_c__70AF86868D2184F7");
 
             entity.ToTable("common_code");
 
             entity.Property(e => e.Type)
-                .HasMaxLength(20)
+                .HasMaxLength(30)
                 .HasColumnName("type");
             entity.Property(e => e.Code)
-                .HasMaxLength(10)
+                .HasMaxLength(30)
                 .HasColumnName("code");
             entity.Property(e => e.Value)
-                .HasMaxLength(30)
+                .HasMaxLength(100)
                 .HasColumnName("value");
         });
 
@@ -63,7 +80,7 @@ public partial class BookTalkDbContext : DbContext
 
         modelBuilder.Entity<Review>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__review__3213E83F90987EAF");
+            entity.HasKey(e => e.Id).HasName("PK__review__3213E83F11A7D3E1");
 
             entity.ToTable("review");
 
@@ -80,6 +97,9 @@ public partial class BookTalkDbContext : DbContext
             entity.Property(e => e.DislikeCount)
                 .HasDefaultValue(0)
                 .HasColumnName("dislike_count");
+            entity.Property(e => e.Isbn10)
+                .HasMaxLength(10)
+                .HasColumnName("isbn10");
             entity.Property(e => e.Isbn13)
                 .HasMaxLength(13)
                 .HasColumnName("isbn13");
@@ -96,7 +116,7 @@ public partial class BookTalkDbContext : DbContext
 
             entity.HasOne(d => d.User).WithMany(p => p.Reviews)
                 .HasForeignKey(d => d.UserId)
-                .HasConstraintName("FK__review__user_id__59C55456");
+                .HasConstraintName("FK__review__user_id__793DFFAF");
         });
 
         modelBuilder.Entity<User>(entity =>
