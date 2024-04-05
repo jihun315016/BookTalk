@@ -3,7 +3,7 @@ using Newtonsoft.Json;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
-namespace BookTalk.Shared.ViewModels;
+namespace BookTalk.Shared.ViewModels.Review;
 
 public class ReviewCreateViewModel
 {
@@ -16,11 +16,9 @@ public class ReviewCreateViewModel
 
     [DisplayName("평점")]
     [Required(ErrorMessage = "평점을 입력해주세요.")]
-    public int Rating { get; set; } 
+    public int Rating { get; set; }
 
     public IEnumerable<SelectListItem>? Rates { get; set; }
-
-    public string Isbn13 { get; set; }
 
     [DisplayName("도서")]
     [Required(ErrorMessage = "도서를 입력해주세요.")]
@@ -31,6 +29,12 @@ public class ReviewCreateViewModel
 
     [Required(ErrorMessage = "내용을 입력해주세요.")]
     public string Content { get; set; }
+
+    public string Isbn10 { get; set; }
+
+    public string Isbn13 { get; set; }
+
+    public string Cover { get; set; }
     #endregion
 
     #region 도서 검색 팝업

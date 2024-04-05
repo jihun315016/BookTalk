@@ -1,9 +1,5 @@
-﻿using MongoDB.Driver;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using BookTalk.Shared.Common;
+using MongoDB.Driver;
 
 namespace BookTalk.BusinessLogic.Interfaces;
 
@@ -33,4 +29,11 @@ public interface IMongoDBService
     /// 모든 세션 삭제
     /// </summary>
     public void DeleteAllSessions();
+
+    /// <summary>
+    /// 세션 정보 가져오기
+    /// </summary>
+    /// <param name="sessionId"></param>
+    /// <returns></returns>
+    public Session GetSession(string sessionId);
 }

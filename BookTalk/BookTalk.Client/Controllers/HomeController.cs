@@ -22,20 +22,20 @@ public class HomeController : Controller
     [HttpGet]
     public async Task<IActionResult> Index()
     {
-        ResponseMessage<IEnumerable<BookQuery>> responseData = new ResponseMessage<IEnumerable<BookQuery>>();
-        BookQuery bookQuery = new BookQuery();
+        ResponseMessage<IEnumerable<BookListQuery>> responseData = new ResponseMessage<IEnumerable<BookListQuery>>();
+        BookListQuery bookQuery = new BookListQuery();
         string url;
 
         try
         {
             url = Utility.GetEndpointUrl(_baseApiUrl, "Book", "GetList");
             HttpClient client = new HttpClient();
-            var response = await client.PostAsJsonAsync<BookQuery>(url, bookQuery);
+            var response = await client.PostAsJsonAsync<BookListQuery>(url, bookQuery);
             string content = await response.Content.ReadAsStringAsync();
             
             if(response.IsSuccessStatusCode)
             {
-                responseData = JsonConvert.DeserializeObject<ResponseMessage<IEnumerable<BookQuery>>>(content);
+                responseData = JsonConvert.DeserializeObject<ResponseMessage<IEnumerable<BookListQuery>>>(content);
             }
             else
             {

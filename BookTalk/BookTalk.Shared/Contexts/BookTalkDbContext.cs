@@ -12,6 +12,8 @@ public partial class BookTalkDbContext : DbContext
     {
     }
 
+    public virtual DbSet<BookCategory> BookCategories { get; set; }
+
     public virtual DbSet<CommonCode> CommonCodes { get; set; }
 
     public virtual DbSet<Menu> Menus { get; set; }
@@ -22,23 +24,35 @@ public partial class BookTalkDbContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        modelBuilder.Entity<BookCategory>(entity =>
+        {
+            entity
+                .HasNoKey()
+                .ToTable("book_category");
+
+            entity.Property(e => e.CategoryId).HasColumnName("category_id");
+            entity.Property(e => e.CategoryName)
+                .HasMaxLength(255)
+                .HasColumnName("category_name");
+            entity.Property(e => e.Mall)
+                .HasMaxLength(255)
+                .HasColumnName("mall");
+        });
+
         modelBuilder.Entity<CommonCode>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__common_c__3213E83FB996CE39");
+            entity.HasKey(e => new { e.Type, e.Code }).HasName("PK__common_c__70AF86868D2184F7");
 
             entity.ToTable("common_code");
 
-            entity.HasIndex(e => e.Tp, "UQ__common_c__3213E04E46835275").IsUnique();
-
-            entity.Property(e => e.Id).HasColumnName("id");
-            entity.Property(e => e.Code)
-                .HasMaxLength(10)
-                .HasColumnName("code");
-            entity.Property(e => e.Tp)
-                .HasMaxLength(20)
-                .HasColumnName("tp");
-            entity.Property(e => e.Value)
+            entity.Property(e => e.Type)
                 .HasMaxLength(30)
+                .HasColumnName("type");
+            entity.Property(e => e.Code)
+                .HasMaxLength(30)
+                .HasColumnName("code");
+            entity.Property(e => e.Value)
+                .HasMaxLength(100)
                 .HasColumnName("value");
         });
 
@@ -66,15 +80,16 @@ public partial class BookTalkDbContext : DbContext
 
         modelBuilder.Entity<Review>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__review__3213E83F53F67E04");
+            entity.HasKey(e => e.Id).HasName("PK__review__3213E83FADB0D470");
 
             entity.ToTable("review");
 
-            entity.HasIndex(e => e.Isbn13, "UQ__review__99F9D0A4272D6484").IsUnique();
-
             entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.BookName)
+                .HasMaxLength(200)
+                .HasColumnName("book_name");
             entity.Property(e => e.Content)
-                .HasColumnType("text")
+                .HasColumnType("ntext")
                 .HasColumnName("content");
             entity.Property(e => e.CreateDate)
                 .HasDefaultValueSql("(getdate())")
@@ -82,6 +97,9 @@ public partial class BookTalkDbContext : DbContext
             entity.Property(e => e.DislikeCount)
                 .HasDefaultValue(0)
                 .HasColumnName("dislike_count");
+            entity.Property(e => e.Isbn10)
+                .HasMaxLength(10)
+                .HasColumnName("isbn10");
             entity.Property(e => e.Isbn13)
                 .HasMaxLength(13)
                 .HasColumnName("isbn13");
@@ -89,13 +107,16 @@ public partial class BookTalkDbContext : DbContext
                 .HasDefaultValue(0)
                 .HasColumnName("like_count");
             entity.Property(e => e.Rating).HasColumnName("rating");
+            entity.Property(e => e.Title)
+                .HasMaxLength(200)
+                .HasColumnName("title");
             entity.Property(e => e.UserId)
                 .HasMaxLength(20)
                 .HasColumnName("user_id");
 
             entity.HasOne(d => d.User).WithMany(p => p.Reviews)
                 .HasForeignKey(d => d.UserId)
-                .HasConstraintName("FK__review__user_id__208CD6FA");
+                .HasConstraintName("FK__review__user_id__27F8EE98");
         });
 
         modelBuilder.Entity<User>(entity =>

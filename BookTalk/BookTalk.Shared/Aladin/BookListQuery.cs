@@ -1,15 +1,13 @@
 ﻿using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace BookTalk.Shared.Aladin;
 
-public class BookQuery
+public class BookListQuery
 {
-    #region 검색 조건
+    #region 검색 조건 / 세팅 값
+    [JsonProperty("baseUrl")]
+    public string BaseUrl { get; set; } = "";
+
     [JsonProperty("query")]
     public string Query { get; set; } = "";
 
@@ -26,11 +24,11 @@ public class BookQuery
 
     // Mall
     [JsonProperty("searchTarget")]
-    public string SearchTarget { get; set; } = "Book";
+    public string SearchTarget { get; set; } = "";
 
     // 응답 형식 -> JSON
     [JsonProperty("output")]
-    public string Output { get; set; } = "js";
+    public string Output { get; set; } = "";
 
     [JsonProperty("start")]
     public int Start { get; set; } = 1;
@@ -39,7 +37,7 @@ public class BookQuery
     public int MaxResult { get; set; } = default(int);
 
     [JsonProperty("cover")]
-    public string Cover { get; set; } = "Big";
+    public string Cover { get; set; } = "";
 
     // 검색어 
     [JsonProperty("keyword")]
@@ -56,6 +54,10 @@ public class BookQuery
     #endregion
 
     #region 응답 정보
+
+    [JsonProperty("totalResults")]
+    public int TotalResults { get; set; } = default;
+
     [JsonProperty("item")]
     public List<Book> Item { get; set; } = new List<Book>();
 

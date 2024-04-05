@@ -50,15 +50,15 @@ public class MongoDBService
         sessions.DeleteOne(filter);
     }
 
-    public Session GetSession(string sessionId)
-    {
-        IMongoCollection<Session> sessions = GetCollection<Session>(0); 
-        return sessions.Find(s => s.Id == sessionId).FirstOrDefault();
-    }
-
     public async Task DeleteAllSessions()
     {
         IMongoCollection<Session> sessions = GetCollection<Session>(0); // 세션 컬렉션
         await sessions.DeleteManyAsync(FilterDefinition<Session>.Empty);
+    }
+
+    public Session GetSession(string sessionId)
+    {
+        IMongoCollection<Session> sessions = GetCollection<Session>(0); 
+        return sessions.Find(s => s.Id == sessionId).FirstOrDefault();
     }
 }

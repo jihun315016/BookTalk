@@ -4,94 +4,138 @@ using BookTalk.Shared.Utility;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 
-namespace BookTalk.Client.Controllers
+namespace BookTalk.Client.Controllers;
+
+public class BookController : Controller
 {
-    public class BookController : Controller
+    private readonly string _baseApiUrl;
+
+    public BookController(IConfiguration configuration)
     {
-        private readonly string _baseApiUrl;
+        _baseApiUrl = configuration.GetValue<string>("ApiSettings:BaseUrl");
+    }
 
-        public BookController(IConfiguration configuration)
+
+    public IActionResult SearchList(string? keyword, int page = 1)
+    {
+        ResponseMessage<BookListQuery> responseData = new ResponseMessage<BookListQuery>();
+        string url;
+
+        try
         {
-            _baseApiUrl = configuration.GetValue<string>("ApiSettings:BaseUrl");
+            responseData = GetSearchBooks(keyword, page);
+        }
+        catch (Exception ex)
+        {
+            ViewBag.ErrorMessage = Utility.GetMessage("msg01");
         }
 
-        [HttpGet]
-        public IActionResult SearchList(string? keyword, int page = 1)
+        return View(responseData.Data);
+    }
+
+
+    public async Task<IActionResult> SearchListJson(string? keyword, int page = 1)
+    {
+        ResponseMessage<BookListQuery> responseData = new ResponseMessage<BookListQuery>();
+        string url;
+
+        try
         {
-            ResponseMessage<BookQuery> responseData = new ResponseMessage<BookQuery>();
-            string url;
-
-            try
-            {
-                responseData = GetSearchBooks(keyword, page);
-            }
-            catch (Exception ex)
-            {
-                ViewBag.ErrorMessage = Utility.GetMessage("msg01");
-                return StatusCode(StatusCodes.Status500InternalServerError, responseData);
-            }
-
-            return View(responseData.Data);
+            responseData = GetSearchBooks(keyword, page);
+        }
+        catch (Exception ex)
+        {
+            ViewBag.ErrorMessage = Utility.GetMessage("msg01");
+            return StatusCode(StatusCodes.Status500InternalServerError, responseData);
         }
 
+        return Json(responseData.Data);
+    }
 
-        [HttpGet]
-        public async Task<IActionResult> SearchListJson(string? keyword, int page = 1)
+
+    public IActionResult Read(string type, string isbn)
+    {
+        ResponseMessage<BookDetailQuery> responseData = new ResponseMessage<BookDetailQuery>();
+        string url;
+
+        try
         {
-            ResponseMessage<BookQuery> responseData = new ResponseMessage<BookQuery>();
-            string url;
-
-            try
+            BookDetailQuery bookQuery = new BookDetailQuery()
             {
-                responseData = GetSearchBooks(keyword, page);
-            }
-            catch (Exception ex)
-            {
-                ViewBag.ErrorMessage = Utility.GetMessage("msg01");
-                return StatusCode(StatusCodes.Status500InternalServerError, responseData);
-            }
+                ItemIdType = type,
+                ItemId = isbn
+            };
 
-            return Json(responseData.Data);
+            url = Utility.GetEndpointUrl(_baseApiUrl, "Book", "Read");
+            HttpClient client = new HttpClient();
+            var response = client.PostAsJsonAsync<BookDetailQuery>(url, bookQuery).Result;
+            string content = response.Content.ReadAsStringAsync().Result;
+
+            if (response.IsSuccessStatusCode)
+            {
+                responseData = JsonConvert.DeserializeObject<ResponseMessage<BookDetailQuery>>(content);
+                responseData.Data.ItemIdType = bookQuery.ItemIdType;
+                responseData.Data.ItemId = bookQuery.ItemId;
+                return View(responseData.Data.Item[0]);
+            }
+            else
+            {
+                responseData.ErrorCode = response.StatusCode.ToString();
+                throw new Exception(responseData.ErrorMessage);
+            }
+        }
+        catch (Exception ex)
+        {
+            ViewBag.ErrorMessage = Utility.GetMessage("msg01");
         }
 
+        return RedirectToAction("Index");
+    }
 
-        private ResponseMessage<BookQuery> GetSearchBooks(string keyword, int page)
+
+    private ResponseMessage<BookListQuery> GetSearchBooks(string keyword, int page)
+    {
+        ResponseMessage<BookListQuery> responseData = new ResponseMessage<BookListQuery>();
+        string url;
+
+        try
         {
-            ResponseMessage<BookQuery> responseData = new ResponseMessage<BookQuery>();
-            string url;
-
-            try
+            BookListQuery bookQuery = new BookListQuery()
             {
-                BookQuery bookQuery = new BookQuery()
-                {
-                    Query = string.IsNullOrWhiteSpace(keyword) ? "" : keyword,
-                    Keyword = string.IsNullOrWhiteSpace(keyword) ? "" : keyword,
-                    Page = page
-                };
+                Query = string.IsNullOrWhiteSpace(keyword) ? "" : keyword,
+                Keyword = string.IsNullOrWhiteSpace(keyword) ? "" : keyword,
+                Page = page
+            };
 
-                url = Utility.GetEndpointUrl(_baseApiUrl, "Book", "SearchList");
-                HttpClient client = new HttpClient();
-                var response = client.PostAsJsonAsync<BookQuery>(url, bookQuery).Result;
-                string content = response.Content.ReadAsStringAsync().Result;
+            url = Utility.GetEndpointUrl(_baseApiUrl, "Book", "SearchList");
+            HttpClient client = new HttpClient();
+            var response = client.PostAsJsonAsync<BookListQuery>(url, bookQuery).Result;
+            string content = response.Content.ReadAsStringAsync().Result;
 
-                if (response.IsSuccessStatusCode)
-                {
-                    responseData = JsonConvert.DeserializeObject<ResponseMessage<BookQuery>>(content);
-                    responseData.Data.Keyword = bookQuery.Keyword;
-                    responseData.Data.Page = bookQuery.Page;
-                }
-                else
-                {
-                    responseData.ErrorCode = response.StatusCode.ToString();
-                    throw new Exception(responseData.ErrorMessage);
-                }
-            }
-            catch (Exception ex)
+            if (response.IsSuccessStatusCode)
             {
-                ViewBag.ErrorMessage = Utility.GetMessage("msg01");
+                responseData = JsonConvert.DeserializeObject<ResponseMessage<BookListQuery>>(content);
+                responseData.Data.Keyword = bookQuery.Keyword;
+                responseData.Data.Page = bookQuery.Page;
             }
-
-            return responseData;
+            else
+            {
+                responseData.ErrorCode = response.StatusCode.ToString();
+                throw new Exception(responseData.ErrorMessage);
+            }
         }
+        catch (Exception ex)
+        {
+            ViewBag.ErrorMessage = Utility.GetMessage("msg01");
+        }
+        finally
+        {
+            if (responseData.Data == null)
+            {
+                responseData.Data = new BookListQuery();
+            }
+        }
+
+        return responseData;
     }
 }

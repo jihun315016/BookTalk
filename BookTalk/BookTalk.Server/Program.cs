@@ -36,6 +36,7 @@ var collections = mongoDBConfig.GetSection("Collections").Get<string[]>();
 builder.Services.AddScoped<MongoDBService>(serviceProvider => new MongoDBService(connectionString, database, collections));
 builder.Services.AddScoped<MenuService>();
 builder.Services.AddScoped<AccountService>();
+builder.Services.AddScoped<BookService>();
 builder.Services.AddScoped<UserService>();
 builder.Services.AddScoped<ReviewService>();
 // ==========  서비스 등록하기 END  ==========

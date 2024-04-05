@@ -10,41 +10,40 @@ namespace BookTalk.Server.Controllers.api
     [ApiController]
     public class BookController : ControllerBase
     {
+        private readonly BookService _bookService;
         private readonly IConfiguration _configuration;
 
-        public BookController(IConfiguration configuration)
+        public BookController(BookService bookService, IConfiguration configuration)
         {
+            _bookService = bookService;
             _configuration = configuration;
         }
 
         [Route("GetList")]
         [HttpPost]
-        public IActionResult GetList([FromBody] BookQuery bookQuery)
+        public IActionResult GetList([FromBody] BookListQuery bookQuery)
         {
-            string baseUrl;
             string key;
             string url;
-            ResponseMessage<IEnumerable<BookQuery>> responseData = new ResponseMessage<IEnumerable<BookQuery>>();
+            ResponseMessage<IEnumerable<BookListQuery>> responseData = new ResponseMessage<IEnumerable<BookListQuery>>();
 
             try
             {
                 key = _configuration["Aladin:Key"];
-                baseUrl = _configuration["Aladin:List:Url"];
-                bookQuery = SetBookListQuery(bookQuery, "ItemNewAll");
+                _bookService.SetBookList(bookQuery, _configuration["Aladin:ListType"], "ItemNewAll");
 
-                BookService bookService = new BookService();
-                url = bookService.GetUrlForNewOrBestSellerBooks(baseUrl, key, bookQuery);
+                url = _bookService.GetUrlForNewOrBestSellerBooks(bookQuery.BaseUrl, key, bookQuery);
 
                 // 주목할 만한 신간 리스트
-                BookQuery resData1 = bookService.GetBooks(url);
+                BookListQuery resData1 = _bookService.GetBookData< BookListQuery>(url);
 
                 // 베스트셀러
-                bookQuery = SetBookListQuery(bookQuery, "BlogBest");
-                url = bookService.GetUrlForNewOrBestSellerBooks(baseUrl, key, bookQuery);
-                BookQuery resData2 = bookService.GetBooks(url);
+                _bookService.SetBookList(bookQuery, _configuration["Aladin:ListType"], "BlogBest");
+                url = _bookService.GetUrlForNewOrBestSellerBooks(bookQuery.BaseUrl, key, bookQuery);
+                BookListQuery resData2 = _bookService.GetBookData<BookListQuery>(url);
 
                 
-                responseData.Data = new List<BookQuery>() { resData1, resData2 }; 
+                responseData.Data = new List<BookListQuery>() { resData1, resData2 }; 
                 return Ok(responseData);
             }
             catch (Exception ex)
@@ -57,36 +56,34 @@ namespace BookTalk.Server.Controllers.api
 
         [Route("SearchList")]
         [HttpPost]
-        public IActionResult SearchList([FromBody] BookQuery bookQuery)
+        public IActionResult SearchList([FromBody] BookListQuery bookQuery)
         {
-            string baseUrl;
+            ResponseMessage<BookListQuery> responseData = new ResponseMessage<BookListQuery>();
             string key;
             string url;
-            ResponseMessage<BookQuery> responseData = new ResponseMessage<BookQuery>();
 
             try
             {
-                BookService bookService = new BookService();
-
                 key = _configuration["Aladin:Key"];
 
                 // 검색어가 없으면 검색 API 호출 시 오류 -> 검색어 없으면 베스트 셀러 조회
                 if (string.IsNullOrWhiteSpace(bookQuery.Query))
                 {
-                    baseUrl = _configuration["Aladin:List:Url"];
-                    bookQuery = SetBookListQuery(bookQuery, "BlogBest");
-                    url = bookService.GetUrlForNewOrBestSellerBooks(baseUrl, key, bookQuery);
+                    _bookService.SetBookList(bookQuery, _configuration["Aladin:ListType"], "BlogBest");
+                    url = _bookService.GetUrlForNewOrBestSellerBooks(bookQuery.BaseUrl, key, bookQuery);
+                    responseData.Data = _bookService.GetBookData<BookListQuery>(url);
+                    responseData.Data.MinPage = bookQuery.MinPage;
+                    responseData.Data.MaxPage = 0;
                 }
                 else
                 {
-                    baseUrl = _configuration["Aladin:Search:Url"];
-                    bookQuery = SetBookSearchQuery(bookQuery);
-                    url = bookService.GetUrlForBookSearch(baseUrl, key, bookQuery);
+                    _bookService.SetBookSearch(bookQuery, _configuration["Aladin:SearchType"]);
+                    url = _bookService.GetUrlForBookSearch(bookQuery.BaseUrl, key, bookQuery);
+                    responseData.Data = _bookService.GetBookData<BookListQuery>(url);
+                    responseData.Data.MinPage = bookQuery.MinPage;
+                    responseData.Data.MaxPage = Math.Min(bookQuery.MaxResult, (int)Math.Ceiling((decimal)responseData.Data.TotalResults / bookQuery.MaxResult));
                 }
 
-                responseData.Data = bookService.GetBooks(url);
-                responseData.Data.MinPage = Convert.ToInt32(_configuration["Aladin:Common:MinPage"]);
-                responseData.Data.MaxPage = Convert.ToInt32(_configuration["Aladin:Common:MaxPage"]);
                 return Ok(responseData);
             }
             catch (Exception ex)
@@ -98,40 +95,31 @@ namespace BookTalk.Server.Controllers.api
         }
 
 
-        /// <summary>
-        /// 신간 도서 or 베스트 셀러 리스트를 요청하기 위한 객체 값 세팅
-        /// </summary>
-        /// <param name="bookQuery"></param>
-        /// <param name="queryType"></param>
-        /// <returns></returns>
-        private BookQuery SetBookListQuery(BookQuery bookQuery, string queryType)
+        [Route("Read")]
+        [HttpPost]
+        public IActionResult Read([FromBody] BookDetailQuery bookQuery)
         {
-            bookQuery.MaxResult = Convert.ToInt32(_configuration["Aladin:Common:MaxResult"]);
-            bookQuery.Start = bookQuery.MaxResult * (bookQuery.Page - 1) + 1;
-            bookQuery.SearchTarget = _configuration["Aladin:Common:SearchTarget"];
-            bookQuery.Output = _configuration["Aladin:Common:Output"];
-            bookQuery.QueryType = queryType;
-            bookQuery.Item = new List<Book>();
+            ResponseMessage<BookDetailQuery> responseData = new ResponseMessage<BookDetailQuery>();
+            string key;
+            string url;
 
-            return bookQuery;
-        }
+            try
+            {
+                key = _configuration["Aladin:Key"];
+                _bookService.SetBookDetail(bookQuery, _configuration["Aladin:DetailType"]);
+                url = _bookService.GetUrlForOneBook(bookQuery.BaseUrl, key, bookQuery);
+                responseData.Data = _bookService.GetBookData<BookDetailQuery>(url);
+                responseData.Data.Item[0].CategoryName = _bookService.GetCategoryName(responseData.Data.Item[0].CategoryId);
+                responseData.Data.Item[0].Rating = _bookService.GetRating(responseData.Data.Item[0].Isbn13, responseData.Data.Item[0].Isbn);
 
-
-        /// <summary>
-        /// 도서 검색을 위한 객체 값 세팅
-        /// </summary>
-        /// <param name="bookQuery"></param>
-        /// <returns></returns>
-        private BookQuery SetBookSearchQuery(BookQuery bookQuery)
-        {
-            bookQuery.MaxResult = Convert.ToInt32(_configuration["Aladin:Common:MaxResult"]);
-            bookQuery.Start = bookQuery.MaxResult * (bookQuery.Page - 1) + 1;
-            bookQuery.SearchTarget = _configuration["Aladin:Common:SearchTarget"];
-            bookQuery.Output = _configuration["Aladin:Common:Output"];
-            bookQuery.QueryType = _configuration["Aladin:Search:QueryType"];
-            bookQuery.Item = new List<Book>();
-
-            return bookQuery;
+                return Ok(responseData);
+            }
+            catch (Exception ex)
+            {
+                responseData.ErrorCode = Utility.GetUserStatusCodeNumber(UserStatusCode.UndefinedError);
+                responseData.ErrorMessage = ex.Message;
+                return StatusCode(StatusCodes.Status500InternalServerError, responseData);
+            }
         }
     }
 }
