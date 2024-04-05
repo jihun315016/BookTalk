@@ -92,9 +92,9 @@ namespace BookTalk.Server.Controllers.api
         }
 
 
-        [Route("Detail")]
+        [Route("Read")]
         [HttpPost]
-        public IActionResult Detail([FromBody] BookDetailQuery bookQuery)
+        public IActionResult Read([FromBody] BookDetailQuery bookQuery)
         {
             ResponseMessage<BookDetailQuery> responseData = new ResponseMessage<BookDetailQuery>();
             string key;
@@ -107,7 +107,7 @@ namespace BookTalk.Server.Controllers.api
                 url = _bookService.GetUrlForOneBook(bookQuery.BaseUrl, key, bookQuery);
                 responseData.Data = _bookService.GetBookData<BookDetailQuery>(url);
                 responseData.Data.Item[0].CategoryName = _bookService.GetCategoryName(responseData.Data.Item[0].CategoryId);
-                responseData.Data.Item[0].Rating = _bookService.GetRating(responseData.Data.Item[0].Isbn13, responseData.Data.Item[0].Isbn10);
+                responseData.Data.Item[0].Rating = _bookService.GetRating(responseData.Data.Item[0].Isbn13, responseData.Data.Item[0].Isbn);
 
                 return Ok(responseData);
             }

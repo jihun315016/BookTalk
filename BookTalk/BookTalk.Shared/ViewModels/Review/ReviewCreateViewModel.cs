@@ -20,8 +20,6 @@ public class ReviewCreateViewModel
 
     public IEnumerable<SelectListItem>? Rates { get; set; }
 
-    public string Isbn13 { get; set; }
-
     [DisplayName("도서")]
     [Required(ErrorMessage = "도서를 입력해주세요.")]
     public string BookTitle { get; set; }
@@ -31,6 +29,12 @@ public class ReviewCreateViewModel
 
     [Required(ErrorMessage = "내용을 입력해주세요.")]
     public string Content { get; set; }
+
+    public string Isbn10 { get; set; }
+
+    public string Isbn13 { get; set; }
+
+    public string Cover { get; set; }
     #endregion
 
     #region 도서 검색 팝업

@@ -7,16 +7,19 @@ using Newtonsoft.Json;
 
 namespace BookTalk.Client.Controllers;
 
+[Route("[controller]")]
 public class ReviewController : Controller
 {
     private readonly IConfiguration _configuration;
     private readonly string _baseApiUrl;
+
 
     public ReviewController(IConfiguration configuration)
     {
         _configuration = configuration;
         _baseApiUrl = configuration.GetValue<string>("ApiSettings:BaseUrl");
     }
+
 
     public IActionResult Index(string? queryType, string? keyword)
     {
@@ -34,9 +37,12 @@ public class ReviewController : Controller
             HttpClient client = new HttpClient();
             var response = client.PostAsJsonAsync(url, model).Result;
             var content = response.Content.ReadAsStringAsync().Result;
-            responseData = JsonConvert.DeserializeObject<ResponseMessage<ReviewIndexViewModel>>(content);
 
-            if (!response.IsSuccessStatusCode)
+            if (response.IsSuccessStatusCode)
+            {
+                responseData = JsonConvert.DeserializeObject<ResponseMessage<ReviewIndexViewModel>>(content);
+            }
+            else
             {
                 responseData.ErrorCode = response.StatusCode.ToString();
                 throw new Exception(responseData.ErrorMessage);
@@ -50,6 +56,8 @@ public class ReviewController : Controller
         return View(responseData.Data);
     }
 
+
+    [Route("Create")]
     [HttpGet]
     public IActionResult Create()
     {
@@ -74,6 +82,8 @@ public class ReviewController : Controller
         return View(model);
     }
 
+
+    [Route("Create")]
     [HttpPost]
     public IActionResult Create(ReviewCreateViewModel viewModel)
     {
@@ -92,10 +102,10 @@ public class ReviewController : Controller
                     HttpClient client = new HttpClient();
                     var response = client.PostAsJsonAsync(url, viewModel).Result;
                     var content = response.Content.ReadAsStringAsync().Result;
-                    responseData = JsonConvert.DeserializeObject<ResponseMessage>(content);
 
                     if (response.IsSuccessStatusCode)
                     {
+                        responseData = JsonConvert.DeserializeObject<ResponseMessage>(content);
                         return RedirectToAction("Index");
                     }
                     else
@@ -127,6 +137,59 @@ public class ReviewController : Controller
         }
     }
 
+
+    [Route("{id}")]
+    [HttpGet]
+
+    public IActionResult Read(int id)
+    {
+        ResponseMessage<ReviewViewModel> responseData = new ResponseMessage<ReviewViewModel>();
+        ReviewViewModel model;
+        string url;
+
+        try
+        {
+            model = new ReviewViewModel()
+            {
+                Id = id,
+                Title = "",
+                Author = "",
+                UserId = "",
+                BookName = "",
+                Cover = ""
+            };
+
+            url = Utility.GetEndpointUrl(_baseApiUrl, "Review", "Read");
+            HttpClient client = new HttpClient();
+            var response = client.PostAsJsonAsync(url, model).Result;
+            var content = response.Content.ReadAsStringAsync().Result;
+
+            if (response.IsSuccessStatusCode)
+            {
+                responseData = JsonConvert.DeserializeObject<ResponseMessage<ReviewViewModel>>(content);
+            }
+            else
+            {
+                responseData.ErrorCode = response.StatusCode.ToString();
+                throw new Exception(responseData.ErrorMessage);
+            }
+        }
+        catch (Exception ex)
+        {
+            ViewBag.ErrorMessage = Utility.GetMessage("msg01");
+        }
+        finally
+        {
+            if (responseData.Data == null)
+            {
+                responseData.Data = new ReviewViewModel();
+            }
+        }
+
+        return View(responseData.Data);
+    }
+
+
     private IEnumerable<SelectListItem> GetRates()
     {
         List<SelectListItem> rateItems = new List<SelectListItem>();
@@ -137,6 +200,6 @@ public class ReviewController : Controller
         {
             rateItems.Add(new SelectListItem { Text = i.ToString(), Value = i.ToString() });
         }
-        return rateItems;
+        return rateItems.OrderByDescending(r => r.Text);
     }
 }

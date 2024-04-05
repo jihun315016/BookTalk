@@ -9,9 +9,9 @@ public partial class Review
 
     public string Title { get; set; } = null!;
 
-    public string Isbn10 { get; set; } = null!;
+    public string? Isbn10 { get; set; }
 
-    public string Isbn13 { get; set; } = null!;
+    public string? Isbn13 { get; set; }
 
     public string BookName { get; set; } = null!;
 
@@ -22,6 +22,8 @@ public partial class Review
     public double Rating { get; set; }
 
     public DateOnly? CreateDate { get; set; }
+
+    public string? Cover { get; set; }
 
     public int? LikeCount { get; set; }
 

@@ -1,6 +1,7 @@
 ﻿using BookTalk.BusinessLogic.Interfaces;
 using BookTalk.Shared.Contexts;
 using BookTalk.Shared.Models;
+using BookTalk.Shared.ViewModels.Review;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace BookTalk.BusinessLogic.Services;
@@ -44,5 +45,29 @@ public class ReviewService : IReviewService
     {
         _dbContext.Reviews.Add(review);
         _dbContext.SaveChanges();
+    }
+
+    public ReviewViewModel GetReview(int id)
+    {
+        Review review = _dbContext.Reviews.FirstOrDefault(r => r.Id == id);
+        if (review == null)
+        {
+            return new ReviewViewModel();
+        }
+
+        return new ReviewViewModel()
+        {
+            Id = id,
+            Title = review.Title,
+            UserId = review.UserId,
+            BookName = review.BookName,
+            //Author = review.Author,
+            CreateDate = review.CreateDate,
+            Rating = review.Rating,
+            Content = review.Content,
+            //Cover = review.Cover,
+            LikeCount = review.LikeCount,
+            DislikeCount = review.DislikeCount
+        };
     }
 }

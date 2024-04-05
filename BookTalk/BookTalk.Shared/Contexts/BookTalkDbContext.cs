@@ -80,7 +80,7 @@ public partial class BookTalkDbContext : DbContext
 
         modelBuilder.Entity<Review>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__review__3213E83F11A7D3E1");
+            entity.HasKey(e => e.Id).HasName("PK__review__3213E83F0C1185FF");
 
             entity.ToTable("review");
 
@@ -91,6 +91,9 @@ public partial class BookTalkDbContext : DbContext
             entity.Property(e => e.Content)
                 .HasColumnType("text")
                 .HasColumnName("content");
+            entity.Property(e => e.Cover)
+                .HasMaxLength(300)
+                .HasColumnName("cover");
             entity.Property(e => e.CreateDate)
                 .HasDefaultValueSql("(getdate())")
                 .HasColumnName("create_date");
@@ -116,7 +119,7 @@ public partial class BookTalkDbContext : DbContext
 
             entity.HasOne(d => d.User).WithMany(p => p.Reviews)
                 .HasForeignKey(d => d.UserId)
-                .HasConstraintName("FK__review__user_id__793DFFAF");
+                .HasConstraintName("FK__review__user_id__1C873BEC");
         });
 
         modelBuilder.Entity<User>(entity =>

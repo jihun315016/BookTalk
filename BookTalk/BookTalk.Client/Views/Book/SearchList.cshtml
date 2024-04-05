@@ -33,7 +33,7 @@
                                 @foreach (var book in Model.Item)
                                 {
                                     <div class="col-md-4">
-                                        <div class="card book-card" onclick="redirectDetail('@book.Isbn13', '@book.Isbn10')">
+                                        <div class="card book-card" onclick="redirectDetail('@book.Isbn13', '@book.Isbn')">
                                             <img src="@book.Cover" class="book-card-img-top" alt="book cover">
                                             <div class="book-card-title-container">
                                                 <h5 class="book-card-title">@book.Title</h5>
@@ -119,6 +119,6 @@
             type = "ISBN13";
             isbn = isbn10;
         }
-        window.location.href = `/Book/Detail?type=${type}&isbn=${isbn}`;
+        window.location.href = `/Book/Read?type=${type}&isbn=${isbn}`;
     }
 </script>

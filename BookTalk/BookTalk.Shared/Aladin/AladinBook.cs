@@ -12,7 +12,7 @@ public class AladinBook
     public DateTime PubDate { get; set; }
 
     // isbn 10
-    public string Isbn10 { get; set; }
+    public string Isbn { get; set; }
 
     // isbn 13
     public string Isbn13 { get; set; }

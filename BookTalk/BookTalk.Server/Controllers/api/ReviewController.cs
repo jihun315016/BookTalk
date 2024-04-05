@@ -66,15 +66,36 @@ public class ReviewController : ControllerBase
             Review review = new Review()
             {
                 Title = viewMocel.ReviewTitle,
-                BookName = viewMocel.BookTitle,
                 Isbn13 = viewMocel.Isbn13,
+                Isbn10 = viewMocel.Isbn10,
+                BookName = viewMocel.BookTitle,
                 UserId = _userService.GetUser(viewMocel.SessionId).Id,
                 Content = viewMocel.Content,
-                Rating = viewMocel.Rating
+                Rating = viewMocel.Rating,
             };
 
             _reviewService.Create(review);
             return Ok();
+        }
+        catch (Exception ex)
+        {
+            responseData.ErrorCode = Utility.GetUserStatusCodeNumber(UserStatusCode.UndefinedError);
+            responseData.ErrorMessage = ex.Message;
+            return StatusCode(StatusCodes.Status500InternalServerError, responseData);
+        }
+    }
+
+
+    [Route("Read")]
+    [HttpPost]
+    public IActionResult Read([FromBody] ReviewViewModel viewMocel)
+    {
+        ResponseMessage<ReviewViewModel> responseData = new ResponseMessage<ReviewViewModel>();
+
+        try
+        {
+            responseData.Data = _reviewService.GetReview(viewMocel.Id);
+            return Ok(responseData);
         }
         catch (Exception ex)
         {
