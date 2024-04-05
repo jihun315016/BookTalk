@@ -71,16 +71,19 @@ namespace BookTalk.Server.Controllers.api
                 {
                     _bookService.SetBookList(bookQuery, _configuration["Aladin:ListType"], "BlogBest");
                     url = _bookService.GetUrlForNewOrBestSellerBooks(bookQuery.BaseUrl, key, bookQuery);
+                    responseData.Data = _bookService.GetBookData<BookListQuery>(url);
+                    responseData.Data.MinPage = bookQuery.MinPage;
+                    responseData.Data.MaxPage = 0;
                 }
                 else
                 {
                     _bookService.SetBookSearch(bookQuery, _configuration["Aladin:SearchType"]);
                     url = _bookService.GetUrlForBookSearch(bookQuery.BaseUrl, key, bookQuery);
+                    responseData.Data = _bookService.GetBookData<BookListQuery>(url);
+                    responseData.Data.MinPage = bookQuery.MinPage;
+                    responseData.Data.MaxPage = Math.Min(bookQuery.MaxResult, (int)Math.Ceiling((decimal)responseData.Data.TotalResults / bookQuery.MaxResult));
                 }
 
-                responseData.Data = _bookService.GetBookData<BookListQuery>(url);
-                responseData.Data.MinPage = bookQuery.MinPage;
-                responseData.Data.MaxPage = bookQuery.MaxPage;
                 return Ok(responseData);
             }
             catch (Exception ex)

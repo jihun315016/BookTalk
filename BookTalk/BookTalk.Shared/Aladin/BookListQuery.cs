@@ -54,6 +54,10 @@ public class BookListQuery
     #endregion
 
     #region 응답 정보
+
+    [JsonProperty("totalResults")]
+    public int TotalResults { get; set; } = default;
+
     [JsonProperty("item")]
     public List<Book> Item { get; set; } = new List<Book>();
 
