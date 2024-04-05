@@ -127,10 +127,11 @@ public class ReviewController : ControllerBase
                 LikeCount = review.LikeCount,
                 DislikeCount = review.DislikeCount,
 
+                CategoryName = _bookService.GetCategoryName(bookQuery.Item[0].CategoryId),
                 Author = bookQuery.Item[0].Author,
                 PubDate = bookQuery.Item[0].PubDate,
                 Publisher = bookQuery.Item[0].Publisher,
-                Cover = bookQuery.Item[0].Cover
+                Cover = bookQuery.Item[0].Cover,
             };
 
             return Ok(responseData);

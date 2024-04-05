@@ -27,5 +27,7 @@ public partial class Review
 
     public int? DislikeCount { get; set; }
 
+    public virtual ICollection<Comment> Comments { get; set; } = new List<Comment>();
+
     public virtual User? User { get; set; }
 }

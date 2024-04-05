@@ -8,12 +8,13 @@
                 <h2>@Model.Title</h2>
                 <hr/>
                 <p><strong>작성자 :</strong> @Model.UserId</p>
-                <p><strong>도서명 :</strong> @Model.BookName</p>
                 <p><strong>작성일 :</strong> @Model.CreateDate</p>
-                <p><strong>평점 :</strong> @(Model.Rating == 0 ? "-" : Model.Rating.ToString())</p>
+                <p><strong>도서명 :</strong> @Model.BookName</p>
+                <p><strong>카테고리 :</strong> @Model.CategoryName</p>
                 <p><strong>작가 :</strong> @Model.Author</p>
                 <p><strong>출판사 :</strong> @Model.Publisher</p>
                 <p><strong>출간일 :</strong> @Model.PubDate</p>
+                <p><strong>평점 :</strong> @(Model.Rating == 0 ? "-" : Model.Rating.ToString())</p>
             </div>
 
             <div class="col-md-4 d-flex justify-content-center">
@@ -30,13 +31,37 @@
 
             <div class="mt-4">
                 <h4>댓글 달기</h4>
-                <form>
-                    <div class="form-group">    
-                        <textarea class="form-control" rows="3" placeholder="댓글을 입력하세요..."></textarea>
-                    </div>
-                    <button type="submit" class="btn btn-primary">댓글 작성</button>
-                </form>
+                <div class="form-group">
+                    <textarea id="commentText" class="form-control" rows="3" placeholder="댓글을 입력하세요..."></textarea>
+                </div>
+                <button id="btnComment" type="submit" class="btn btn-primary">댓글 작성</button>
+
+                <div id="commentsContainer">
+                    <!-- 댓글들이 여기에 동적으로 추가됩니다 -->
+                </div>
             </div>
         </div>
     </div>
 </div>
+
+<script>
+     window.onload = function () {
+     OnLoadView();
+     }
+
+    function OnLoadView() {
+        var errorMessage = "@Html.Raw(ViewBag.ErrorMessage)";
+
+        if (errorMessage) {
+            alert(errorMessage);
+        }
+    }
+
+
+    var btnComment = document.getElementById("btnComment");
+    btnComment.onclick = function () {
+        let commentText = document.getElementById("commentText").value;
+        console.log(commentText);
+    }
+    
+</script>
