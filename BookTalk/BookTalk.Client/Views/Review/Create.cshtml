@@ -6,6 +6,7 @@
 {
     @Html.HiddenFor(model => model.Isbn13, new { @id = "hidIsbn13", @readonly = "readonly" })
     @Html.HiddenFor(model => model.Isbn10, new { @id = "hidIsbn10", @readonly = "readonly" })
+    @Html.HiddenFor(model => model.Cover, new { @id = "hidCover", @readonly = "readonly" })
 
     <div class="row d-flex align-items-stretch">
         <div class="col-md-8">
@@ -197,6 +198,7 @@
             document.getElementById("txtFormAuthor").value = clickedElement.getAttribute("data-author");
             document.getElementById("hidIsbn13").value = clickedElement.getAttribute("data-isbn13");
             document.getElementById("hidIsbn10").value = clickedElement.getAttribute("data-isbn10");
+            document.getElementById("hidCover").value = clickedElement.getAttribute("data-cover");
             document.getElementById("bookImg").src = clickedElement.getAttribute("data-cover");
             closePopup();
         }

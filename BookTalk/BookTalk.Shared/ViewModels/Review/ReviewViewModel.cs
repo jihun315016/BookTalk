@@ -14,6 +14,10 @@ public class ReviewViewModel
 
     public DateOnly? CreateDate { get; set; }
 
+    public DateTime? PubDate { get; set; } = default;
+
+    public string Publisher { get; set; } = "";
+
     public double Rating { get; set; } = default;
 
     public string Content { get; set; } = "";

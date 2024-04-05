@@ -1,11 +1,11 @@
 ﻿using BookTalk.BusinessLogic.Services;
+using BookTalk.Shared.Aladin;
 using BookTalk.Shared.Common;
 using BookTalk.Shared.Models;
 using BookTalk.Shared.Utility;
 using BookTalk.Shared.ViewModels.Review;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using System.Collections.Generic;
+using System.Security.Policy;
 
 namespace BookTalk.Server.Controllers.api;
 
@@ -13,13 +13,17 @@ namespace BookTalk.Server.Controllers.api;
 [ApiController]
 public class ReviewController : ControllerBase
 {
+    IConfiguration _configuration;
     private readonly ReviewService _reviewService;
     private readonly UserService _userService;
+    private readonly BookService _bookService;
 
-    public ReviewController(ReviewService reviewService, UserService userService)
+    public ReviewController(IConfiguration configuration, ReviewService reviewService, UserService userService, BookService bookService)
     {
+        _configuration = configuration;
         _reviewService = reviewService;
         _userService = userService;
+        _bookService = bookService;
     }
 
     [Route("Search")]
@@ -71,7 +75,7 @@ public class ReviewController : ControllerBase
                 BookName = viewMocel.BookTitle,
                 UserId = _userService.GetUser(viewMocel.SessionId).Id,
                 Content = viewMocel.Content,
-                Rating = viewMocel.Rating,
+                Rating = viewMocel.Rating
             };
 
             _reviewService.Create(review);
@@ -91,10 +95,44 @@ public class ReviewController : ControllerBase
     public IActionResult Read([FromBody] ReviewViewModel viewMocel)
     {
         ResponseMessage<ReviewViewModel> responseData = new ResponseMessage<ReviewViewModel>();
+        Review review;
+        BookDetailQuery bookQuery;
+        string key;
+        string url;
 
         try
         {
-            responseData.Data = _reviewService.GetReview(viewMocel.Id);
+            review = _reviewService.GetReview(viewMocel.Id);            
+
+            bookQuery = new BookDetailQuery()
+            {
+                ItemIdType = string.IsNullOrWhiteSpace(review.Isbn13) ? "ISBN" : "ISBN13",
+                ItemId = string.IsNullOrWhiteSpace(review.Isbn13) ? review.Isbn10 : review.Isbn13,
+            };
+
+            _bookService.SetBookDetail(bookQuery, _configuration["Aladin:DetailType"]);
+            key = _configuration["Aladin:Key"];
+            url = _bookService.GetUrlForOneBook(bookQuery.BaseUrl, key, bookQuery);
+            bookQuery = _bookService.GetBookData<BookDetailQuery>(url);            
+
+            responseData.Data = new ReviewViewModel()
+            {
+                Id = viewMocel.Id,
+                Title = review.Title,
+                UserId = review.UserId,
+                BookName = review.BookName,
+                CreateDate = review.CreateDate,
+                Rating = review.Rating,
+                Content = review.Content,
+                LikeCount = review.LikeCount,
+                DislikeCount = review.DislikeCount,
+
+                Author = bookQuery.Item[0].Author,
+                PubDate = bookQuery.Item[0].PubDate,
+                Publisher = bookQuery.Item[0].Publisher,
+                Cover = bookQuery.Item[0].Cover
+            };
+
             return Ok(responseData);
         }
         catch (Exception ex)

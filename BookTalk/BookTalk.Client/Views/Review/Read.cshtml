@@ -1,50 +1,42 @@
 ﻿@using BookTalk.Shared.ViewModels.Review
 @model ReviewViewModel
 
-@*<div class="form-container custom-base-container">
+<div class="form-container custom-base-container">
     <div class="container mt-5">
         <div class="row">
             <div class="col-md-8">
                 <h2>@Model.Title</h2>
+                <hr/>
+                <p><strong>작성자 :</strong> @Model.UserId</p>
+                <p><strong>도서명 :</strong> @Model.BookName</p>
+                <p><strong>작성일 :</strong> @Model.CreateDate</p>
+                <p><strong>평점 :</strong> @(Model.Rating == 0 ? "-" : Model.Rating.ToString())</p>
                 <p><strong>작가 :</strong> @Model.Author</p>
                 <p><strong>출판사 :</strong> @Model.Publisher</p>
-                <p><strong>카테고리 :</strong> @Model.CategoryName</p>
-                <p><strong>평점 :</strong> @(Model.Rating == 0 ? "-" : Model.Rating)</p>
-
-                <p>@Model.Description</p>
-
-                <a href="@Url.Action("WriteReview", "Book", new { id = Model.Isbn13 })" class="btn btn-primary">리뷰 작성하기</a>
+                <p><strong>출간일 :</strong> @Model.PubDate</p>
             </div>
-            <div class="col-md-4">
-                <img src="@Model.Cover" class="img-fluid user-image" alt="도서 이미지">
-            </div>
-        </div>
-    </div>
-</div>*@
 
-<div class="container mt-4">
-    <div class="card">
-        <img src="@Model.Cover" class="card-img-top" alt="책 표지">
-        <div class="card-body">
-            <h5 class="card-title">@Model.Title</h5>
-            <h6 class="card-subtitle mb-2 text-muted">@Model.BookName</h6>
-            <p class="card-text">@Model.Content</p>
-            <p class="card-text"><small class="text-muted">작성자: @Model.UserId, 작성일: @Model.CreateDate</small></p>
-            <p class="card-text">평점: @Model.Rating</p>
+            <div class="col-md-4 d-flex justify-content-center">
+                <img src="@Model.Cover" class="img-fluid user-image" alt="책 표지">
+            </div>
+
+            <hr/>
+            <p>@Html.Raw(Model.Content)</p>
+
             <div>
                 <button type="button" class="btn btn-success">좋아요 @Model.LikeCount</button>
                 <button type="button" class="btn btn-danger">싫어요 @Model.DislikeCount</button>
             </div>
-        </div>
-    </div>
 
-    <div class="mt-4">
-        <h4>댓글 달기</h4>
-        <form>
-            <div class="form-group">
-                <textarea class="form-control" rows="3" placeholder="댓글을 입력하세요..."></textarea>
+            <div class="mt-4">
+                <h4>댓글 달기</h4>
+                <form>
+                    <div class="form-group">    
+                        <textarea class="form-control" rows="3" placeholder="댓글을 입력하세요..."></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary">댓글 작성</button>
+                </form>
             </div>
-            <button type="submit" class="btn btn-primary">댓글 작성</button>
-        </form>
+        </div>
     </div>
 </div>

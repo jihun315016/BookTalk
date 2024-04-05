@@ -47,27 +47,8 @@ public class ReviewService : IReviewService
         _dbContext.SaveChanges();
     }
 
-    public ReviewViewModel GetReview(int id)
+    public Review GetReview(int id)
     {
-        Review review = _dbContext.Reviews.FirstOrDefault(r => r.Id == id);
-        if (review == null)
-        {
-            return new ReviewViewModel();
-        }
-
-        return new ReviewViewModel()
-        {
-            Id = id,
-            Title = review.Title,
-            UserId = review.UserId,
-            BookName = review.BookName,
-            //Author = review.Author,
-            CreateDate = review.CreateDate,
-            Rating = review.Rating,
-            Content = review.Content,
-            //Cover = review.Cover,
-            LikeCount = review.LikeCount,
-            DislikeCount = review.DislikeCount
-        };
+        return _dbContext.Reviews.FirstOrDefault(r => r.Id == id);
     }
 }
