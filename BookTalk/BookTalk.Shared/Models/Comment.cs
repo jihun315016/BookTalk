@@ -13,8 +13,6 @@ public partial class Comment
 
     public string Content { get; set; } = null!;
 
-    public int? ParentCommentId { get; set; }
-
     public DateOnly? CreateDate { get; set; }
 
     public virtual Review Review { get; set; } = null!;

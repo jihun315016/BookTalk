@@ -1,4 +1,5 @@
 ﻿using BookTalk.Shared.Common;
+using BookTalk.Shared.Common;
 using BookTalk.Shared.Exceptions;
 using BookTalk.Shared.Models;
 using BookTalk.Shared.Utility;

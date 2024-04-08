@@ -43,7 +43,7 @@ public partial class BookTalkDbContext : DbContext
 
         modelBuilder.Entity<Comment>(entity =>
         {
-            entity.HasKey(e => new { e.ReviewId, e.CommentId }).HasName("PK__comment__0EF16AF8A5908B91");
+            entity.HasKey(e => new { e.ReviewId, e.CommentId }).HasName("PK__comment__0EF16AF84200D9BB");
 
             entity.ToTable("comment");
 
@@ -55,7 +55,6 @@ public partial class BookTalkDbContext : DbContext
             entity.Property(e => e.CreateDate)
                 .HasDefaultValueSql("(getdate())")
                 .HasColumnName("create_date");
-            entity.Property(e => e.ParentCommentId).HasColumnName("parent_comment_id");
             entity.Property(e => e.UserId)
                 .HasMaxLength(20)
                 .HasColumnName("user_id");
@@ -63,11 +62,11 @@ public partial class BookTalkDbContext : DbContext
             entity.HasOne(d => d.Review).WithMany(p => p.Comments)
                 .HasForeignKey(d => d.ReviewId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__comment__review___2BC97F7C");
+                .HasConstraintName("FK__comment__review___308E3499");
 
             entity.HasOne(d => d.User).WithMany(p => p.Comments)
                 .HasForeignKey(d => d.UserId)
-                .HasConstraintName("FK__comment__user_id__2CBDA3B5");
+                .HasConstraintName("FK__comment__user_id__318258D2");
         });
 
         modelBuilder.Entity<CommonCode>(entity =>

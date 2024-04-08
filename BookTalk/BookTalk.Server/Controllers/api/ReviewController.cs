@@ -1,10 +1,12 @@
 ﻿using BookTalk.BusinessLogic.Services;
 using BookTalk.Shared.Aladin;
 using BookTalk.Shared.Common;
+using BookTalk.Shared.Exceptions;
 using BookTalk.Shared.Models;
 using BookTalk.Shared.Utility;
 using BookTalk.Shared.ViewModels.Review;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 using System.Security.Policy;
 
 namespace BookTalk.Server.Controllers.api;
@@ -102,7 +104,12 @@ public class ReviewController : ControllerBase
 
         try
         {
-            review = _reviewService.GetReview(viewMocel.Id);            
+            review = _reviewService.GetReview(viewMocel.Id);
+
+            if (review == null)
+            {
+                throw new UserNoDataException();
+            }
 
             bookQuery = new BookDetailQuery()
             {
@@ -132,6 +139,46 @@ public class ReviewController : ControllerBase
                 PubDate = bookQuery.Item[0].PubDate,
                 Publisher = bookQuery.Item[0].Publisher,
                 Cover = bookQuery.Item[0].Cover,
+            };
+
+            return Ok(responseData);
+        }
+        catch (UserNoDataException ex)
+        {
+            responseData.ErrorCode = Utility.GetUserStatusCodeNumber(UserStatusCode.NoDataException);
+            return StatusCode(StatusCodes.Status500InternalServerError, responseData);
+        }
+        catch (Exception ex)
+        {
+            responseData.ErrorCode = Utility.GetUserStatusCodeNumber(UserStatusCode.UndefinedError);
+            responseData.ErrorMessage = ex.Message;
+            return StatusCode(StatusCodes.Status500InternalServerError, responseData);
+        }
+    }
+
+    [Route("CreateComment")]
+    [HttpPost]
+    public IActionResult CreateComment([FromBody] CommentViewModel viewMocel)
+    {
+        ResponseMessage<CommentViewModel> responseData = new ResponseMessage<CommentViewModel>();
+        Comment comment;
+
+        try
+        {
+            comment = _reviewService.CreateAndGetComment(new Comment()
+            {
+                ReviewId = viewMocel.ReviewId,
+                UserId = _userService.GetUser(viewMocel.SessionId).Id,
+                Content = viewMocel.Content
+            });
+
+            responseData.Data = new CommentViewModel()
+            {
+                ReviewId = comment.ReviewId,
+                CommentId = comment.CommentId,
+                UserId = comment.UserId,
+                Content = comment.Content,
+                CreateDate = comment.CreateDate
             };
 
             return Ok(responseData);
