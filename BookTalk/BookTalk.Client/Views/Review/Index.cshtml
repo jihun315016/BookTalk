@@ -64,3 +64,17 @@
         </div>
     }
 </div>
+
+<script>
+     window.onload = function () {
+     OnLoadView();
+     }
+
+    function OnLoadView() {
+        var errorMessage = "@Html.Raw(ViewBag.ErrorMessage)";
+
+        if (errorMessage) {
+            alert(errorMessage);
+        }
+    }
+</script>

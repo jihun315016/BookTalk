@@ -24,6 +24,8 @@ public class ReviewViewModel
 
     public string Cover { get; set; } = "";
 
+    public string CategoryName { get; set; } = "";
+
     public int? LikeCount { get; set; }
 
     public int? DislikeCount { get; set; }

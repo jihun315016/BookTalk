@@ -14,6 +14,8 @@ public partial class BookTalkDbContext : DbContext
 
     public virtual DbSet<BookCategory> BookCategories { get; set; }
 
+    public virtual DbSet<Comment> Comments { get; set; }
+
     public virtual DbSet<CommonCode> CommonCodes { get; set; }
 
     public virtual DbSet<Menu> Menus { get; set; }
@@ -37,6 +39,34 @@ public partial class BookTalkDbContext : DbContext
             entity.Property(e => e.Mall)
                 .HasMaxLength(255)
                 .HasColumnName("mall");
+        });
+
+        modelBuilder.Entity<Comment>(entity =>
+        {
+            entity.HasKey(e => new { e.ReviewId, e.CommentId }).HasName("PK__comment__0EF16AF84200D9BB");
+
+            entity.ToTable("comment");
+
+            entity.Property(e => e.ReviewId).HasColumnName("review_id");
+            entity.Property(e => e.CommentId).HasColumnName("comment_id");
+            entity.Property(e => e.Content)
+                .HasColumnType("ntext")
+                .HasColumnName("content");
+            entity.Property(e => e.CreateDate)
+                .HasDefaultValueSql("(getdate())")
+                .HasColumnName("create_date");
+            entity.Property(e => e.UserId)
+                .HasMaxLength(20)
+                .HasColumnName("user_id");
+
+            entity.HasOne(d => d.Review).WithMany(p => p.Comments)
+                .HasForeignKey(d => d.ReviewId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK__comment__review___308E3499");
+
+            entity.HasOne(d => d.User).WithMany(p => p.Comments)
+                .HasForeignKey(d => d.UserId)
+                .HasConstraintName("FK__comment__user_id__318258D2");
         });
 
         modelBuilder.Entity<CommonCode>(entity =>

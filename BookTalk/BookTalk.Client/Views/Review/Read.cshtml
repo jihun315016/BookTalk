@@ -1,26 +1,29 @@
 ﻿@using BookTalk.Shared.ViewModels.Review
 @model ReviewViewModel
 
+@Html.HiddenFor(model => model.Id, new { @id = "hidId", @readonly = "readonly" })
+
 <div class="form-container custom-base-container">
     <div class="container mt-5">
         <div class="row">
             <div class="col-md-8">
                 <h2>@Model.Title</h2>
-                <hr/>
+                <hr />
                 <p><strong>작성자 :</strong> @Model.UserId</p>
-                <p><strong>도서명 :</strong> @Model.BookName</p>
                 <p><strong>작성일 :</strong> @Model.CreateDate</p>
-                <p><strong>평점 :</strong> @(Model.Rating == 0 ? "-" : Model.Rating.ToString())</p>
+                <p><strong>도서명 :</strong> @Model.BookName</p>
+                <p><strong>카테고리 :</strong> @Model.CategoryName</p>
                 <p><strong>작가 :</strong> @Model.Author</p>
                 <p><strong>출판사 :</strong> @Model.Publisher</p>
                 <p><strong>출간일 :</strong> @Model.PubDate</p>
+                <p><strong>평점 :</strong> @(Model.Rating == 0 ? "-" : Model.Rating.ToString())</p>
             </div>
 
             <div class="col-md-4 d-flex justify-content-center">
                 <img src="@Model.Cover" class="img-fluid user-image" alt="책 표지">
             </div>
 
-            <hr/>
+            <hr />
             <p>@Html.Raw(Model.Content)</p>
 
             <div>
@@ -30,13 +33,96 @@
 
             <div class="mt-4">
                 <h4>댓글 달기</h4>
-                <form>
-                    <div class="form-group">    
-                        <textarea class="form-control" rows="3" placeholder="댓글을 입력하세요..."></textarea>
-                    </div>
-                    <button type="submit" class="btn btn-primary">댓글 작성</button>
-                </form>
+                <div class="form-group">
+                    <textarea id="commentText" class="form-control" rows="3" placeholder="댓글을 입력하세요..."></textarea>
+                </div>
+                <button id="btnComment" type="submit" class="btn btn-primary">댓글 작성</button>
+
+                <div id="commentsContainer">
+                    <!-- 댓글들이 여기에 동적으로 추가됩니다 -->
+                </div>
             </div>
         </div>
     </div>
 </div>
+
+<script>
+     window.onload = function () {
+     OnLoadView();
+     }
+
+    function OnLoadView() {
+        var errorMessage = "@Html.Raw(ViewBag.ErrorMessage)";
+
+        if (errorMessage) {
+            alert(errorMessage);
+        }
+    }
+
+
+    var btnComment = document.getElementById("btnComment");
+    btnComment.onclick = function () {
+        let reviewId = document.getElementById("hidId").value;
+        let commentText = document.getElementById("commentText").value;
+
+        fetch('/Review/CreateComment', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                reviewId: reviewId,
+                content: commentText
+            }),
+        })
+        .then(response => {
+            if (response.ok) {
+                return response.json().then(data => {
+                    document.getElementById("commentText").value = "";
+                    const newComment = document.createElement("div");
+                    newComment.innerHTML = `
+                        <div class="card mb-3">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between">
+                                    <h6 class="text-muted">작성자 : ${data.userId}</h6>
+                                    <h6 class="text-muted">작성일 : ${data.createDate}</h6>
+                                </div>
+                                <p class="card-text">${data.content}</p>
+                                <div class="d-flex justify-content-end">
+                                    <!-- 수정 버튼 -->
+                                    <button type="button" class="btn btn-outline-secondary btn-sm me-2 edit-comment" data-comment-id="${data.commentId}"><i class="fas fa-edit"></i> 수정</button>
+                                    <!-- 삭제 버튼 -->
+                                    <button type="button" class="btn btn-outline-danger btn-sm delete-comment" data-comment-id="${data.commentId}"><i class="fas fa-trash-alt"></i> 삭제</button>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+
+                    document.getElementById("commentsContainer").appendChild(newComment);
+                });
+            } else if (response.status === 401) {
+                // Unauthorized 응답(401)
+                return response.json().then(err => {
+                    alert(err.message);
+                    window.location.href = "/Account/Signin";
+                });
+            } else {
+                return response.json().then(err => { throw new Error(err.message); });
+            }
+        })
+        .catch(error => {
+            alert(error.message)
+        });
+    }
+
+
+    document.addEventListener('click', function (e) {
+        if (e.target.matches('.edit-comment')) {
+            const commentId = e.target.getAttribute('data-comment-id');
+            console.log('수정 버튼 클릭됨, 댓글 ID:', commentId);
+        } else if (e.target.matches('.delete-comment')) {
+            const commentId = e.target.getAttribute('data-comment-id');
+            console.log('삭제 버튼 클릭됨, 댓글 ID:', commentId);
+        }
+    });
+</script>

@@ -51,4 +51,24 @@ public class ReviewService : IReviewService
     {
         return _dbContext.Reviews.FirstOrDefault(r => r.Id == id);
     }
+
+    public Comment CreateAndGetComment(Comment comment)
+    {
+        List<Comment> list = _dbContext.Comments.Where(c => c.ReviewId == comment.ReviewId).ToList();
+        
+        // CommentId 가져와서 넣어주기
+        if (list.Count > 0) 
+        {
+            comment.CommentId = (from item in list select item.CommentId).ToList().Max() + 1;
+        }
+        else
+        {
+            comment.CommentId = 1;
+        }
+
+        _dbContext.Comments.Add(comment);
+        _dbContext.SaveChanges();
+
+        return _dbContext.Comments.FirstOrDefault(c => c.ReviewId == comment.ReviewId && c.CommentId == comment.CommentId);
+    }
 }

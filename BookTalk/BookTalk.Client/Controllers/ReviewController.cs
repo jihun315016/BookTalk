@@ -1,8 +1,12 @@
-﻿using BookTalk.Shared.Common;
+﻿using Azure;
+using BookTalk.Shared.Common;
+using BookTalk.Shared.Exceptions;
+using BookTalk.Shared.Models;
 using BookTalk.Shared.Utility;
 using BookTalk.Shared.ViewModels.Review;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.Extensions.Logging.Abstractions;
 using Newtonsoft.Json;
 
 namespace BookTalk.Client.Controllers;
@@ -163,16 +167,29 @@ public class ReviewController : Controller
             HttpClient client = new HttpClient();
             var response = client.PostAsJsonAsync(url, model).Result;
             var content = response.Content.ReadAsStringAsync().Result;
+            responseData = JsonConvert.DeserializeObject<ResponseMessage<ReviewViewModel>>(content);
 
-            if (response.IsSuccessStatusCode)
+            if (!response.IsSuccessStatusCode)
             {
-                responseData = JsonConvert.DeserializeObject<ResponseMessage<ReviewViewModel>>(content);
+                if (string.IsNullOrWhiteSpace(responseData.ErrorCode)) 
+                {
+                    responseData.ErrorCode = Convert.ToInt32(response.StatusCode).ToString();
+                }
+
+                if(responseData.ErrorCode == Utility.GetUserStatusCodeNumber(UserStatusCode.NoDataException))
+                {
+                    // 작성되지 않은 리뷰를 요청하면 조회 페이지로 이동
+                    throw new UserNoDataException();
+                }
+                else
+                {
+                    throw new Exception(responseData.ErrorMessage);
+                }
             }
-            else
-            {
-                responseData.ErrorCode = response.StatusCode.ToString();
-                throw new Exception(responseData.ErrorMessage);
-            }
+        }
+        catch (UserNoDataException ex)
+        {
+            return RedirectToAction("Index");
         }
         catch (Exception ex)
         {
@@ -187,6 +204,53 @@ public class ReviewController : Controller
         }
 
         return View(responseData.Data);
+    }
+
+
+    [Route("CreateComment")]
+    [HttpPost]
+    public IActionResult CreateComment([FromBody] Comment comment)
+    {
+        ResponseMessage<Comment> responseData = new ResponseMessage<Comment>();
+        CommentViewModel viewModel;
+        string url;
+        
+        try
+        {
+            HttpContext.Request.Cookies.TryGetValue(_configuration.GetValue<string>("Session:id"), out string sessionId);
+            if (string.IsNullOrWhiteSpace(sessionId))
+            {
+                return Unauthorized(new { Message = Utility.GetMessage("msg08") });
+            }
+
+            viewModel = new CommentViewModel()
+            {
+                ReviewId = comment.ReviewId,
+                CommentId = comment.CommentId,
+                SessionId = sessionId,
+                Content = comment.Content
+            };
+
+            url = Utility.GetEndpointUrl(_baseApiUrl, "Review", "CreateComment");
+            HttpClient client = new HttpClient();
+            var response = client.PostAsJsonAsync(url, viewModel).Result;
+            var content = response.Content.ReadAsStringAsync().Result;
+
+            if (response.IsSuccessStatusCode)
+            {
+                responseData = JsonConvert.DeserializeObject<ResponseMessage<Comment>>(content);
+                return Ok(responseData.Data == null ? new Comment() : responseData.Data);
+            }
+            else
+            {
+                responseData.ErrorCode = Convert.ToInt32(response.StatusCode).ToString();
+                throw new Exception(responseData.ErrorMessage);
+            }
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(Convert.ToInt32(responseData.ErrorCode), new { message = Utility.GetMessage("msg01") });
+        }
     }
 
 

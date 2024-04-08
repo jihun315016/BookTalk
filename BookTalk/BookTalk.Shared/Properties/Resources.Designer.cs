@@ -122,5 +122,14 @@ namespace BookTalk.Shared.Properties {
                 return ResourceManager.GetString("msg07", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   로그인이 필요합니다.과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        internal static string msg08 {
+            get {
+                return ResourceManager.GetString("msg08", resourceCulture);
+            }
+        }
     }
 }

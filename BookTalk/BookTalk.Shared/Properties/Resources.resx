@@ -145,4 +145,8 @@
     <value>비밀번호가 재설정되었습니다. 로그인해주세요.</value>
     <comment>비밀번호 재설정 성공</comment>
   </data>
+  <data name="msg08" xml:space="preserve">
+    <value>로그인이 필요합니다.</value>
+    <comment>로그인 필요 메시지</comment>
+  </data>
 </root>

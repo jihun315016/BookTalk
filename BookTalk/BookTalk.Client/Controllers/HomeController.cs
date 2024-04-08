@@ -47,8 +47,6 @@ public class HomeController : Controller
         {
             ViewBag.ErrorMessage = Utility.GetMessage("msg01");
             responseData.InitializeResponseMessage(ex.Message, null);
-
-            // responseData.DeveloperErrorMessage ·Î±ë
         }
 
         return View(responseData.Data);
