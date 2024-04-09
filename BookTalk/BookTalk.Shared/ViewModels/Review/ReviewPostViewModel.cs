@@ -5,9 +5,11 @@ using System.ComponentModel.DataAnnotations;
 
 namespace BookTalk.Shared.ViewModels.Review;
 
-public class ReviewCreateViewModel
+public class ReviewPostViewModel
 {
-    #region CREATE
+    #region POST
+    public int? Id { get; set; }
+
     public string? SessionId { get; set; }
 
     [DisplayName("리뷰 제목")]

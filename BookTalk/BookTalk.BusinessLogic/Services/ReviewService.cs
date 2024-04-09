@@ -4,6 +4,7 @@ using BookTalk.Shared.Contexts;
 using BookTalk.Shared.Models;
 using BookTalk.Shared.ViewModels.Review;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using System.ComponentModel.Design;
 
 namespace BookTalk.BusinessLogic.Services;
 
@@ -73,10 +74,16 @@ public class ReviewService : IReviewService
     }
 
 
-    private int GetCommentsCount(int reviewId)
+    public void Delete(int reviewId)
     {
-        return _dbContext.Comments.Where(c => c.ReviewId == reviewId).Count();
-    }
+        Review review = _dbContext.Reviews.FirstOrDefault(r => r.Id == reviewId);
+
+        if (review != null)
+        {
+            _dbContext.Reviews.Remove(review);
+            _dbContext.SaveChanges();
+        }
+    }    
 
 
     public Pagination SetCommentInfo(int reviewId, int currentPage = 1)
@@ -134,5 +141,11 @@ public class ReviewService : IReviewService
             comment.Content = content;
             _dbContext.SaveChanges();
         }
+    }
+
+
+    private int GetCommentsCount(int reviewId)
+    {
+        return _dbContext.Comments.Where(c => c.ReviewId == reviewId).Count();
     }
 }

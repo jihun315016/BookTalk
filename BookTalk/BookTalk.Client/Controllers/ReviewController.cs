@@ -62,20 +62,20 @@ public class ReviewController : Controller
     }
 
 
-    [Route("Create")]
+    [Route("Post")]
     [HttpGet]
-    public IActionResult Create()
+    public IActionResult Post()
     {
-        ReviewCreateViewModel model = new ReviewCreateViewModel();
-
-        HttpContext.Request.Cookies.TryGetValue(_configuration.GetValue<string>("Session:id"), out string sessionId);
-        if (string.IsNullOrWhiteSpace(sessionId))
-        {
-            return RedirectToAction("Signin", "Account");
-        }
+        ReviewPostViewModel model = new ReviewPostViewModel();
 
         try
         {
+            HttpContext.Request.Cookies.TryGetValue(_configuration.GetValue<string>("Session:id"), out string sessionId);
+            if (string.IsNullOrWhiteSpace(sessionId))
+            {
+                return RedirectToAction("Signin", "Account");
+            }
+
             ViewBag.TinyMCEApiKey = _configuration.GetValue<string>("TinyMCE:ApiKey");
             model.Rates = GetRates();
         }
@@ -88,12 +88,12 @@ public class ReviewController : Controller
     }
 
 
-    [Route("Create")]
+    [Route("Post")]
     [HttpPost]
-    public IActionResult Create(ReviewCreateViewModel viewModel)
+    public IActionResult Post(ReviewPostViewModel viewModel)
     {
         ResponseMessage responseData = new ResponseMessage();
-        ReviewCreateViewModel model = new ReviewCreateViewModel();
+        ReviewPostViewModel model = new ReviewPostViewModel();
         string url;
 
         try
@@ -102,6 +102,7 @@ public class ReviewController : Controller
             {
                 if (HttpContext.Request.Cookies.TryGetValue(_configuration.GetValue<string>("Session:id"), out string sessionId))
                 {
+                    
                     viewModel.SessionId = sessionId;
                     url = Utility.GetEndpointUrl(_baseApiUrl, "Review", "Create");
                     HttpClient client = new HttpClient();
@@ -141,6 +142,87 @@ public class ReviewController : Controller
             return View(model);
         }
     }
+
+
+    //[Route("Create")]
+    //[HttpGet]
+    //public IActionResult Create()
+    //{
+    //    ReviewPostViewModel model = new ReviewPostViewModel();
+
+    //    try
+    //    {
+    //        HttpContext.Request.Cookies.TryGetValue(_configuration.GetValue<string>("Session:id"), out string sessionId);
+    //        if (string.IsNullOrWhiteSpace(sessionId))
+    //        {
+    //            return RedirectToAction("Signin", "Account");
+    //        }
+
+    //        ViewBag.TinyMCEApiKey = _configuration.GetValue<string>("TinyMCE:ApiKey");
+    //        model.Rates = GetRates();
+    //    }
+    //    catch (Exception ex)
+    //    {
+    //        ViewBag.ErrorMessage = Utility.GetMessage("msg01");
+    //    }
+
+    //    return View(model);
+    //}
+
+
+    //[Route("Create")]
+    //[HttpPost]
+    //public IActionResult Create(ReviewPostViewModel viewModel)
+    //{
+    //    ResponseMessage responseData = new ResponseMessage();
+    //    ReviewPostViewModel model = new ReviewPostViewModel();
+    //    string url;
+
+    //    try
+    //    {
+    //        if (ModelState.IsValid)
+    //        {
+    //            if (HttpContext.Request.Cookies.TryGetValue(_configuration.GetValue<string>("Session:id"), out string sessionId))
+    //            {
+    //                viewModel.SessionId = sessionId;
+    //                url = Utility.GetEndpointUrl(_baseApiUrl, "Review", "Create");
+    //                HttpClient client = new HttpClient();
+    //                var response = client.PostAsJsonAsync(url, viewModel).Result;
+    //                var content = response.Content.ReadAsStringAsync().Result;
+
+    //                if (response.IsSuccessStatusCode)
+    //                {
+    //                    responseData = JsonConvert.DeserializeObject<ResponseMessage>(content);
+    //                    return RedirectToAction("Index");
+    //                }
+    //                else
+    //                {
+    //                    responseData.ErrorCode = response.StatusCode.ToString();
+    //                    throw new Exception(responseData.ErrorMessage);
+    //                }
+    //            }
+    //            else
+    //            {
+    //                return RedirectToAction("Signin");
+    //            }
+    //        }
+    //        else
+    //        {
+    //            ViewBag.TinyMCEApiKey = _configuration.GetValue<string>("TinyMCE:ApiKey");
+    //            model.Rates = GetRates();
+    //            return View(model);
+    //        }
+    //    }
+    //    catch (Exception ex)
+    //    {
+    //        ViewBag.ErrorMessage = Utility.GetMessage("msg01");
+    //        responseData.ErrorMessage = ex.Message;
+
+    //        ViewBag.TinyMCEApiKey = _configuration.GetValue<string>("TinyMCE:ApiKey");
+    //        model.Rates = GetRates();
+    //        return View(model);
+    //    }
+    //}
 
 
     [Route("{id}")]

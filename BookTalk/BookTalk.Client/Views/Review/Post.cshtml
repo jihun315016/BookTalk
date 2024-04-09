@@ -161,6 +161,21 @@
         // pagination-container 안에 있는 클래스가 page-link인 a 태그
         var pageLinks = document.querySelectorAll('#pagination-container a.page-link');
 
+        const reviewData = JSON.parse(localStorage.getItem('reviewToEdit'));
+
+        if (reviewData) {
+            // 폼 필드에 데이터 채우기
+            alert("!!")
+            document.getElementById('hidId').value = reviewData.id;
+            document.getElementById('txtFormReviewTitle').value = reviewData.title;
+            document.getElementById('txtFormBookTitle').value = reviewData.bookName;
+            document.getElementById('txtFormAuthor').value = reviewData.author;
+            document.getElementById('cboFormRate').value = reviewData.rating;
+
+            // 사용 후 localStorage에서 해당 항목 삭제
+            localStorage.removeItem('reviewToEdit');
+        }
+
         // 각 요소에 대해 클릭 이벤트 리스너 추가
         pageLinks.forEach(function (link) {
             link.addEventListener('click', function (event) {
@@ -256,6 +271,13 @@
         keyword = "";
         searchResults.innerHTML = "";
         document.getElementById("txtSearch").value = "";
+    }
+
+
+    function decodeHtmlEntities(encodedString) {
+        var textArea = document.createElement('textarea');
+        textArea.innerHTML = encodedString;
+        return textArea.value;
     }
 </script>
 

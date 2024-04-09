@@ -84,15 +84,65 @@
         if (errorMessage) {
             alert(errorMessage);
         }
-    }   
+    }
 
 
     document.addEventListener('click', function (e) {
-        if (e.target.matches('#btnComment')) { // ****************************** 댓글 작성 버튼 ******************************
+        if (e.target.matches('#btnEditReview')) { // ****************************** 글 수정 버튼 ******************************
+            let reviewId = document.getElementById("hidId").value;
+
+            const reviewData = {
+                id: reviewId,
+                title: "@(Model.Title)",
+                author: "@(Model.Author)",
+                rating: "@(Model.Rating)",
+                bookName: "@(Model.BookName)"
+            };
+
+            localStorage.setItem('reviewToEdit', JSON.stringify(reviewData));
+
+            alert("hello");
+            window.location.href = "/Review/Post";
+        }
+        else if (e.target.matches('#btnDeleteReview')) { // ****************************** 글 삭제 버튼 ******************************
+            let confirmDelete = confirm('글을 삭제하시겠습니까?');
+            if (!confirmDelete) {
+                return;
+            }
+
+            let reviewId = document.getElementById("hidId").value;
+            let url = "@(ViewBag.baseUrl)/api/Review/Delete"
+
+            fetch(url, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    id: reviewId,
+                    Title: "",
+                    Author: "",
+                    UserId: "",
+                    BookName: ""
+                }),
+            })
+            .then(response => {
+                if (response.ok) {
+                    return response.json().then(data => {
+                        window.location.href = "/Review/Index";
+                    });
+                } else {
+                    return response.json().then(err => { throw new Error(err.message); });
+                }
+            })
+            .catch(error => {
+                alert(error.message)
+            });
+        }
+
+        else if (e.target.matches('#btnComment')) { // ****************************** 댓글 작성 버튼 ******************************
             let reviewId = document.getElementById("hidId").value;
             let commentText = document.getElementById("commentText").value;
-
-            let baseUrl = "@(ViewBag.baseUrl)"
 
             fetch(`/Review/CreateComment`, {
                 method: 'POST',
@@ -124,7 +174,8 @@
                 alert(error.message)
             });
         }
-        else if (e.target.matches('.edit-comment')) { // ****************************** 수정 버튼 ******************************
+
+        else if (e.target.matches('.edit-comment')) { // ****************************** 댓글 수정 버튼 ******************************
             let commentId = e.target.getAttribute('data-comment-id');
             let commentDiv = e.target.closest('.card-body');
             let originalContent = commentDiv.querySelector('p.card-text').innerText;
@@ -137,7 +188,7 @@
             let buttonsDiv = commentDiv.querySelector('.d-flex.justify-content-end');
             buttonsDiv.innerHTML = buttonsDiv.innerHTML = getCommentButtonElementString(2, commentId);
 
-        } else if (e.target.matches('.save-edit-comment')) { // ****************************** 수정 완료 버튼 ******************************
+        } else if (e.target.matches('.save-edit-comment')) { // ****************************** 댓글 수정 완료 버튼 ******************************
             let commentId = e.target.getAttribute('data-comment-id');
             let editedContent = document.getElementById(`editCommentText${commentId}`).value;
             let reviewId = document.getElementById("hidId").value;
@@ -168,7 +219,7 @@
 
             });
 
-        } else if (e.target.matches('.cancel-edit-comment')) { // ****************************** 수정 취소 버튼 ******************************
+        } else if (e.target.matches('.cancel-edit-comment')) { // ****************************** 댓글 수정 취소 버튼 ******************************
             let commentId = e.target.getAttribute('data-comment-id');
             let commentDiv = e.target.closest('.card-body');
 
@@ -177,7 +228,7 @@
             let buttonsDiv = commentDiv.querySelector('.d-flex.justify-content-end');
             buttonsDiv.innerHTML = getCommentButtonElementString(1, commentId);
 
-        } else if (e.target.matches('.delete-comment')) { // ****************************** 삭제 버튼 ******************************
+        } else if (e.target.matches('.delete-comment')) { // ****************************** 댓글 삭제 버튼 ******************************
             let confirmDelete = confirm('댓글을 삭제하시겠습니까?');
             if (!confirmDelete) {
                 return;

@@ -63,7 +63,7 @@ public class ReviewController : ControllerBase
 
     [Route("Create")]
     [HttpPost]
-    public IActionResult Create([FromBody] ReviewCreateViewModel viewMocel)
+    public IActionResult Create([FromBody] ReviewPostViewModel viewMocel)
     {
         ResponseMessage responseData = new ResponseMessage();
 
@@ -157,6 +157,27 @@ public class ReviewController : ControllerBase
             return StatusCode(StatusCodes.Status500InternalServerError, responseData);
         }
     }
+
+
+    [Route("Delete")]
+    [HttpDelete]
+    public IActionResult Delete([FromBody] ReviewViewModel viewMocel)
+    {
+        ResponseMessage<ReviewViewModel> responseData = new ResponseMessage<ReviewViewModel>();
+
+        try
+        {
+            _reviewService.Delete(viewMocel.Id);
+            return Ok(responseData);
+        }
+        catch (Exception ex)
+        {
+            responseData.ErrorCode = Utility.GetUserStatusCodeNumber(UserStatusCode.UndefinedError);
+            responseData.ErrorMessage = ex.Message;
+            return StatusCode(StatusCodes.Status500InternalServerError, responseData);
+        }
+    }
+
 
     [Route("CreateComment")]
     [HttpPost]
