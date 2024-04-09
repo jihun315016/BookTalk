@@ -29,12 +29,10 @@ app.UseAuthorization();
 
 app.UseSession();
 
-// 세션 만료 시간 갱신
 app.Use(async (context, next) =>
 {
     var sessionConfig = builder.Configuration.GetSection("Session");
     string sessionId = sessionConfig["id"];
-    int sessionMinute = Convert.ToInt32(sessionConfig["SessionMinute"]);
 
     var sessionIdCookie = context.Request.Cookies[sessionId];
     if (sessionIdCookie != null)

@@ -1,11 +1,9 @@
-﻿using Azure;
-using BookTalk.BusinessLogic.Interfaces;
+﻿using BookTalk.BusinessLogic.Interfaces;
 using BookTalk.Shared.Common;
 using BookTalk.Shared.Contexts;
 using BookTalk.Shared.Models;
 using BookTalk.Shared.ViewModels.Review;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using System.Xml.Linq;
 
 namespace BookTalk.BusinessLogic.Services;
 
@@ -112,5 +110,29 @@ public class ReviewService : IReviewService
         _dbContext.SaveChanges();
 
         return _dbContext.Comments.FirstOrDefault(c => c.ReviewId == comment.ReviewId && c.CommentId == comment.CommentId);
+    }
+
+
+    public void DeleteComment(int reviewId, int commentId)
+    {
+        Comment comment = _dbContext.Comments.FirstOrDefault(c => c.ReviewId == reviewId && c.CommentId == commentId);
+
+        if (comment != null)
+        {
+            _dbContext.Comments.Remove(comment); 
+            _dbContext.SaveChanges(); 
+        }
+    }
+
+
+    public void PutComment(int reviewId, int commentId, string content)
+    {
+        Comment comment = _dbContext.Comments.FirstOrDefault(c => c.ReviewId == reviewId && c.CommentId == commentId);
+
+        if (comment != null)
+        {
+            comment.Content = content;
+            _dbContext.SaveChanges();
+        }
     }
 }

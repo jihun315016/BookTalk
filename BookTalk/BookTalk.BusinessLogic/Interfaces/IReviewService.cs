@@ -48,4 +48,19 @@ public interface IReviewService
     /// <param name="currentPage"></param>
     /// <returns></returns>
     public Pagination SetCommentInfo(int reviewId, int currentPage = 1);
+
+    /// <summary>
+    /// 리뷰 댓글 삭제
+    /// </summary>
+    /// <param name="reviewId"></param>
+    /// <param name="commentId"></param>
+    public void DeleteComment(int reviewId, int commentId);
+
+    /// <summary>
+    /// 리뷰 댓글 수정
+    /// </summary>
+    /// <param name="reviewId"></param>
+    /// <param name="commentId"></param>
+    /// <param name="content"></param>
+    public void PutComment(int reviewId, int commentId, string content);
 }

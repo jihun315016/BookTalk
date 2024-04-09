@@ -1,4 +1,5 @@
 ﻿// Pagination 요소 업데이트
+// id가 pagination-container인 ul 태그 안에 현재 페이지 - 2부터 + 2 까지 페이지 번호를 생성한다
 function updatePagination(selectedPage, minPage, maxPage, func) {
     var paginationContainer = document.getElementById('pagination-container');
     paginationContainer.innerHTML = '';
@@ -20,6 +21,7 @@ function updatePagination(selectedPage, minPage, maxPage, func) {
                 pageLink.style.color = "black";
                 pageLink.style.backgroundColor = "transparent";
                 pageLink.style.pointerEvents = "none";
+                pageLink.setAttribute('data-current-page', 'true');
             }
 
             pageItem.appendChild(pageLink);
@@ -40,10 +42,7 @@ function updatePagination(selectedPage, minPage, maxPage, func) {
 function getCommentElementString(data, currentUserId, author) {
     let buttons = "";
     if (currentUserId === author) {
-        buttons = `
-            <button type="button" class="btn btn-outline-secondary btn-sm me-2 edit-comment" data-comment-id="${data.commentId}"><i class="fas fa-edit"></i> 수정</button>
-            <button type="button" class="btn btn-outline-danger btn-sm delete-comment" data-comment-id="${data.commentId}"><i class="fas fa-trash-alt"></i> 삭제</button>
-        `;
+        buttons = getCommentButtonElementString(1, data.commentId);
     }    
 
     return `
@@ -63,3 +62,18 @@ function getCommentElementString(data, currentUserId, author) {
     // * javascript:void(0) : 링크 기본 동작 방지
 }
 
+
+function getCommentButtonElementString(mode, commentId) {
+    if (mode == 1) { // 평소
+        return `
+            <button type="button" class="btn btn-outline-secondary btn-sm me-2 edit-comment" data-comment-id="${commentId}"><i class="fas fa-edit"></i> 수정</button>
+            <button type="button" class="btn btn-outline-danger btn-sm delete-comment" data-comment-id="${commentId}"><i class="fas fa-trash-alt"></i> 삭제</button>
+        `;
+    }
+    else if (mode == 2) { // 수정할 때 버튼
+        return `
+            <button type="button" class="btn btn-primary btn-sm save-edit-comment me-2" data-comment-id="${commentId}">수정 완료</button>
+            <button type="button" class="btn btn-secondary btn-sm cancel-edit-comment" data-comment-id="${commentId}">취소</button>
+        `
+    }
+}

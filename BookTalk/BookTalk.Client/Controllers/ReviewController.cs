@@ -221,7 +221,7 @@ public class ReviewController : Controller
         ResponseMessage<Comment> responseData = new ResponseMessage<Comment>();
         CommentViewModel viewModel;
         string url;
-        
+
         try
         {
             HttpContext.Request.Cookies.TryGetValue(_configuration.GetValue<string>("Session:id"), out string sessionId);
@@ -242,10 +242,10 @@ public class ReviewController : Controller
             HttpClient client = new HttpClient();
             var response = client.PostAsJsonAsync(url, viewModel).Result;
             var content = response.Content.ReadAsStringAsync().Result;
+            responseData = JsonConvert.DeserializeObject<ResponseMessage<Comment>>(content);
 
             if (response.IsSuccessStatusCode)
             {
-                responseData = JsonConvert.DeserializeObject<ResponseMessage<Comment>>(content);
                 return Ok(responseData.Data == null ? new Comment() : responseData.Data);
             }
             else
@@ -258,7 +258,7 @@ public class ReviewController : Controller
         {
             return StatusCode(Convert.ToInt32(responseData.ErrorCode), new { message = Utility.GetMessage("msg01") });
         }
-    }   
+    }
 
 
     private IEnumerable<SelectListItem> GetRates()

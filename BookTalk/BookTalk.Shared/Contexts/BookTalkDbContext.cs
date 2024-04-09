@@ -124,18 +124,12 @@ public partial class BookTalkDbContext : DbContext
             entity.Property(e => e.CreateDate)
                 .HasDefaultValueSql("(getdate())")
                 .HasColumnName("create_date");
-            entity.Property(e => e.DislikeCount)
-                .HasDefaultValue(0)
-                .HasColumnName("dislike_count");
             entity.Property(e => e.Isbn10)
                 .HasMaxLength(10)
                 .HasColumnName("isbn10");
             entity.Property(e => e.Isbn13)
                 .HasMaxLength(13)
                 .HasColumnName("isbn13");
-            entity.Property(e => e.LikeCount)
-                .HasDefaultValue(0)
-                .HasColumnName("like_count");
             entity.Property(e => e.Rating).HasColumnName("rating");
             entity.Property(e => e.Title)
                 .HasMaxLength(200)

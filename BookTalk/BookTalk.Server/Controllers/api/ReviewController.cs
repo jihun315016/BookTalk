@@ -132,8 +132,6 @@ public class ReviewController : ControllerBase
                 CreateDate = review.CreateDate,
                 Rating = review.Rating,
                 Content = review.Content,
-                LikeCount = review.LikeCount,
-                DislikeCount = review.DislikeCount,
 
                 CurrentUserId = string.IsNullOrWhiteSpace(viewMocel.CurrentSessionId) ? "" : _userService.GetUser(viewMocel.CurrentSessionId).Id,
 
@@ -204,6 +202,45 @@ public class ReviewController : ControllerBase
         try
         {
             responseData.Data = _reviewService.GetComments(reviewId, page);
+            return Ok(responseData);
+        }
+        catch (Exception ex)
+        {
+            responseData.ErrorCode = Utility.GetUserStatusCodeNumber(UserStatusCode.UndefinedError);
+            responseData.ErrorMessage = ex.Message;
+            return StatusCode(StatusCodes.Status500InternalServerError, responseData);
+        }
+    }
+
+    [Route("DeleteComment")]
+    [HttpDelete]
+    public IActionResult DeleteComment([FromBody] CommentViewModel viewMocel)
+    {
+        ResponseMessage<CommentViewModel> responseData = new ResponseMessage<CommentViewModel>();
+
+        try
+        {
+            _reviewService.DeleteComment(viewMocel.ReviewId, viewMocel.CommentId);
+            return Ok(responseData);
+        }
+        catch (Exception ex)
+        {
+            responseData.ErrorCode = Utility.GetUserStatusCodeNumber(UserStatusCode.UndefinedError);
+            responseData.ErrorMessage = ex.Message;
+            return StatusCode(StatusCodes.Status500InternalServerError, responseData);
+        }
+    }
+
+
+    [Route("PutComment")]
+    [HttpPut]
+    public IActionResult PutComment([FromBody] CommentViewModel viewMocel)
+    {
+        ResponseMessage<CommentViewModel> responseData = new ResponseMessage<CommentViewModel>();
+
+        try
+        {
+            _reviewService.PutComment(viewMocel.ReviewId, viewMocel.CommentId, viewMocel.Content);
             return Ok(responseData);
         }
         catch (Exception ex)

@@ -110,7 +110,7 @@ public class AccountController : Controller
 
         try
         {
-            ModelState.Remove("FPassword");            
+            ModelState.Remove("FPassword");
 
             if (ModelState.IsValid)
             {
