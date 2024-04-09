@@ -82,11 +82,11 @@
             <button id="btnPopSearch" class="btn btn-primary">검색</button>
         </div>
 
-        <!-- 검색 결과를 여기에 표시 -->
+        <!-- 검색 결과 표시 -->
         <div id="searchResults" class="mt-4"></div>
 
         <div class="row">
-            <nav id="popPage" class="user-page" aria-label="Page navigation example" ">
+            <nav id="popPage" class="user-page" aria-label="Page">
                 <ul id="pagination-container" class="pagination">
                     <!-- Page - 2 ~ Page + 2 -->
                     @for (int i = Model.Page - 2; i < Model.Page + 3; i++)
@@ -237,7 +237,7 @@
 
                     popPpage.style.display = "block"
                     if (page >= 1) {
-                        updatePagination(page, data.minPage, data.maxPage);
+                        updatePagination(page, data.minPage, data.maxPage, getRequestBooks);
                     }
                 }
                 else {
@@ -255,43 +255,6 @@
         keyword = "";
         searchResults.innerHTML = "";
         document.getElementById("txtSearch").value = "";
-    }
-
-
-    function updatePagination(selectedPage, minPage, maxPage) {
-        var paginationContainer = document.getElementById('pagination-container');
-        paginationContainer.innerHTML = '';
-        selectedPage = parseInt(selectedPage);
-
-        for (let i = selectedPage - 2; i <= selectedPage + 2; i++) {
-            if (i >= minPage && i <= maxPage) {
-                let pageItem = document.createElement('li');
-                pageItem.className = 'page-item';
-
-                let pageLink = document.createElement('a');
-                pageLink.className = 'page-link';
-
-                pageLink.href = '#';
-                pageLink.setAttribute('data-page', i);
-                pageLink.textContent = i;
-
-                if (i === selectedPage) {
-                    pageLink.style.color = "black";
-                    pageLink.style.backgroundColor = "transparent";
-                    pageLink.style.pointerEvents = "none";
-                }
-
-                pageItem.appendChild(pageLink);
-                paginationContainer.appendChild(pageItem);
-
-                // 각 페이지 번호에 이벤트 리스너를 추가해야해서 함수로 따로 뺐음
-                pageLink.addEventListener('click', function (event) {
-                    event.preventDefault();
-                    var selectedPage = this.getAttribute('data-page');
-                    getRequestBooks(selectedPage)
-                })
-            }
-        }
     }
 </script>
 

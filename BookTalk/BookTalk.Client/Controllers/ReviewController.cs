@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Logging.Abstractions;
 using Newtonsoft.Json;
+using System.Security.Policy;
 
 namespace BookTalk.Client.Controllers;
 
@@ -153,6 +154,8 @@ public class ReviewController : Controller
 
         try
         {
+            HttpContext.Request.Cookies.TryGetValue(_configuration.GetValue<string>("Session:id"), out string sessionId);
+
             model = new ReviewViewModel()
             {
                 Id = id,
@@ -160,7 +163,9 @@ public class ReviewController : Controller
                 Author = "",
                 UserId = "",
                 BookName = "",
-                Cover = ""
+                Cover = "",
+                CurrentSessionId = sessionId ?? "",
+                Page = new Pagination()
             };
 
             url = Utility.GetEndpointUrl(_baseApiUrl, "Review", "Read");
@@ -168,6 +173,8 @@ public class ReviewController : Controller
             var response = client.PostAsJsonAsync(url, model).Result;
             var content = response.Content.ReadAsStringAsync().Result;
             responseData = JsonConvert.DeserializeObject<ResponseMessage<ReviewViewModel>>(content);
+
+            ViewBag.baseUrl = _baseApiUrl;
 
             if (!response.IsSuccessStatusCode)
             {
@@ -251,7 +258,7 @@ public class ReviewController : Controller
         {
             return StatusCode(Convert.ToInt32(responseData.ErrorCode), new { message = Utility.GetMessage("msg01") });
         }
-    }
+    }   
 
 
     private IEnumerable<SelectListItem> GetRates()

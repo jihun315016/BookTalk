@@ -2,6 +2,7 @@
 @model ReviewViewModel
 
 @Html.HiddenFor(model => model.Id, new { @id = "hidId", @readonly = "readonly" })
+@Html.HiddenFor(model => model.CurrentUserId, new { @id = "hidCurrentUserId", @readonly = "readonly" })
 
 <div class="form-container custom-base-container">
     <div class="container mt-5">
@@ -24,12 +25,7 @@
             </div>
 
             <hr />
-            <p>@Html.Raw(Model.Content)</p>
-
-            <div>
-                <button type="button" class="btn btn-success">좋아요 @Model.LikeCount</button>
-                <button type="button" class="btn btn-danger">싫어요 @Model.DislikeCount</button>
-            </div>
+            <p>@Html.Raw(Model.Content)</p>            
 
             <div class="mt-4">
                 <h4>댓글 달기</h4>
@@ -39,16 +35,41 @@
                 <button id="btnComment" type="submit" class="btn btn-primary">댓글 작성</button>
 
                 <div id="commentsContainer">
-                    <!-- 댓글들이 여기에 동적으로 추가됩니다 -->
                 </div>
             </div>
+        </div>
+
+        <div class="row">
+            <nav aria-label="Page navigation example">
+                <ul id="pagination-container" class="pagination">
+                    @for (int i = Model.Page.Page - 2; i < Model.Page.Page + 3; i++)
+                    {
+                        if (i >= Model.Page.MinPage && i <= Model.Page.MaxPage)
+                        {
+                            if (i == Model.Page.Page)
+                            {
+                                <li class="page-item">
+                                    <a class="page-link" href="javascript:void(0)" data-page="@i" style="color:black; background-color:transparent; pointer-events:none;">@i</a>
+                                </li>
+                            }
+                            else
+                            {
+                                <li class="page-item">
+                                    <a class="page-link" href="javascript:void(0)" data-page="@i">@i</a>
+                                </li>
+                            }
+                        }
+                    }
+                </ul>
+            </nav>
         </div>
     </div>
 </div>
 
 <script>
      window.onload = function () {
-     OnLoadView();
+         OnLoadView();
+         getRequestComment(1)
      }
 
     function OnLoadView() {
@@ -80,24 +101,7 @@
                 return response.json().then(data => {
                     document.getElementById("commentText").value = "";
                     const newComment = document.createElement("div");
-                    newComment.innerHTML = `
-                        <div class="card mb-3">
-                            <div class="card-body">
-                                <div class="d-flex justify-content-between">
-                                    <h6 class="text-muted">작성자 : ${data.userId}</h6>
-                                    <h6 class="text-muted">작성일 : ${data.createDate}</h6>
-                                </div>
-                                <p class="card-text">${data.content}</p>
-                                <div class="d-flex justify-content-end">
-                                    <!-- 수정 버튼 -->
-                                    <button type="button" class="btn btn-outline-secondary btn-sm me-2 edit-comment" data-comment-id="${data.commentId}"><i class="fas fa-edit"></i> 수정</button>
-                                    <!-- 삭제 버튼 -->
-                                    <button type="button" class="btn btn-outline-danger btn-sm delete-comment" data-comment-id="${data.commentId}"><i class="fas fa-trash-alt"></i> 삭제</button>
-                                </div>
-                            </div>
-                        </div>
-                    `;
-
+                    newComment.innerHTML = getCommentElementString(data, "s");
                     document.getElementById("commentsContainer").appendChild(newComment);
                 });
             } else if (response.status === 401) {
@@ -125,4 +129,56 @@
             console.log('삭제 버튼 클릭됨, 댓글 ID:', commentId);
         }
     });
+
+
+    document.addEventListener('DOMContentLoaded', function () {
+        var pageLinks = document.querySelectorAll('#pagination-container a.page-link');
+
+        pageLinks.forEach(function (link) {
+            link.addEventListener('click', function (event) {
+                event.preventDefault();
+                let reviewId = document.getElementById("hidId").value;                
+                let selectedPage = this.getAttribute('data-page');
+                getRequestComment(reviewId, selectedPage);
+            });
+        });
+    });
+
+
+    function getRequestComment(page) {
+        let baseUrl = "@(ViewBag.baseUrl)"
+        let reviewId = document.getElementById("hidId").value;
+        let url = `${baseUrl}/api/Review/GetComments?reviewId=${reviewId}&page=${page}`
+        let commentsContainer = document.getElementById("commentsContainer");
+        
+        fetch(url, {
+            method: "GET",
+        })
+            .then(response => {
+                if (response.ok) {
+                    return response.json();
+                }
+                return response.json().then(err => { throw new Error(err.message); });
+            })
+            .then(data => {
+                if (data.data && data.data.comments.length > 0) {
+                    commentsContainer.innerHTML = data.data.comments.map(item => {
+                        return getCommentElementString(item, "@(Model.UserId)", document.getElementById("hidCurrentUserId").value);
+                    }).join(''); 
+
+                    if (page >= 1) {
+                        updatePagination(page, data.data.page.minPage, data.data.page.maxPage, getRequestComment);
+                    }
+                } else {
+                    commentsContainer.innerHTML = '<p>검색 결과가 없습니다.</p>';
+                }
+            })
+            .catch(error => {
+                alert(error.message);
+            });
+
+    }
+
+
+    
 </script>

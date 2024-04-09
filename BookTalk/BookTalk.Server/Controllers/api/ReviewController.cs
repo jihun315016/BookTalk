@@ -6,8 +6,8 @@ using BookTalk.Shared.Models;
 using BookTalk.Shared.Utility;
 using BookTalk.Shared.ViewModels.Review;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore.ChangeTracking;
-using System.Security.Policy;
+using System.Collections.Generic;
+using System.Numerics;
 
 namespace BookTalk.Server.Controllers.api;
 
@@ -120,7 +120,8 @@ public class ReviewController : ControllerBase
             _bookService.SetBookDetail(bookQuery, _configuration["Aladin:DetailType"]);
             key = _configuration["Aladin:Key"];
             url = _bookService.GetUrlForOneBook(bookQuery.BaseUrl, key, bookQuery);
-            bookQuery = _bookService.GetBookData<BookDetailQuery>(url);            
+            bookQuery = _bookService.GetBookData<BookDetailQuery>(url);
+
 
             responseData.Data = new ReviewViewModel()
             {
@@ -134,11 +135,14 @@ public class ReviewController : ControllerBase
                 LikeCount = review.LikeCount,
                 DislikeCount = review.DislikeCount,
 
+                CurrentUserId = string.IsNullOrWhiteSpace(viewMocel.CurrentSessionId) ? "" : _userService.GetUser(viewMocel.CurrentSessionId).Id,
+
                 CategoryName = _bookService.GetCategoryName(bookQuery.Item[0].CategoryId),
                 Author = bookQuery.Item[0].Author,
                 PubDate = bookQuery.Item[0].PubDate,
                 Publisher = bookQuery.Item[0].Publisher,
                 Cover = bookQuery.Item[0].Cover,
+                Page = _reviewService.SetCommentInfo(viewMocel.Id)
             };
 
             return Ok(responseData);
@@ -181,6 +185,25 @@ public class ReviewController : ControllerBase
                 CreateDate = comment.CreateDate
             };
 
+            return Ok(responseData);
+        }
+        catch (Exception ex)
+        {
+            responseData.ErrorCode = Utility.GetUserStatusCodeNumber(UserStatusCode.UndefinedError);
+            responseData.ErrorMessage = ex.Message;
+            return StatusCode(StatusCodes.Status500InternalServerError, responseData);
+        }
+    }
+
+
+    [Route("GetComments")]
+    [HttpGet]
+    public IActionResult GetComments(int reviewId, int page)
+    {
+        ResponseMessage<ReviewViewModel> responseData = new ResponseMessage<ReviewViewModel>();
+        try
+        {
+            responseData.Data = _reviewService.GetComments(reviewId, page);
             return Ok(responseData);
         }
         catch (Exception ex)

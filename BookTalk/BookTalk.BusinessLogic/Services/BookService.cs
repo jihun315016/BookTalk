@@ -78,7 +78,7 @@ public class BookService : IBookService
         bookQuery.Cover = commonCodes.FirstOrDefault(c => c.Code == "Cover").Value;
         bookQuery.MinPage = Convert.ToInt32(commonCodes.FirstOrDefault(c => c.Code == "MinPage").Value);
         bookQuery.MaxPage = Convert.ToInt32(commonCodes.FirstOrDefault(c => c.Code == "MaxPage").Value);
-        bookQuery.Start = bookQuery.MaxResult * (bookQuery.Page - 1) + 1;
+        bookQuery.Start = bookQuery.Page;
         bookQuery.Item = new List<Book>();
     }
 

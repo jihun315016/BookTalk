@@ -81,7 +81,7 @@ namespace BookTalk.Server.Controllers.api
                     url = _bookService.GetUrlForBookSearch(bookQuery.BaseUrl, key, bookQuery);
                     responseData.Data = _bookService.GetBookData<BookListQuery>(url);
                     responseData.Data.MinPage = bookQuery.MinPage;
-                    responseData.Data.MaxPage = Math.Min(bookQuery.MaxResult, (int)Math.Ceiling((decimal)responseData.Data.TotalResults / bookQuery.MaxResult));
+                    responseData.Data.MaxPage = (int)Math.Ceiling((decimal)responseData.Data.TotalResults / bookQuery.MaxResult);
                 }
 
                 return Ok(responseData);
