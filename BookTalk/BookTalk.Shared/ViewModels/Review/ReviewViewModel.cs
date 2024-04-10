@@ -1,4 +1,6 @@
-﻿namespace BookTalk.Shared.ViewModels.Review;
+﻿using BookTalk.Shared.Common;
+
+namespace BookTalk.Shared.ViewModels.Review;
 
 public class ReviewViewModel
 {
@@ -26,7 +28,11 @@ public class ReviewViewModel
 
     public string CategoryName { get; set; } = "";
 
-    public int? LikeCount { get; set; }
+    public string CurrentSessionId { get; set; } = "";
 
-    public int? DislikeCount { get; set; }
+    public string CurrentUserId { get; set; } = "";
+
+    public IEnumerable<CommentViewModel> Comments { get; set; } = new List<CommentViewModel>();
+
+    public Pagination Page { get; set; } = new Pagination();
 }

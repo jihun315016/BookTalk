@@ -110,7 +110,7 @@ public class AccountController : Controller
 
         try
         {
-            ModelState.Remove("FPassword");            
+            ModelState.Remove("FPassword");
 
             if (ModelState.IsValid)
             {
@@ -130,7 +130,6 @@ public class AccountController : Controller
                 if (response.IsSuccessStatusCode) 
                 {
                     string sessionId = _configuration.GetValue<string>("Session:id");
-                    int sessionMinute = Convert.ToInt32(_configuration.GetValue<string>("Session:SessionMinute"));
 
                     // 클라이언트에 쿠키 설정
                     HttpContext.Response.Cookies.Append(
@@ -139,7 +138,6 @@ public class AccountController : Controller
                         new CookieOptions
                         {
                             HttpOnly = true,
-                            Expires = DateTimeOffset.Now.AddMinutes(sessionMinute)
                         }
                     );
 
