@@ -25,7 +25,7 @@ public interface IReviewService
     /// 리뷰 작성 글 생성
     /// </summary>
     /// <param name="review"></param>
-    public void Create(Review review);
+    public void CreateOrUpdate(Review review);
 
     /// <summary>
     /// 리뷰 댓글 작성 후 작성한 댓글 가져오기

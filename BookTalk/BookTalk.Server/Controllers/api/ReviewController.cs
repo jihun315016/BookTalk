@@ -61,9 +61,10 @@ public class ReviewController : ControllerBase
         }
     }
 
-    [Route("Create")]
+
+    [Route("Post")]
     [HttpPost]
-    public IActionResult Create([FromBody] ReviewPostViewModel viewMocel)
+    public IActionResult CreatePost([FromBody] ReviewPostViewModel viewModel)
     {
         ResponseMessage responseData = new ResponseMessage();
 
@@ -71,16 +72,17 @@ public class ReviewController : ControllerBase
         {
             Review review = new Review()
             {
-                Title = viewMocel.ReviewTitle,
-                Isbn13 = viewMocel.Isbn13,
-                Isbn10 = viewMocel.Isbn10,
-                BookName = viewMocel.BookTitle,
-                UserId = _userService.GetUser(viewMocel.SessionId).Id,
-                Content = viewMocel.Content,
-                Rating = viewMocel.Rating
+                Id = (int)viewModel.Id,
+                Title = viewModel.ReviewTitle,
+                Isbn13 = viewModel.Isbn13,
+                Isbn10 = viewModel.Isbn10,
+                BookName = viewModel.BookTitle,
+                UserId = _userService.GetUser(viewModel.SessionId).Id,
+                Content = viewModel.Content,
+                Rating = viewModel.Rating
             };
 
-            _reviewService.Create(review);
+            _reviewService.CreateOrUpdate(review);
             return Ok();
         }
         catch (Exception ex)
@@ -90,6 +92,37 @@ public class ReviewController : ControllerBase
             return StatusCode(StatusCodes.Status500InternalServerError, responseData);
         }
     }
+
+
+    //[Route("Create")]
+    //[HttpPost]
+    //public IActionResult Create([FromBody] ReviewPostViewModel viewMocel)
+    //{
+    //    ResponseMessage responseData = new ResponseMessage();
+
+    //    try
+    //    {
+    //        Review review = new Review()
+    //        {
+    //            Title = viewMocel.ReviewTitle,
+    //            Isbn13 = viewMocel.Isbn13,
+    //            Isbn10 = viewMocel.Isbn10,
+    //            BookName = viewMocel.BookTitle,
+    //            UserId = _userService.GetUser(viewMocel.SessionId).Id,
+    //            Content = viewMocel.Content,
+    //            Rating = viewMocel.Rating
+    //        };
+
+    //        _reviewService.Create(review);
+    //        return Ok();
+    //    }
+    //    catch (Exception ex)
+    //    {
+    //        responseData.ErrorCode = Utility.GetUserStatusCodeNumber(UserStatusCode.UndefinedError);
+    //        responseData.ErrorMessage = ex.Message;
+    //        return StatusCode(StatusCodes.Status500InternalServerError, responseData);
+    //    }
+    //}
 
 
     [Route("Read")]

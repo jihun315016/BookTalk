@@ -96,12 +96,11 @@
                 title: "@(Model.Title)",
                 author: "@(Model.Author)",
                 rating: "@(Model.Rating)",
-                bookName: "@(Model.BookName)"
+                bookName: "@(Model.BookName)",
+                content: "@(Model.Content)"
             };
 
             localStorage.setItem('reviewToEdit', JSON.stringify(reviewData));
-
-            alert("hello");
             window.location.href = "/Review/Post";
         }
         else if (e.target.matches('#btnDeleteReview')) { // ****************************** 글 삭제 버튼 ******************************

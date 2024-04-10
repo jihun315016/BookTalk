@@ -144,8 +144,10 @@
 
     //  도서 텍스트 박스 클릭
     txtFormBookTitle.onclick = function () {
-        bookModal.style.display = "block";
-        popPpage.style.display = "none";
+        if (!reviewData.id) {
+            bookModal.style.display = "block";
+            popPpage.style.display = "none";
+        }
     }
 
 
@@ -165,12 +167,19 @@
 
         if (reviewData) {
             // 폼 필드에 데이터 채우기
-            alert("!!")
-            document.getElementById('hidId').value = reviewData.id;
-            document.getElementById('txtFormReviewTitle').value = reviewData.title;
-            document.getElementById('txtFormBookTitle').value = reviewData.bookName;
-            document.getElementById('txtFormAuthor').value = reviewData.author;
-            document.getElementById('cboFormRate').value = reviewData.rating;
+            document.getElementById('hidId').value = reviewData.id ? decodeHtmlEntities(reviewData.id) : "";
+            document.getElementById('txtFormReviewTitle').value = reviewData.title ? decodeHtmlEntities(reviewData.title) : "";
+            document.getElementById('txtFormBookTitle').value = decodeHtmlEntities(reviewData.bookName);
+            document.getElementById('txtFormAuthor').value = decodeHtmlEntities(reviewData.author);
+            document.getElementById('cboFormRate').value = reviewData.rating ? reviewData.rating : "5";
+            document.getElementById('txaFormContent').value = decodeHtmlEntities(reviewData.content);
+
+            if (reviewData.id){
+                document.getElementById('txtFormReviewTitle').readOnly = true;
+                document.getElementById('txtFormBookTitle').readOnly = true;
+                document.getElementById('txtFormAuthor').readOnly = true;
+                document.getElementById('cboFormRate').disabled = true;
+            }
 
             // 사용 후 localStorage에서 해당 항목 삭제
             localStorage.removeItem('reviewToEdit');
@@ -275,6 +284,14 @@
 
 
     function decodeHtmlEntities(encodedString) {
+        var textArea = document.createElement('textarea');
+        textArea.innerHTML = encodedString;
+        return textArea.value;
+    }
+
+
+    function decodeHtmlEntities(encodedString) {
+        // 가상의 DOM 요소에서는 자동으로 디코딩 처리된다.
         var textArea = document.createElement('textarea');
         textArea.innerHTML = encodedString;
         return textArea.value;

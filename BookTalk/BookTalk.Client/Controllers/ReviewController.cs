@@ -1,14 +1,11 @@
-﻿using Azure;
-using BookTalk.Shared.Common;
+﻿using BookTalk.Shared.Common;
 using BookTalk.Shared.Exceptions;
 using BookTalk.Shared.Models;
 using BookTalk.Shared.Utility;
 using BookTalk.Shared.ViewModels.Review;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.Extensions.Logging.Abstractions;
 using Newtonsoft.Json;
-using System.Security.Policy;
 
 namespace BookTalk.Client.Controllers;
 
@@ -104,7 +101,7 @@ public class ReviewController : Controller
                 {
                     
                     viewModel.SessionId = sessionId;
-                    url = Utility.GetEndpointUrl(_baseApiUrl, "Review", "Create");
+                    url = Utility.GetEndpointUrl(_baseApiUrl, "Review", "Post");
                     HttpClient client = new HttpClient();
                     var response = client.PostAsJsonAsync(url, viewModel).Result;
                     var content = response.Content.ReadAsStringAsync().Result;
@@ -127,6 +124,14 @@ public class ReviewController : Controller
             }
             else
             {
+                var errors = ModelState.Values.SelectMany(v => v.Errors);
+                foreach (var error in errors)
+                {                    
+                    string errorMessage = error.ErrorMessage;
+                    Console.WriteLine(errorMessage);
+                }
+
+
                 ViewBag.TinyMCEApiKey = _configuration.GetValue<string>("TinyMCE:ApiKey");
                 model.Rates = GetRates();
                 return View(model);

@@ -43,9 +43,17 @@ public class ReviewService : IReviewService
         }
     }    
 
-    public void Create(Review review)
+    public void CreateOrUpdate(Review review)
     {
-        _dbContext.Reviews.Add(review);
+        Review newReview = _dbContext.Reviews.FirstOrDefault(r => r.Id == review.Id);
+        if (newReview == null)
+        {
+            _dbContext.Reviews.Add(review);
+        }
+        else
+        {
+            newReview.Content = review.Content;
+        }
         _dbContext.SaveChanges();
     }
 
