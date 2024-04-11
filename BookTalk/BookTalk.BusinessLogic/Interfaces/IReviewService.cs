@@ -22,7 +22,7 @@ public interface IReviewService
     public IEnumerable<Review> Search(string title, string bookName);
 
     /// <summary>
-    /// 리뷰 작성 글 생성
+    /// 리뷰 작성 글 생성 또는 수정
     /// </summary>
     /// <param name="review"></param>
     public void CreateOrUpdate(Review review);

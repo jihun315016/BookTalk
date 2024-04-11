@@ -6,8 +6,6 @@ using BookTalk.Shared.Models;
 using BookTalk.Shared.Utility;
 using BookTalk.Shared.ViewModels.Review;
 using Microsoft.AspNetCore.Mvc;
-using System.Collections.Generic;
-using System.Numerics;
 
 namespace BookTalk.Server.Controllers.api;
 
@@ -48,7 +46,7 @@ public class ReviewController : ControllerBase
                                      UserId = review.UserId,
                                      BookName = review.BookName,
                                      CreateDate = review.CreateDate
-                                 }).ToList();
+                                 }).ToList().OrderByDescending(r => r.Id);
 
             responseData.Data = viewModel;
             return Ok(responseData);
@@ -64,7 +62,7 @@ public class ReviewController : ControllerBase
 
     [Route("Post")]
     [HttpPost]
-    public IActionResult CreatePost([FromBody] ReviewPostViewModel viewModel)
+    public IActionResult Post([FromBody] ReviewPostViewModel viewModel)
     {
         ResponseMessage responseData = new ResponseMessage();
 
@@ -72,7 +70,7 @@ public class ReviewController : ControllerBase
         {
             Review review = new Review()
             {
-                Id = (int)viewModel.Id,
+                Id = viewModel.Id == null ? 0 : (int)viewModel.Id,
                 Title = viewModel.ReviewTitle,
                 Isbn13 = viewModel.Isbn13,
                 Isbn10 = viewModel.Isbn10,
@@ -85,6 +83,12 @@ public class ReviewController : ControllerBase
             _reviewService.CreateOrUpdate(review);
             return Ok();
         }
+        catch (UserOverlapException ex)
+        {
+            responseData.ErrorCode = Utility.GetUserStatusCodeNumber(UserStatusCode.OverlapException);
+            responseData.ErrorMessage = ex.Message;
+            return StatusCode(StatusCodes.Status400BadRequest, responseData);
+        }
         catch (Exception ex)
         {
             responseData.ErrorCode = Utility.GetUserStatusCodeNumber(UserStatusCode.UndefinedError);
@@ -92,37 +96,6 @@ public class ReviewController : ControllerBase
             return StatusCode(StatusCodes.Status500InternalServerError, responseData);
         }
     }
-
-
-    //[Route("Create")]
-    //[HttpPost]
-    //public IActionResult Create([FromBody] ReviewPostViewModel viewMocel)
-    //{
-    //    ResponseMessage responseData = new ResponseMessage();
-
-    //    try
-    //    {
-    //        Review review = new Review()
-    //        {
-    //            Title = viewMocel.ReviewTitle,
-    //            Isbn13 = viewMocel.Isbn13,
-    //            Isbn10 = viewMocel.Isbn10,
-    //            BookName = viewMocel.BookTitle,
-    //            UserId = _userService.GetUser(viewMocel.SessionId).Id,
-    //            Content = viewMocel.Content,
-    //            Rating = viewMocel.Rating
-    //        };
-
-    //        _reviewService.Create(review);
-    //        return Ok();
-    //    }
-    //    catch (Exception ex)
-    //    {
-    //        responseData.ErrorCode = Utility.GetUserStatusCodeNumber(UserStatusCode.UndefinedError);
-    //        responseData.ErrorMessage = ex.Message;
-    //        return StatusCode(StatusCodes.Status500InternalServerError, responseData);
-    //    }
-    //}
 
 
     [Route("Read")]

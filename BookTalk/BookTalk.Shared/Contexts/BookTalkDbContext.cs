@@ -30,7 +30,7 @@ public partial class BookTalkDbContext : DbContext
         {
             entity
                 .HasNoKey()
-                .ToTable("book_categories");
+                .ToTable("book_category");
 
             entity.Property(e => e.CategoryId).HasColumnName("category_id");
             entity.Property(e => e.CategoryName)
@@ -43,7 +43,7 @@ public partial class BookTalkDbContext : DbContext
 
         modelBuilder.Entity<Comment>(entity =>
         {
-            entity.HasKey(e => new { e.ReviewId, e.CommentId }).HasName("PK__comment__0EF16AF885DFC8F3");
+            entity.HasKey(e => new { e.ReviewId, e.CommentId }).HasName("PK__comment__0EF16AF866C2E6ED");
 
             entity.ToTable("comment");
 
@@ -62,16 +62,16 @@ public partial class BookTalkDbContext : DbContext
             entity.HasOne(d => d.Review).WithMany(p => p.Comments)
                 .HasForeignKey(d => d.ReviewId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__comment__review___0A9D95DB");
+                .HasConstraintName("FK__comment__review___3B0BC30C");
 
             entity.HasOne(d => d.User).WithMany(p => p.Comments)
                 .HasForeignKey(d => d.UserId)
-                .HasConstraintName("FK__comment__user_id__0B91BA14");
+                .HasConstraintName("FK__comment__user_id__3BFFE745");
         });
 
         modelBuilder.Entity<CommonCode>(entity =>
         {
-            entity.HasKey(e => new { e.Type, e.Code }).HasName("PK__common_c__70AF86860ECD808F");
+            entity.HasKey(e => new { e.Type, e.Code }).HasName("PK__common_c__70AF868685AF189F");
 
             entity.ToTable("common_code");
 
@@ -88,11 +88,11 @@ public partial class BookTalkDbContext : DbContext
 
         modelBuilder.Entity<Menu>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__menu__3213E83F5D68A6BE");
+            entity.HasKey(e => e.Id).HasName("PK__menu__3213E83F8AB2E143");
 
             entity.ToTable("menu");
 
-            entity.HasIndex(e => e.MenuName, "UQ__menu__4505407D1ECC918D").IsUnique();
+            entity.HasIndex(e => e.MenuName, "UQ__menu__4505407DAA904A27").IsUnique();
 
             entity.Property(e => e.Id).HasColumnName("id");
             entity.Property(e => e.ActionName)
@@ -110,7 +110,7 @@ public partial class BookTalkDbContext : DbContext
 
         modelBuilder.Entity<Review>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__review__3213E83FAD391837");
+            entity.HasKey(e => e.Id).HasName("PK__review__3213E83F4A18A95B");
 
             entity.ToTable("review");
 
@@ -140,24 +140,18 @@ public partial class BookTalkDbContext : DbContext
 
             entity.HasOne(d => d.User).WithMany(p => p.Reviews)
                 .HasForeignKey(d => d.UserId)
-                .HasConstraintName("FK__review__user_id__06CD04F7");
+                .HasConstraintName("FK__review__user_id__373B3228");
         });
 
         modelBuilder.Entity<User>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__users__3213E83F84340234");
+            entity.HasKey(e => e.Id).HasName("PK__users__3213E83F9FB2F06B");
 
             entity.ToTable("users");
 
             entity.Property(e => e.Id)
                 .HasMaxLength(20)
                 .HasColumnName("id");
-            entity.Property(e => e.Follower)
-                .HasDefaultValue(0)
-                .HasColumnName("follower");
-            entity.Property(e => e.Following)
-                .HasDefaultValue(0)
-                .HasColumnName("following");
             entity.Property(e => e.Name)
                 .HasMaxLength(30)
                 .HasColumnName("name");

@@ -131,5 +131,14 @@ namespace BookTalk.Shared.Properties {
                 return ResourceManager.GetString("msg08", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   이미 리뷰 작성이 완료된 도서입니다.과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        internal static string msg09 {
+            get {
+                return ResourceManager.GetString("msg09", resourceCulture);
+            }
+        }
     }
 }

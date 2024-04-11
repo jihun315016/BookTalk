@@ -1,6 +1,7 @@
 ﻿using BookTalk.BusinessLogic.Interfaces;
 using BookTalk.Shared.Common;
 using BookTalk.Shared.Contexts;
+using BookTalk.Shared.Exceptions;
 using BookTalk.Shared.Models;
 using BookTalk.Shared.ViewModels.Review;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -48,6 +49,11 @@ public class ReviewService : IReviewService
         Review newReview = _dbContext.Reviews.FirstOrDefault(r => r.Id == review.Id);
         if (newReview == null)
         {
+            Review overlap = _dbContext.Reviews.FirstOrDefault(r => r.UserId == review.UserId && (r.Isbn10 == review.Isbn10 || r.Isbn13 == review.Isbn13));
+            if(overlap != null)
+            {
+                throw new UserOverlapException();
+            }
             _dbContext.Reviews.Add(review);
         }
         else
