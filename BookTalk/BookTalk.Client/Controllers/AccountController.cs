@@ -1,14 +1,11 @@
 ﻿using BookTalk.Shared.Common;
-using BookTalk.Shared.Common;
 using BookTalk.Shared.Exceptions;
 using BookTalk.Shared.Models;
 using BookTalk.Shared.Utility;
 using BookTalk.Shared.ViewModels.Account;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Newtonsoft.Json;
-using System;
 using System.Net;
 
 namespace BookTalk.Client.Controllers;
@@ -17,11 +14,13 @@ public class AccountController : Controller
 {
     private readonly IConfiguration _configuration;
     private readonly string _baseApiUrl;
+    private readonly ILogger<AccountController> _logger;
 
-    public AccountController(IConfiguration configuration)
+    public AccountController(IConfiguration configuration, ILogger<AccountController> logger)
     {
         _configuration = configuration;
         _baseApiUrl = configuration.GetValue<string>("ApiSettings:BaseUrl");
+        _logger = logger;
     }
 
     [HttpGet]
@@ -69,6 +68,7 @@ public class AccountController : Controller
                     {
                         // 추가 유효성 검사 실패
                         ModelState.AddModelError(responseData.ValidationError.Key, responseData.ValidationError.Message);
+                        return View(responseData.Data);
                     }
                     else
                     {
@@ -87,11 +87,11 @@ public class AccountController : Controller
         {
             // 실패 메세지
             ViewBag.ErrorMessage = Utility.GetMessage("msg04");
-            responseData.InitializeResponseMessage(ex.Message, viewModel);
+            Logging.WriteError(_logger, ex);
+            return View(viewModel);
         }
 
         // 로그인 실패 시, 다시 기존 로그인 페이지로 이동
-        return View(responseData.Data);
     }
 
     [HttpGet]
@@ -162,13 +162,12 @@ public class AccountController : Controller
         catch (UserValidationException ex)
         {
             ViewBag.ErrorMessage = ex.Message;
-            responseData.InitializeResponseMessage(ex.Message, null);
         }
         catch (Exception ex)
         {
             // 실패 메세지
             ViewBag.ErrorMessage = Utility.GetMessage("msg01");
-            responseData.InitializeResponseMessage(ex.Message, null);
+            Logging.WriteError(_logger, ex);
         }
 
         // 로그인 실패 시, 다시 로그인 페이지로 이동
@@ -217,6 +216,7 @@ public class AccountController : Controller
         }
         catch (Exception ex)
         {
+            Logging.WriteError(_logger, ex);
             return StatusCode(StatusCodes.Status500InternalServerError, new { message = Utility.GetMessage("msg01") });
         }
     }
@@ -267,6 +267,7 @@ public class AccountController : Controller
         }
         catch (Exception ex)
         {
+            Logging.WriteError(_logger, ex);
             return StatusCode(StatusCodes.Status500InternalServerError, new { message = Utility.GetMessage("msg01"), validMessage = "" });
         }
     }
@@ -303,6 +304,7 @@ public class AccountController : Controller
         }
         catch (Exception ex)
         {
+            Logging.WriteError(_logger, ex);
             return StatusCode(StatusCodes.Status500InternalServerError, new { message = Utility.GetMessage("msg01") });
         }
 

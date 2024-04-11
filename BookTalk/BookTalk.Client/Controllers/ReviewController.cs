@@ -15,12 +15,13 @@ public class ReviewController : Controller
 {
     private readonly IConfiguration _configuration;
     private readonly string _baseApiUrl;
+    private readonly ILogger<ReviewController> _logger;
 
-
-    public ReviewController(IConfiguration configuration)
+    public ReviewController(IConfiguration configuration, ILogger<ReviewController> logger)
     {
         _configuration = configuration;
         _baseApiUrl = configuration.GetValue<string>("ApiSettings:BaseUrl");
+        _logger = logger;
     }
 
 
@@ -29,14 +30,14 @@ public class ReviewController : Controller
         ResponseMessage<ReviewIndexViewModel> responseData = new ResponseMessage<ReviewIndexViewModel>();
         ReviewIndexViewModel model = new ReviewIndexViewModel();
         string url;
-
+        
         try
         {
             model.QueryType = string.IsNullOrWhiteSpace(queryType) ? "" : queryType;
             model.Keyword = string.IsNullOrWhiteSpace(keyword) ? "" : keyword;
             model.Items = new List<ReviewViewModel>();
 
-            url = Utility.GetEndpointUrl(_baseApiUrl, "Review", "Search");
+            url = Utility.GetEndpointUrl(_baseApiUrl, "2Review", "Search");
             HttpClient client = new HttpClient();
             var response = client.PostAsJsonAsync(url, model).Result;
             var content = response.Content.ReadAsStringAsync().Result;
@@ -53,6 +54,7 @@ public class ReviewController : Controller
         }
         catch (Exception ex)
         {
+            Logging.WriteError(_logger, ex);
             ViewBag.ErrorMessage = Utility.GetMessage("msg01");
         }
 
@@ -79,6 +81,7 @@ public class ReviewController : Controller
         }
         catch (Exception ex)
         {
+            Logging.WriteError(_logger, ex);
             ViewBag.ErrorMessage = Utility.GetMessage("msg01");
         }
 
@@ -135,12 +138,12 @@ public class ReviewController : Controller
             }
             else
             {
-                //var errors = ModelState.Values.SelectMany(v => v.Errors);
-                //foreach (var error in errors)
-                //{                    
-                //    string errorMessage = error.ErrorMessage;
-                //    Console.WriteLine(errorMessage);
-                //}
+                var errors = ModelState.Values.SelectMany(v => v.Errors);
+                foreach (var error in errors)
+                {
+                    string errorMessage = error.ErrorMessage;
+                    Logging.WriteError(_logger);
+                }
 
                 return View(viewModel);
             }
@@ -148,7 +151,7 @@ public class ReviewController : Controller
         catch (UserOverlapException ex)
         {
             ViewBag.ErrorMessage = Utility.GetMessage("msg09");
-            responseData.ErrorMessage = ex.Message;
+            Logging.WriteError(_logger, ex);
             return View(viewModel);
         }
         catch (Exception ex)
@@ -217,14 +220,8 @@ public class ReviewController : Controller
         }
         catch (Exception ex)
         {
+            Logging.WriteError(_logger, ex);
             ViewBag.ErrorMessage = Utility.GetMessage("msg01");
-        }
-        finally
-        {
-            if (responseData.Data == null)
-            {
-                responseData.Data = new ReviewViewModel();
-            }
         }
 
         return View(responseData.Data);
@@ -273,6 +270,7 @@ public class ReviewController : Controller
         }
         catch (Exception ex)
         {
+            Logging.WriteError(_logger, ex);
             return StatusCode(Convert.ToInt32(responseData.ErrorCode), new { message = Utility.GetMessage("msg01") });
         }
     }

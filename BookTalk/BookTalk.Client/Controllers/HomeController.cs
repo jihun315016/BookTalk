@@ -1,10 +1,8 @@
 using BookTalk.Shared.Aladin;
 using BookTalk.Shared.Common;
 using BookTalk.Shared.Utility;
-using BookTalk.Web.Models;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
-using System.Diagnostics;
 
 namespace BookTalk.Web.Controllers;
 
@@ -42,13 +40,13 @@ public class HomeController : Controller
                 responseData.ErrorCode = response.StatusCode.ToString();
                 throw new Exception(responseData.ErrorMessage);
             }
+            return View(responseData.Data);
         }
         catch (Exception ex)
         {
             ViewBag.ErrorMessage = Utility.GetMessage("msg01");
-            responseData.InitializeResponseMessage(ex.Message, null);
+            Logging.WriteError(_logger, ex);
         }
-
         return View(responseData.Data);
     }
 }

@@ -10,6 +10,7 @@ BookTalk/BookTalk.Server/appsettings.json
 BookTalk/BookTalk.Server/appsettings.Development.json
 BookTalk/BookTalk.Shared/appsettings.json
 BookTalk/BookTalk.Shared/appsettings.Development.json
+BookTalk/BookTalk.Client/logs/*
 # User Setting END ##############################################################
 
 # dotenv files

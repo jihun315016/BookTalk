@@ -1,13 +1,6 @@
-﻿using BookTalk.BusinessLogic.Interfaces;
-using BookTalk.Shared.Common;
+﻿using BookTalk.Shared.Common;
 using BookTalk.Shared.Contexts;
 using BookTalk.Shared.Models;
-using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace BookTalk.BusinessLogic.Services;
 
