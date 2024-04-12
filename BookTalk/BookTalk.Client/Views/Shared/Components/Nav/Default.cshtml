@@ -1,5 +1,7 @@
 ﻿@using BookTalk.Client.Controllers
 @using BookTalk.Shared.Models
+@using BookTalk.Web.Controllers
+
 @model BookTalk.Shared.Common.ResponseMessage<User>
 
 @if (Model.Data == null)
@@ -7,7 +9,7 @@
     <nav class="sb-topnav navbar navbar-expand navbar-dark bg-dark">
 
         <!-- Navbar Brand-->
-        <a class="navbar-brand ps-3" href="index.html">BookTalk</a>
+        <a class="navbar-brand ps-3" asp-controller="@nameof(HomeController).Replace("Controller", "")" asp-action="@nameof(HomeController.Index)">BookTalk</a>
 
         <!-- Sidebar Toggle-->
         <button class="btn btn-link btn-sm order-1 order-lg-0 me-4 me-lg-0" id="sidebarToggle" href="#!"><i class="fas fa-bars"></i></button>
@@ -25,7 +27,7 @@
                 </a>
             </li>
             <li class="nav-item dropdown">
-                <a class="nav-link" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false" asp-area="" asp-controller="@nameof(UserController).Replace("Controller", "")" asp-action="@nameof(UserController.Index)">
+                <a class="nav-link" id="navbarDropdown" role="button" asp-area="" asp-controller="@nameof(UserController).Replace("Controller", "")" asp-action="@nameof(UserController.Index)">
                     <i class="fas fa-user fa-fw"></i>
                 </a>
             </li>
@@ -37,7 +39,7 @@ else
     <nav class="sb-topnav navbar navbar-expand navbar-dark bg-dark">
 
         <!-- Navbar Brand-->
-        <a class="navbar-brand ps-3" href="index.html">BookTalk</a>
+        <a class="navbar-brand ps-3" asp-controller="@nameof(HomeController).Replace("Controller", "")" asp-action="@nameof(HomeController.Index)">BookTalk</a>
 
         <!-- Sidebar Toggle-->
         <button class="btn btn-link btn-sm order-1 order-lg-0 me-4 me-lg-0" id="sidebarToggle" href="#!"><i class="fas fa-bars"></i></button>
@@ -55,7 +57,7 @@ else
                 </a>
             </li>
             <li class="nav-item dropdown">
-                <a class="nav-link" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false" asp-area="" asp-controller="@nameof(UserController).Replace("Controller", "")" asp-action="@nameof(UserController.Index)">
+                <a class="nav-link" id="navbarDropdown" role="button" asp-area="" asp-controller="@nameof(UserController).Replace("Controller", "")" asp-action="@nameof(UserController.Index)">
                     <i class="fas fa-user fa-fw"></i>
                 </a>
             </li>

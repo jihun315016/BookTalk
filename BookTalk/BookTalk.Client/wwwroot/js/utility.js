@@ -63,6 +63,7 @@ function getCommentElementString(data, currentUserId, author) {
 }
 
 
+// 댓글 관련 버튼 태그
 function getCommentButtonElementString(mode, commentId) {
     if (mode == 1) { // 평소
         return `

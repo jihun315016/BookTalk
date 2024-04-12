@@ -8,9 +8,9 @@ public class ReviewViewModel
 
     public string Title { get; set; }
 
-    public string Author { get; set; } 
+    public string Author { get; set; } = "";
 
-    public string UserId { get; set; }
+    public string UserId { get; set; } = "";
 
     public string BookName { get; set; }
 

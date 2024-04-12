@@ -1,6 +1,7 @@
 ﻿using BookTalk.BusinessLogic.Services;
 using BookTalk.Shared.Common;
 using BookTalk.Shared.Models;
+using BookTalk.Shared.ViewModels.User;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BookTalk.Server.Controllers.api;
@@ -25,6 +26,25 @@ public class UserController : ControllerBase
         try
         {
             responseData.Data = _userService.GetUser(session.Id);
+            return Ok(responseData);
+        }
+        catch (Exception ex)
+        {
+            responseData.ErrorMessage = ex.Message;
+            return StatusCode(StatusCodes.Status500InternalServerError, responseData);
+        }
+    }
+
+
+    [HttpPost]
+    [Route("Profile")]
+    public IActionResult GetProfile([FromBody] Session session)
+    {
+        ResponseMessage<UserViewModel> responseData = new ResponseMessage<UserViewModel>();
+
+        try
+        {
+            responseData.Data = _userService.GetProfile(session.Id);
             return Ok(responseData);
         }
         catch (Exception ex)

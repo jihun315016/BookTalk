@@ -124,7 +124,7 @@
     }
 
     function OnLoadView() {
-        var errorMessage = "@Html.Raw(ViewBag.ErrorMessage)";
+        let errorMessage = "@Html.Raw(ViewBag.ErrorMessage)";
 
         if (errorMessage) {
             @{ViewBag.ErrorMessage = "";};
@@ -162,7 +162,7 @@
     // 팝업창에서 페이지 버튼 클릭 이벤트
     document.addEventListener('DOMContentLoaded', function () {
         // pagination-container 안에 있는 클래스가 page-link인 a 태그
-        var pageLinks = document.querySelectorAll('#pagination-container a.page-link');
+        let pageLinks = document.querySelectorAll('#pagination-container a.page-link');
 
         // 로컬 스토리지에 데이터가 있는지 확인 후 있으면 데이터 세팅(글 수정 or 도서 상세에서 리뷰 작성 버튼 클릭)
         setLocalStorage();
@@ -199,7 +199,7 @@
     searchResults.onclick = function (event) {
         // event.target : 이벤트가 발생한 요소
         // 이벤트가 발생한 요소로부터 clickable 클래스를 가지는 가장 가까운 조상을 찾는다.
-        var clickedElement = event.target.closest(".book-title");
+        let clickedElement = event.target.closest(".book-title");
         if (clickedElement) {
             txtFormBookTitle.value = clickedElement.getAttribute("data-title");
             document.getElementById("txtFormAuthor").value = clickedElement.getAttribute("data-author");
@@ -213,7 +213,7 @@
 
 
     function getRequestBooks(page) {
-        var query = `keyword=${keyword}&page=${page}`
+        let query = `keyword=${keyword}&page=${page}`
 
         fetch(`/Book/SearchListJson?${query}`, {
             method: "GET",
@@ -274,7 +274,7 @@
 
     function decodeHtmlEntities(encodedString) {
         // 가상의 DOM 요소에서는 자동으로 디코딩 처리된다.
-        var textArea = document.createElement('textarea');
+        let textArea = document.createElement('textarea');
         textArea.innerHTML = encodedString;
         return textArea.value;
     }

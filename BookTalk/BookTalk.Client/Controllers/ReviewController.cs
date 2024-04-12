@@ -14,8 +14,8 @@ namespace BookTalk.Client.Controllers;
 public class ReviewController : Controller
 {
     private readonly IConfiguration _configuration;
-    private readonly string _baseApiUrl;
     private readonly ILogger<ReviewController> _logger;
+    private readonly string _baseApiUrl;
 
     public ReviewController(IConfiguration configuration, ILogger<ReviewController> logger)
     {
@@ -37,7 +37,7 @@ public class ReviewController : Controller
             model.Keyword = string.IsNullOrWhiteSpace(keyword) ? "" : keyword;
             model.Items = new List<ReviewViewModel>();
 
-            url = Utility.GetEndpointUrl(_baseApiUrl, "2Review", "Search");
+            url = Utility.GetEndpointUrl(_baseApiUrl, "Review", "Search");
             HttpClient client = new HttpClient();
             var response = client.PostAsJsonAsync(url, model).Result;
             var content = response.Content.ReadAsStringAsync().Result;

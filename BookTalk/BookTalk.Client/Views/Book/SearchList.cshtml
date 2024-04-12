@@ -98,7 +98,7 @@
     }
 
     function OnLoadView() {
-        var errorMessage = "@Html.Raw(ViewBag.ErrorMessage)";
+        let errorMessage = "@Html.Raw(ViewBag.ErrorMessage)";
         if (errorMessage) {
             alert(errorMessage);
         }

@@ -4,7 +4,7 @@
 // Write your JavaScript code.
 
 $(document).ready(function () {
-    $('#bookTab .nav-link').hover(function () {
+    $('#user-tab .nav-link').hover(function () {
         $(this).tab('show');
     });
 });

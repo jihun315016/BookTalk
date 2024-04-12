@@ -4,6 +4,8 @@ public class CommentViewModel
 {
     public int ReviewId { get; set; }
 
+    public string ReviewTitle { get; set; } = "";
+
     public int CommentId { get; set; }
 
     public string SessionId { get; set; } = "";
