@@ -1,0 +1,222 @@
+﻿@using BookTalk.Shared.ViewModels.User
+
+@model UserViewModel
+
+<div class="form-container custom-base-container">
+    @if (Model != null)
+    {
+        <div class="container mt-5">
+            <div class="row">
+                <h2>사용자 프로필</h2>
+                <div class="card mb-3">
+                    <div class="card-header">
+                        기본 정보
+                    </div>
+                    <div class="card-body">
+                        <h5 class="card-title">@(Model.Name) 님의 프로필</h5>
+                        <p class="card-text">ID: @(Model.UserId)</p>
+                        <a href="javascript:void(0)" id="btnResetPassword" class="btn btn-light btn-outline-dark">비밀번호 재설정</a>
+                        <a href="javascript:void(0)" id="btnWithdrawal" class="btn btn-dark">회원 탈퇴</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="row">
+            <div class="container custom-container">
+                <div class="row">
+                    <ul class="nav nav-tabs" id="user-tab" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <a class="nav-link" id="review-tab" data-toggle="tab" href="#review-list" role="tab" aria-controls="review-list" aria-selected="true">작성 리뷰</a>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <a class="nav-link" id="comment-Tab" data-toggle="tab" href="#comment-list" role="tab" aria-controls="comment-list" aria-selected="false">작성 댓글</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="container custom-container">
+                <div class="tab-content" id="bookTabContent">
+                    <!-- 작성 리뷰 -->
+                    <div class="tab-pane fade show active" id="review-list" role="tabpanel" aria-labelledby="review-tab">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>글 제목</th>
+                                    <th>도서명</th>
+                                    <th>작성 날짜</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model.Reviews)
+                                {
+                                    <tr>
+                                        <td>
+                                            <div class="text-truncate max-width50">
+                                                @Html.ActionLink(item.Title, "Read", "Review", new { id = item.Id }, new { @class = "custom-link" })
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="text-truncate max-width40">
+                                                @Html.DisplayFor(modelItem => item.BookName)
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="text-truncate max-width30">
+                                                @Html.DisplayFor(modelItem => item.CreateDate)
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- 작성 댓글 -->
+                    <div class="tab-pane fade" id="comment-list" role="tabpanel" aria-labelledby="comment-tab">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>글 제목</th>
+                                    <th>댓글 내용</th>
+                                    <th>댓글 작성 날짜</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model.Comments)
+                                {
+                                    <tr>
+                                        <td>
+                                            <div class="text-truncate max-width50">
+                                                @Html.ActionLink(item.ReviewTitle, "Read", "Review", new { id = item.ReviewId }, new { @class = "custom-link" })
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="text-truncate max-width40">
+                                                @Html.DisplayFor(modelItem => item.Content)
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="text-truncate max-width30">
+                                                @Html.DisplayFor(modelItem => item.CreateDate)
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+
+
+<!-- 비밀번호 재설정 팝업 -->
+<div id="resetPasswordModal" class="modal">1
+    <div class="modal-content">
+        <span class="closeResetPassword">&times;</span>
+        
+        <div class="form-group">
+            @Html.LabelFor(m => m.NewPassword, new { @class = "control-label", @for = "txtNewPassword" })
+            @Html.PasswordFor(m => m.NewPassword, new { @class = "form-control", @id = "txtNewPassword", @placeholder = "New password" })
+            @Html.ValidationMessageFor(m => m.NewPassword, "", new { @id = "passwordError", @class = "text-danger" })
+        </div>
+
+        <div class="form-group button-container">
+            <button id="btnConfirm" class="btn btn-primary">비밀번호 재설정</button>
+        </div>
+    </div>
+</div>
+
+
+
+<script>
+    window.onload = function () {
+        OnLoadView();
+    }
+
+    function OnLoadView() {
+        var errorMessage = "@Html.Raw(ViewBag.ErrorMessage)";
+
+        if (errorMessage) {
+            @{ViewBag.ErrorMessage = "";};
+            alert(errorMessage);
+        }
+    }
+
+
+    var btnResetPassword = document.getElementById("btnResetPassword");
+    var resetPasswordModal = document.getElementById("resetPasswordModal");
+    var btnConfirm = document.getElementById("btnConfirm");
+    var spanResetPassword = document.getElementsByClassName("closeResetPassword")[0];
+    var btnWithdrawal = document.getElementById("btnWithdrawal");
+
+    btnResetPassword.onclick = function () {
+        resetPasswordModal.style.display = "block";
+        document.getElementById("txtNewPassword").value = "";
+        document.getElementById("passwordError").innerText = "";
+    }
+
+
+    // 비밀번호 재설정
+    btnConfirm.onclick = function () {
+        let newPassword = document.getElementById("txtNewPassword").value;
+        let userId = "@(Model.UserId)"
+
+        fetch("/Account/ResetPassword", {
+            method: "POST",
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                FId: userId,
+                FPassword: newPassword,
+            })
+        })
+            .then(response => {
+                if (response.ok) {
+                    return response.json();
+                }
+                return response.json().then(err => { throw new Error(err.message); });
+            })
+            .then(data => {
+                if (data.validMessage) {
+                    // 유효성 검사 실패
+                    document.getElementById("passwordError").innerText = data.validMessage;
+                }
+                else {
+                    alert(data.message)
+                    window.location.href = '/Account/Signin';
+                }
+            })
+            .catch(error => {
+                alert(error.message);
+            });
+    }
+
+
+    // 사용자가 닫기 버튼(X)을 클릭하면 모달 닫기
+    spanResetPassword.onclick = function () {
+        resetPasswordModal.style.display = "none";
+    }
+
+
+    // 사용자가 모달 외부를 클릭하면 모달 닫기
+    window.onclick = function (event) {
+        if (event.target == resetPasswordModal) {
+            resetPasswordModal.style.display = "none";
+        }
+    }
+
+
+    btnWithdrawal.onclick = function () {
+        alert("Hello World")
+    }
+</script>

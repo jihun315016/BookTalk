@@ -45,7 +45,7 @@
         <div class="col-md-4">
             <div class="card h-100 d-flex justify-content-center align-items-center">
                 <div class="card-body d-flex justify-content-center align-items-center">
-                    <img src="#" id="bookImg" class="img-fluid user-image" style="max-width: 100%; max-height: 100%;" alt="">
+                    <img src="@(Model.Cover)" id="bookImg" class="img-fluid user-image" style="max-width: 100%; max-height: 100%;" alt="">
                 </div>
             </div>
         </div>
@@ -124,9 +124,10 @@
     }
 
     function OnLoadView() {
-        var errorMessage = "@Html.Raw(ViewBag.ErrorMessage)";
+        let errorMessage = "@Html.Raw(ViewBag.ErrorMessage)";
 
         if (errorMessage) {
+            @{ViewBag.ErrorMessage = "";};
             alert(errorMessage);
         }
     }
@@ -144,7 +145,7 @@
 
     //  도서 텍스트 박스 클릭
     txtFormBookTitle.onclick = function () {
-        if (!reviewData.id) {
+        if (!document.getElementById('hidId').value) {
             bookModal.style.display = "block";
             popPpage.style.display = "none";
         }
@@ -161,29 +162,10 @@
     // 팝업창에서 페이지 버튼 클릭 이벤트
     document.addEventListener('DOMContentLoaded', function () {
         // pagination-container 안에 있는 클래스가 page-link인 a 태그
-        var pageLinks = document.querySelectorAll('#pagination-container a.page-link');
+        let pageLinks = document.querySelectorAll('#pagination-container a.page-link');
 
-        const reviewData = JSON.parse(localStorage.getItem('reviewToEdit'));
-
-        if (reviewData) {
-            // 폼 필드에 데이터 채우기
-            document.getElementById('hidId').value = reviewData.id ? decodeHtmlEntities(reviewData.id) : "";
-            document.getElementById('txtFormReviewTitle').value = reviewData.title ? decodeHtmlEntities(reviewData.title) : "";
-            document.getElementById('txtFormBookTitle').value = decodeHtmlEntities(reviewData.bookName);
-            document.getElementById('txtFormAuthor').value = decodeHtmlEntities(reviewData.author);
-            document.getElementById('cboFormRate').value = reviewData.rating ? reviewData.rating : "5";
-            document.getElementById('txaFormContent').value = decodeHtmlEntities(reviewData.content);
-
-            if (reviewData.id){
-                document.getElementById('txtFormReviewTitle').readOnly = true;
-                document.getElementById('txtFormBookTitle').readOnly = true;
-                document.getElementById('txtFormAuthor').readOnly = true;
-                document.getElementById('cboFormRate').disabled = true;
-            }
-
-            // 사용 후 localStorage에서 해당 항목 삭제
-            localStorage.removeItem('reviewToEdit');
-        }
+        // 로컬 스토리지에 데이터가 있는지 확인 후 있으면 데이터 세팅(글 수정 or 도서 상세에서 리뷰 작성 버튼 클릭)
+        setLocalStorage();
 
         // 각 요소에 대해 클릭 이벤트 리스너 추가
         pageLinks.forEach(function (link) {
@@ -217,7 +199,7 @@
     searchResults.onclick = function (event) {
         // event.target : 이벤트가 발생한 요소
         // 이벤트가 발생한 요소로부터 clickable 클래스를 가지는 가장 가까운 조상을 찾는다.
-        var clickedElement = event.target.closest(".book-title");
+        let clickedElement = event.target.closest(".book-title");
         if (clickedElement) {
             txtFormBookTitle.value = clickedElement.getAttribute("data-title");
             document.getElementById("txtFormAuthor").value = clickedElement.getAttribute("data-author");
@@ -231,7 +213,7 @@
 
 
     function getRequestBooks(page) {
-        var query = `keyword=${keyword}&page=${page}`
+        let query = `keyword=${keyword}&page=${page}`
 
         fetch(`/Book/SearchListJson?${query}`, {
             method: "GET",
@@ -292,9 +274,36 @@
 
     function decodeHtmlEntities(encodedString) {
         // 가상의 DOM 요소에서는 자동으로 디코딩 처리된다.
-        var textArea = document.createElement('textarea');
+        let textArea = document.createElement('textarea');
         textArea.innerHTML = encodedString;
         return textArea.value;
+    }
+
+    function setLocalStorage() {
+        const reviewData = JSON.parse(localStorage.getItem('reviewToEdit'));
+
+        if (reviewData) {
+            // 폼 필드에 데이터 채우기
+            document.getElementById('hidId').value = reviewData.id ? decodeHtmlEntities(reviewData.id) : "";
+            document.getElementById('txtFormReviewTitle').value = reviewData.title ? decodeHtmlEntities(reviewData.title) : "";
+            document.getElementById('txtFormBookTitle').value = reviewData.bookName ? decodeHtmlEntities(reviewData.bookName) : "";
+            document.getElementById('txtFormAuthor').value = decodeHtmlEntities(reviewData.author);
+            document.getElementById('cboFormRate').value = reviewData.rating ? reviewData.rating : "5";
+            document.getElementById('txaFormContent').value = reviewData.content ? decodeHtmlEntities(reviewData.content) : "";
+            document.getElementById('hidIsbn13').value = reviewData.isbn13 ? decodeHtmlEntities(reviewData.isbn13) : "";
+            document.getElementById('hidIsbn10').value = reviewData.isbn10 ? decodeHtmlEntities(reviewData.isbn10) : "";
+            document.getElementById("bookImg").src = decodeHtmlEntities(reviewData.cover);
+
+            if (reviewData.id) {
+                document.getElementById('txtFormReviewTitle').readOnly = true;
+                document.getElementById('txtFormBookTitle').readOnly = true;
+                document.getElementById('txtFormAuthor').readOnly = true;
+                document.getElementById('cboFormRate').disabled = true;
+            }
+
+            // 사용 후 localStorage에서 해당 항목 삭제
+            localStorage.removeItem('reviewToEdit');
+        }
     }
 </script>
 

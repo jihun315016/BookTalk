@@ -27,18 +27,4 @@
         </div>
     }
 }
-else
-{
-    <script>
-            // _Layout.cshtml에서 호출하는 ViewComponent는 onload 이벤트를 갖지 않아 여기서 동작하도록 구현한다.
-            function CheckError() {
-                var errorMessage = "@Html.Raw(ViewBag.ErrorMessage)";
-                if (errorMessage) {
-                    alert(errorMessage);
-                }
-            }
-
-            CheckError()
-    </script>
-}
 

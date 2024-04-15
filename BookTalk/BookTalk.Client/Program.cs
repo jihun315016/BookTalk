@@ -1,3 +1,5 @@
+using Serilog;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -7,6 +9,15 @@ builder.Services.AddSession(options =>
     options.Cookie.Name = ".BookTalk.Session";
     options.Cookie.IsEssential = true;
 });
+
+// Serilog ¼³Á¤
+Log.Logger = new LoggerConfiguration()
+    .MinimumLevel.Error()
+    .WriteTo.Console()
+    .WriteTo.File("logs/BookTalk.log", rollingInterval: RollingInterval.Day)
+    .CreateLogger();
+
+builder.Host.UseSerilog();
 
 var app = builder.Build();
 

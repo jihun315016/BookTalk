@@ -1,10 +1,8 @@
 ﻿using BookTalk.BusinessLogic.Interfaces;
-using BookTalk.Shared.Common;
 using BookTalk.Shared.Contexts;
+using BookTalk.Shared.Exceptions;
 using BookTalk.Shared.Models;
-using BookTalk.Shared.ViewModels.Review;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using System.ComponentModel.Design;
 
 namespace BookTalk.BusinessLogic.Services;
 
@@ -48,6 +46,11 @@ public class ReviewService : IReviewService
         Review newReview = _dbContext.Reviews.FirstOrDefault(r => r.Id == review.Id);
         if (newReview == null)
         {
+            Review overlap = _dbContext.Reviews.FirstOrDefault(r => r.UserId == review.UserId && (r.Isbn10 == review.Isbn10 || r.Isbn13 == review.Isbn13));
+            if(overlap != null)
+            {
+                throw new UserOverlapException();
+            }
             _dbContext.Reviews.Add(review);
         }
         else
@@ -62,25 +65,6 @@ public class ReviewService : IReviewService
         return _dbContext.Reviews.FirstOrDefault(r => r.Id == id);
     }
 
-    public ReviewViewModel GetComments(int reviewId, int page = 1)
-    {
-        ReviewViewModel viewModel = new ReviewViewModel();
-        int unit = Convert.ToInt32(_dbContext.CommonCodes.Where(c => c.Type == "Comment-Info").FirstOrDefault(c => c.Code == "PageUnit").Value);
-        IEnumerable<Comment> list = _dbContext.Comments.Where(c => c.ReviewId == reviewId).ToList();
-
-        viewModel.Page = SetCommentInfo(reviewId, page);
-        viewModel.Comments = (from item in list
-                              select new CommentViewModel()
-                              {
-                                  ReviewId = item.ReviewId,
-                                  CommentId = item.CommentId,
-                                  UserId = item.UserId,
-                                  Content = item.Content,
-                                  CreateDate = item.CreateDate
-                              }).ToList().OrderByDescending(l => l.CommentId).Skip(unit * (page - 1)).Take(unit).ToList();
-        return viewModel;
-    }
-
 
     public void Delete(int reviewId)
     {
@@ -91,69 +75,5 @@ public class ReviewService : IReviewService
             _dbContext.Reviews.Remove(review);
             _dbContext.SaveChanges();
         }
-    }    
-
-
-    public Pagination SetCommentInfo(int reviewId, int currentPage = 1)
-    {
-        IEnumerable<CommonCode> commonCodes = _dbContext.CommonCodes.Where(c => c.Type == "Comment-Info").ToList();
-        Pagination page = new Pagination();
-        page.PageUnit = Convert.ToInt32(commonCodes.FirstOrDefault(c => c.Code == "PageUnit").Value);
-        page.TotalResults = GetCommentsCount(reviewId);
-        page.Page = currentPage;
-        page.MinPage = 1;
-        page.MaxPage = (int)Math.Ceiling((decimal)page.TotalResults / 5);
-        return page;
-    }
-
-
-    public Comment CreateAndGetComment(Comment comment)
-    {
-        List<Comment> list = _dbContext.Comments.Where(c => c.ReviewId == comment.ReviewId).ToList();
-        
-        // CommentId 가져와서 넣어주기
-        if (list.Count > 0) 
-        {
-            comment.CommentId = (from item in list select item.CommentId).ToList().Max() + 1;
-        }
-        else
-        {
-            comment.CommentId = 1;
-        }
-
-        _dbContext.Comments.Add(comment);
-        _dbContext.SaveChanges();
-
-        return _dbContext.Comments.FirstOrDefault(c => c.ReviewId == comment.ReviewId && c.CommentId == comment.CommentId);
-    }
-
-
-    public void DeleteComment(int reviewId, int commentId)
-    {
-        Comment comment = _dbContext.Comments.FirstOrDefault(c => c.ReviewId == reviewId && c.CommentId == commentId);
-
-        if (comment != null)
-        {
-            _dbContext.Comments.Remove(comment); 
-            _dbContext.SaveChanges(); 
-        }
-    }
-
-
-    public void PutComment(int reviewId, int commentId, string content)
-    {
-        Comment comment = _dbContext.Comments.FirstOrDefault(c => c.ReviewId == reviewId && c.CommentId == commentId);
-
-        if (comment != null)
-        {
-            comment.Content = content;
-            _dbContext.SaveChanges();
-        }
-    }
-
-
-    private int GetCommentsCount(int reviewId)
-    {
-        return _dbContext.Comments.Where(c => c.ReviewId == reviewId).Count();
     }
 }

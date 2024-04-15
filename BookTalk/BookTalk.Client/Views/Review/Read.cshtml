@@ -79,7 +79,7 @@
      }
 
     function OnLoadView() {
-        var errorMessage = "@Html.Raw(ViewBag.ErrorMessage)";
+        let errorMessage = "@Html.Raw(ViewBag.ErrorMessage)";
 
         if (errorMessage) {
             alert(errorMessage);
@@ -97,7 +97,8 @@
                 author: "@(Model.Author)",
                 rating: "@(Model.Rating)",
                 bookName: "@(Model.BookName)",
-                content: "@(Model.Content)"
+                content: "@(Model.Content)",
+                cover: "@(Model.Cover)"
             };
 
             localStorage.setItem('reviewToEdit', JSON.stringify(reviewData));
@@ -143,7 +144,7 @@
             let reviewId = document.getElementById("hidId").value;
             let commentText = document.getElementById("commentText").value;
 
-            fetch(`/Review/CreateComment`, {
+            fetch(`/Comment/Create`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -158,6 +159,7 @@
                     return response.json().then(data => {
                         let currentPage = document.querySelector('a[data-current-page="true"]').getAttribute('data-page');
                         getRequestComment(currentPage)
+                        document.getElementById("commentText").value = ""
                     });
                 } else if (response.status === 401) {
                     // Unauthorized 응답(401)
@@ -193,7 +195,7 @@
             let reviewId = document.getElementById("hidId").value;
             let currentPage = document.querySelector('a[data-current-page="true"]').getAttribute('data-page');
 
-            let url = "@(ViewBag.baseUrl)/api/Review/PutComment"
+            let url = "@(ViewBag.baseUrl)/api/Comment/PutComment"
 
             fetch(url, {
                 method: "PUT",
@@ -237,7 +239,7 @@
             let reviewId = document.getElementById("hidId").value;
             let currentPage = document.querySelector('a[data-current-page="true"]').getAttribute('data-page');
 
-            let url = "@(ViewBag.baseUrl)/api/Review/DeleteComment"
+            let url = "@(ViewBag.baseUrl)/api/Comment/DeleteComment"
             fetch(url, {
                 method: "DELETE",
                 headers: {
@@ -280,7 +282,7 @@
     function getRequestComment(page) {
         let baseUrl = "@(ViewBag.baseUrl)"
         let reviewId = document.getElementById("hidId").value;
-        let url = `${baseUrl}/api/Review/GetComments?reviewId=${reviewId}&page=${page}`
+        let url = `${baseUrl}/api/Comment/Get?reviewId=${reviewId}&page=${page}`
         let commentsContainer = document.getElementById("commentsContainer");
 
         fetch(url, {
@@ -301,9 +303,7 @@
                     if (page >= 1) {
                         updatePagination(page, data.data.page.minPage, data.data.page.maxPage, getRequestComment);
                     }
-                } else {
-                    commentsContainer.innerHTML = '<p>검색 결과가 없습니다.</p>';
-                }
+                } 
             })
             .catch(error => {
                 alert(error.message);

@@ -84,8 +84,8 @@
     }
 
     function OnLoadView() {
-        var successMessage = "@Html.Raw(TempData["SuccessMessage"])"; // 로그인 성공 메세지
-        var errorMessage = "@Html.Raw(ViewBag.ErrorMessage)"; // 오류 메세지
+        let successMessage = "@Html.Raw(TempData["SuccessMessage"])"; // 로그인 성공 메세지
+        let errorMessage = "@Html.Raw(ViewBag.ErrorMessage)"; // 오류 메세지
 
         if (successMessage) {
             alert(successMessage);
@@ -121,8 +121,8 @@
 
     // 사용자 유효성 검사
     btnCheckUser.onclick = function () {
-        var userId = document.getElementById("txtFID1").value;
-        var userName = document.getElementById("txtFName1").value;
+        let userId = document.getElementById("txtFID1").value;
+        let userName = document.getElementById("txtFName1").value;
 
         fetch("/Account/CheckValidUser", {
             method: "POST",
@@ -153,8 +153,8 @@
 
     // 비밀번호 재설정
     btnResetPassword.onclick = function () {
-        var userId = document.getElementById("txtFID2").value;
-        var userPassword = document.getElementById("txtPassword").value;
+        let userId = document.getElementById("txtFID2").value;
+        let userPassword = document.getElementById("txtPassword").value;
 
         fetch("/Account/ResetPassword", {
             method: "POST",

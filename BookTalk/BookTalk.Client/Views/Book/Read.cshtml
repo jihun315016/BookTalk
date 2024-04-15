@@ -1,19 +1,22 @@
 ﻿@using BookTalk.Shared.Aladin
 @model Book
 
+@Html.HiddenFor(model => model.Isbn13, new { @id = "hidIsbn13", @readonly = "readonly" })
+@Html.HiddenFor(model => model.Isbn, new { @id = "hidIsbn10", @readonly = "readonly" })
+
 <div class="form-container custom-base-container">
     <div class="container mt-5">
         <div class="row">
             <div class="col-md-8">
-                <h2>@Model.Title</h2> 
-                <p><strong>작가 :</strong> @Model.Author</p> 
-                <p><strong>출판사 :</strong> @Model.Publisher</p> 
-                <p><strong>카테고리 :</strong> @Model.CategoryName</p> 
-                <p><strong>평점 :</strong> @(Model.Rating == 0 ? "-" : Model.Rating)</p> 
-                
+                <h2>@Model.Title</h2>
+                <p><strong>작가 :</strong> @Model.Author</p>
+                <p><strong>출판사 :</strong> @Model.Publisher</p>
+                <p><strong>카테고리 :</strong> @Model.CategoryName</p>
+                <p><strong>평점 :</strong> @(Model.Rating == 0 ? "-" : Model.Rating)</p>
+
                 <p>@Model.Description</p>
-                
-                <a href="@Url.Action("WriteReview", "Book", new { id = Model.Isbn13 })" class="btn btn-primary">리뷰 작성하기</a>
+
+                <a href="javascript:void(0)" id="lnkPostReview" class="btn btn-dark">리뷰 작성하기</a>
             </div>
             <div class="col-md-4">
                 <img src="@Model.Cover" class="img-fluid user-image" alt="도서 이미지">
@@ -21,3 +24,20 @@
         </div>
     </div>
 </div>
+
+<script>
+    var lnkPostReview = document.getElementById("lnkPostReview")
+    lnkPostReview.onclick = function () {
+        const reviewData = {
+            author: "@(Model.Author)",
+            bookName: "@(Model.Title)",
+            cover: "@(Model.Cover)",
+            isbn10: "@(Model.Isbn)",
+            isbn13: "@(Model.Isbn13)"
+        };
+
+        localStorage.setItem('reviewToEdit', JSON.stringify(reviewData));
+
+        window.location.href = "/Review/Post";
+    }
+</script>

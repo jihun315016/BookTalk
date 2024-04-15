@@ -6,6 +6,7 @@ using BookTalk.Shared.ViewModels.Review;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Newtonsoft.Json;
+using System.Net;
 
 namespace BookTalk.Client.Controllers;
 
@@ -13,13 +14,14 @@ namespace BookTalk.Client.Controllers;
 public class ReviewController : Controller
 {
     private readonly IConfiguration _configuration;
+    private readonly ILogger<ReviewController> _logger;
     private readonly string _baseApiUrl;
 
-
-    public ReviewController(IConfiguration configuration)
+    public ReviewController(IConfiguration configuration, ILogger<ReviewController> logger)
     {
         _configuration = configuration;
         _baseApiUrl = configuration.GetValue<string>("ApiSettings:BaseUrl");
+        _logger = logger;
     }
 
 
@@ -28,7 +30,7 @@ public class ReviewController : Controller
         ResponseMessage<ReviewIndexViewModel> responseData = new ResponseMessage<ReviewIndexViewModel>();
         ReviewIndexViewModel model = new ReviewIndexViewModel();
         string url;
-
+        
         try
         {
             model.QueryType = string.IsNullOrWhiteSpace(queryType) ? "" : queryType;
@@ -52,6 +54,7 @@ public class ReviewController : Controller
         }
         catch (Exception ex)
         {
+            Logging.WriteError(_logger, ex);
             ViewBag.ErrorMessage = Utility.GetMessage("msg01");
         }
 
@@ -78,6 +81,7 @@ public class ReviewController : Controller
         }
         catch (Exception ex)
         {
+            Logging.WriteError(_logger, ex);
             ViewBag.ErrorMessage = Utility.GetMessage("msg01");
         }
 
@@ -90,11 +94,13 @@ public class ReviewController : Controller
     public IActionResult Post(ReviewPostViewModel viewModel)
     {
         ResponseMessage responseData = new ResponseMessage();
-        ReviewPostViewModel model = new ReviewPostViewModel();
         string url;
 
         try
         {
+            ViewBag.TinyMCEApiKey = _configuration.GetValue<string>("TinyMCE:ApiKey");
+            viewModel.Rates = GetRates();
+
             if (ModelState.IsValid)
             {
                 if (HttpContext.Request.Cookies.TryGetValue(_configuration.GetValue<string>("Session:id"), out string sessionId))
@@ -105,16 +111,24 @@ public class ReviewController : Controller
                     HttpClient client = new HttpClient();
                     var response = client.PostAsJsonAsync(url, viewModel).Result;
                     var content = response.Content.ReadAsStringAsync().Result;
+                    responseData = JsonConvert.DeserializeObject<ResponseMessage>(content);
 
                     if (response.IsSuccessStatusCode)
                     {
-                        responseData = JsonConvert.DeserializeObject<ResponseMessage>(content);
                         return RedirectToAction("Index");
                     }
                     else
                     {
-                        responseData.ErrorCode = response.StatusCode.ToString();
-                        throw new Exception(responseData.ErrorMessage);
+                        if (response.StatusCode == HttpStatusCode.BadRequest && responseData.ErrorCode == Utility.GetUserStatusCodeNumber(UserStatusCode.OverlapException))
+                        {
+                            responseData.ErrorCode = response.StatusCode.ToString();
+                            throw new UserOverlapException(responseData.ErrorMessage);
+                        }
+                        else
+                        {
+                            responseData.ErrorCode = response.StatusCode.ToString();
+                            throw new Exception(responseData.ErrorMessage);
+                        }                        
                     }
                 }
                 else
@@ -126,108 +140,27 @@ public class ReviewController : Controller
             {
                 var errors = ModelState.Values.SelectMany(v => v.Errors);
                 foreach (var error in errors)
-                {                    
+                {
                     string errorMessage = error.ErrorMessage;
-                    Console.WriteLine(errorMessage);
+                    Logging.WriteError(_logger);
                 }
 
-
-                ViewBag.TinyMCEApiKey = _configuration.GetValue<string>("TinyMCE:ApiKey");
-                model.Rates = GetRates();
-                return View(model);
+                return View(viewModel);
             }
+        }
+        catch (UserOverlapException ex)
+        {
+            ViewBag.ErrorMessage = Utility.GetMessage("msg09");
+            Logging.WriteError(_logger, ex);
+            return View(viewModel);
         }
         catch (Exception ex)
         {
             ViewBag.ErrorMessage = Utility.GetMessage("msg01");
             responseData.ErrorMessage = ex.Message;
-
-            ViewBag.TinyMCEApiKey = _configuration.GetValue<string>("TinyMCE:ApiKey");
-            model.Rates = GetRates();
-            return View(model);
+            return View(viewModel);
         }
     }
-
-
-    //[Route("Create")]
-    //[HttpGet]
-    //public IActionResult Create()
-    //{
-    //    ReviewPostViewModel model = new ReviewPostViewModel();
-
-    //    try
-    //    {
-    //        HttpContext.Request.Cookies.TryGetValue(_configuration.GetValue<string>("Session:id"), out string sessionId);
-    //        if (string.IsNullOrWhiteSpace(sessionId))
-    //        {
-    //            return RedirectToAction("Signin", "Account");
-    //        }
-
-    //        ViewBag.TinyMCEApiKey = _configuration.GetValue<string>("TinyMCE:ApiKey");
-    //        model.Rates = GetRates();
-    //    }
-    //    catch (Exception ex)
-    //    {
-    //        ViewBag.ErrorMessage = Utility.GetMessage("msg01");
-    //    }
-
-    //    return View(model);
-    //}
-
-
-    //[Route("Create")]
-    //[HttpPost]
-    //public IActionResult Create(ReviewPostViewModel viewModel)
-    //{
-    //    ResponseMessage responseData = new ResponseMessage();
-    //    ReviewPostViewModel model = new ReviewPostViewModel();
-    //    string url;
-
-    //    try
-    //    {
-    //        if (ModelState.IsValid)
-    //        {
-    //            if (HttpContext.Request.Cookies.TryGetValue(_configuration.GetValue<string>("Session:id"), out string sessionId))
-    //            {
-    //                viewModel.SessionId = sessionId;
-    //                url = Utility.GetEndpointUrl(_baseApiUrl, "Review", "Create");
-    //                HttpClient client = new HttpClient();
-    //                var response = client.PostAsJsonAsync(url, viewModel).Result;
-    //                var content = response.Content.ReadAsStringAsync().Result;
-
-    //                if (response.IsSuccessStatusCode)
-    //                {
-    //                    responseData = JsonConvert.DeserializeObject<ResponseMessage>(content);
-    //                    return RedirectToAction("Index");
-    //                }
-    //                else
-    //                {
-    //                    responseData.ErrorCode = response.StatusCode.ToString();
-    //                    throw new Exception(responseData.ErrorMessage);
-    //                }
-    //            }
-    //            else
-    //            {
-    //                return RedirectToAction("Signin");
-    //            }
-    //        }
-    //        else
-    //        {
-    //            ViewBag.TinyMCEApiKey = _configuration.GetValue<string>("TinyMCE:ApiKey");
-    //            model.Rates = GetRates();
-    //            return View(model);
-    //        }
-    //    }
-    //    catch (Exception ex)
-    //    {
-    //        ViewBag.ErrorMessage = Utility.GetMessage("msg01");
-    //        responseData.ErrorMessage = ex.Message;
-
-    //        ViewBag.TinyMCEApiKey = _configuration.GetValue<string>("TinyMCE:ApiKey");
-    //        model.Rates = GetRates();
-    //        return View(model);
-    //    }
-    //}
 
 
     [Route("{id}")]
@@ -287,64 +220,11 @@ public class ReviewController : Controller
         }
         catch (Exception ex)
         {
+            Logging.WriteError(_logger, ex);
             ViewBag.ErrorMessage = Utility.GetMessage("msg01");
-        }
-        finally
-        {
-            if (responseData.Data == null)
-            {
-                responseData.Data = new ReviewViewModel();
-            }
         }
 
         return View(responseData.Data);
-    }
-
-
-    [Route("CreateComment")]
-    [HttpPost]
-    public IActionResult CreateComment([FromBody] Comment comment)
-    {
-        ResponseMessage<Comment> responseData = new ResponseMessage<Comment>();
-        CommentViewModel viewModel;
-        string url;
-
-        try
-        {
-            HttpContext.Request.Cookies.TryGetValue(_configuration.GetValue<string>("Session:id"), out string sessionId);
-            if (string.IsNullOrWhiteSpace(sessionId))
-            {
-                return Unauthorized(new { Message = Utility.GetMessage("msg08") });
-            }
-
-            viewModel = new CommentViewModel()
-            {
-                ReviewId = comment.ReviewId,
-                CommentId = comment.CommentId,
-                SessionId = sessionId,
-                Content = comment.Content
-            };
-
-            url = Utility.GetEndpointUrl(_baseApiUrl, "Review", "CreateComment");
-            HttpClient client = new HttpClient();
-            var response = client.PostAsJsonAsync(url, viewModel).Result;
-            var content = response.Content.ReadAsStringAsync().Result;
-            responseData = JsonConvert.DeserializeObject<ResponseMessage<Comment>>(content);
-
-            if (response.IsSuccessStatusCode)
-            {
-                return Ok(responseData.Data == null ? new Comment() : responseData.Data);
-            }
-            else
-            {
-                responseData.ErrorCode = Convert.ToInt32(response.StatusCode).ToString();
-                throw new Exception(responseData.ErrorMessage);
-            }
-        }
-        catch (Exception ex)
-        {
-            return StatusCode(Convert.ToInt32(responseData.ErrorCode), new { message = Utility.GetMessage("msg01") });
-        }
     }
 
 

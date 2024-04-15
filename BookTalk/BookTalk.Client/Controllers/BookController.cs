@@ -8,11 +8,13 @@ namespace BookTalk.Client.Controllers;
 
 public class BookController : Controller
 {
+    private readonly ILogger<BookController> _logger;
     private readonly string _baseApiUrl;
 
-    public BookController(IConfiguration configuration)
+    public BookController(IConfiguration configuration, ILogger<BookController> logger)
     {
         _baseApiUrl = configuration.GetValue<string>("ApiSettings:BaseUrl");
+        _logger = logger;
     }
 
 
@@ -27,6 +29,7 @@ public class BookController : Controller
         }
         catch (Exception ex)
         {
+            Logging.WriteError(_logger, ex);
             ViewBag.ErrorMessage = Utility.GetMessage("msg01");
         }
 
@@ -46,6 +49,7 @@ public class BookController : Controller
         catch (Exception ex)
         {
             ViewBag.ErrorMessage = Utility.GetMessage("msg01");
+            Logging.WriteError(_logger, ex);
             return StatusCode(StatusCodes.Status500InternalServerError, responseData);
         }
 
@@ -86,6 +90,7 @@ public class BookController : Controller
         }
         catch (Exception ex)
         {
+            Logging.WriteError(_logger, ex);
             ViewBag.ErrorMessage = Utility.GetMessage("msg01");
         }
 
@@ -95,7 +100,7 @@ public class BookController : Controller
 
     private ResponseMessage<BookListQuery> GetSearchBooks(string keyword, int page)
     {
-        ResponseMessage<BookListQuery> responseData = new ResponseMessage<BookListQuery>();
+        ResponseMessage<BookListQuery> responseData = new ResponseMessage<BookListQuery>() { Data = new BookListQuery() };
         string url;
 
         try
@@ -126,14 +131,8 @@ public class BookController : Controller
         }
         catch (Exception ex)
         {
+            Logging.WriteError(_logger, ex);
             ViewBag.ErrorMessage = Utility.GetMessage("msg01");
-        }
-        finally
-        {
-            if (responseData.Data == null)
-            {
-                responseData.Data = new BookListQuery();
-            }
         }
 
         return responseData;

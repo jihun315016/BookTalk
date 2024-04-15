@@ -55,9 +55,10 @@
             {
                 <div class="col-md-12">
                     <div class="d-flex justify-content-center">
-                            @Html.DropDownListFor(m => m.QueryType, Model.SearchTypeCombo, new { @class = "form-control", style = "width: 150px;" })
-                            @Html.TextBoxFor(m => m.Keyword, new { @class = "form-control input-text-search", @id = "txtSearch", @placeholder = "검색", style = "width: 300px; display: inline-block; margin-left: 10px;" })
-                        <button type="submit" class="btn btn-primary btn-search">검색</button>
+                        @Html.DropDownListFor(m => m.QueryType, Model.SearchTypeCombo, new { @class = "form-control", style = "width: 150px;" })
+                        @Html.TextBoxFor(m => m.Keyword, new { @class = "form-control input-text-search", @id = "txtSearch", @placeholder = "검색", style = "width: 300px; display: inline-block; margin-left: 10px;" })
+                        <button type="submit" class="btn btn-light btn-outline-dark btn-search me-2">검색</button>
+                        <a id="lnkPostReview" class="btn btn-dark" asp-controller="@nameof(ReviewController).Replace("Controller", "")" asp-action="@nameof(ReviewController.Post)">리뷰 작성하기</a>
                     </div>
                 </div>
             }
@@ -67,11 +68,11 @@
 
 <script>
      window.onload = function () {
-     OnLoadView();
+        OnLoadView();
      }
 
     function OnLoadView() {
-        var errorMessage = "@Html.Raw(ViewBag.ErrorMessage)";
+        let errorMessage = "@Html.Raw(ViewBag.ErrorMessage)";
 
         if (errorMessage) {
             alert(errorMessage);
