@@ -42,7 +42,6 @@ public class NavViewComponent : ViewComponent
         }
         catch (Exception ex)
         {
-            ViewBag.ErrorMessage = Utility.GetMessage("msg01");
             responseData.InitializeResponseMessage(ex.Message, null);
         }
 

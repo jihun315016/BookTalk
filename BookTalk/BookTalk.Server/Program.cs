@@ -39,6 +39,7 @@ builder.Services.AddScoped<AccountService>();
 builder.Services.AddScoped<BookService>();
 builder.Services.AddScoped<UserService>();
 builder.Services.AddScoped<ReviewService>();
+builder.Services.AddScoped<CommentService>();
 // ==========  서비스 등록하기 END  ==========
 
 var app = builder.Build();

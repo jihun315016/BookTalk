@@ -17,13 +17,15 @@ public class ReviewController : ControllerBase
     private readonly ReviewService _reviewService;
     private readonly UserService _userService;
     private readonly BookService _bookService;
+    private readonly CommentService _commentService;
 
-    public ReviewController(IConfiguration configuration, ReviewService reviewService, UserService userService, BookService bookService)
+    public ReviewController(IConfiguration configuration, ReviewService reviewService, UserService userService, BookService bookService, CommentService commentService)
     {
         _configuration = configuration;
         _reviewService = reviewService;
         _userService = userService;
         _bookService = bookService;
+        _commentService = commentService;
     }
 
     [Route("Search")]
@@ -146,7 +148,7 @@ public class ReviewController : ControllerBase
                 PubDate = bookQuery.Item[0].PubDate,
                 Publisher = bookQuery.Item[0].Publisher,
                 Cover = bookQuery.Item[0].Cover,
-                Page = _reviewService.SetCommentInfo(viewMocel.Id)
+                Page = _commentService.SetCommentInfo(viewMocel.Id)
             };
 
             return Ok(responseData);
@@ -174,100 +176,6 @@ public class ReviewController : ControllerBase
         try
         {
             _reviewService.Delete(viewMocel.Id);
-            return Ok(responseData);
-        }
-        catch (Exception ex)
-        {
-            responseData.ErrorCode = Utility.GetUserStatusCodeNumber(UserStatusCode.UndefinedError);
-            responseData.ErrorMessage = ex.Message;
-            return StatusCode(StatusCodes.Status500InternalServerError, responseData);
-        }
-    }
-
-
-    [Route("CreateComment")]
-    [HttpPost]
-    public IActionResult CreateComment([FromBody] CommentViewModel viewMocel)
-    {
-        ResponseMessage<CommentViewModel> responseData = new ResponseMessage<CommentViewModel>();
-        Comment comment;
-
-        try
-        {
-            comment = _reviewService.CreateAndGetComment(new Comment()
-            {
-                ReviewId = viewMocel.ReviewId,
-                UserId = _userService.GetUser(viewMocel.SessionId).Id,
-                Content = viewMocel.Content
-            });
-
-            responseData.Data = new CommentViewModel()
-            {
-                ReviewId = comment.ReviewId,
-                CommentId = comment.CommentId,
-                UserId = comment.UserId,
-                Content = comment.Content,
-                CreateDate = comment.CreateDate
-            };
-
-            return Ok(responseData);
-        }
-        catch (Exception ex)
-        {
-            responseData.ErrorCode = Utility.GetUserStatusCodeNumber(UserStatusCode.UndefinedError);
-            responseData.ErrorMessage = ex.Message;
-            return StatusCode(StatusCodes.Status500InternalServerError, responseData);
-        }
-    }
-
-
-    [Route("GetComments")]
-    [HttpGet]
-    public IActionResult GetComments(int reviewId, int page)
-    {
-        ResponseMessage<ReviewViewModel> responseData = new ResponseMessage<ReviewViewModel>();
-        try
-        {
-            responseData.Data = _reviewService.GetComments(reviewId, page);
-            return Ok(responseData);
-        }
-        catch (Exception ex)
-        {
-            responseData.ErrorCode = Utility.GetUserStatusCodeNumber(UserStatusCode.UndefinedError);
-            responseData.ErrorMessage = ex.Message;
-            return StatusCode(StatusCodes.Status500InternalServerError, responseData);
-        }
-    }
-
-    [Route("DeleteComment")]
-    [HttpDelete]
-    public IActionResult DeleteComment([FromBody] CommentViewModel viewMocel)
-    {
-        ResponseMessage<CommentViewModel> responseData = new ResponseMessage<CommentViewModel>();
-
-        try
-        {
-            _reviewService.DeleteComment(viewMocel.ReviewId, viewMocel.CommentId);
-            return Ok(responseData);
-        }
-        catch (Exception ex)
-        {
-            responseData.ErrorCode = Utility.GetUserStatusCodeNumber(UserStatusCode.UndefinedError);
-            responseData.ErrorMessage = ex.Message;
-            return StatusCode(StatusCodes.Status500InternalServerError, responseData);
-        }
-    }
-
-
-    [Route("PutComment")]
-    [HttpPut]
-    public IActionResult PutComment([FromBody] CommentViewModel viewMocel)
-    {
-        ResponseMessage<CommentViewModel> responseData = new ResponseMessage<CommentViewModel>();
-
-        try
-        {
-            _reviewService.PutComment(viewMocel.ReviewId, viewMocel.CommentId, viewMocel.Content);
             return Ok(responseData);
         }
         catch (Exception ex)

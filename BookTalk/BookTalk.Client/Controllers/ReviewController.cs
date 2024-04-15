@@ -228,54 +228,6 @@ public class ReviewController : Controller
     }
 
 
-    [Route("CreateComment")]
-    [HttpPost]
-    public IActionResult CreateComment([FromBody] Comment comment)
-    {
-        ResponseMessage<Comment> responseData = new ResponseMessage<Comment>();
-        CommentViewModel viewModel;
-        string url;
-
-        try
-        {
-            HttpContext.Request.Cookies.TryGetValue(_configuration.GetValue<string>("Session:id"), out string sessionId);
-            if (string.IsNullOrWhiteSpace(sessionId))
-            {
-                return Unauthorized(new { Message = Utility.GetMessage("msg08") });
-            }
-
-            viewModel = new CommentViewModel()
-            {
-                ReviewId = comment.ReviewId,
-                CommentId = comment.CommentId,
-                SessionId = sessionId,
-                Content = comment.Content
-            };
-
-            url = Utility.GetEndpointUrl(_baseApiUrl, "Review", "CreateComment");
-            HttpClient client = new HttpClient();
-            var response = client.PostAsJsonAsync(url, viewModel).Result;
-            var content = response.Content.ReadAsStringAsync().Result;
-            responseData = JsonConvert.DeserializeObject<ResponseMessage<Comment>>(content);
-
-            if (response.IsSuccessStatusCode)
-            {
-                return Ok(responseData.Data == null ? new Comment() : responseData.Data);
-            }
-            else
-            {
-                responseData.ErrorCode = Convert.ToInt32(response.StatusCode).ToString();
-                throw new Exception(responseData.ErrorMessage);
-            }
-        }
-        catch (Exception ex)
-        {
-            Logging.WriteError(_logger, ex);
-            return StatusCode(Convert.ToInt32(responseData.ErrorCode), new { message = Utility.GetMessage("msg01") });
-        }
-    }
-
-
     private IEnumerable<SelectListItem> GetRates()
     {
         List<SelectListItem> rateItems = new List<SelectListItem>();

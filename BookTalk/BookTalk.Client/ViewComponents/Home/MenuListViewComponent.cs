@@ -36,7 +36,6 @@ namespace BookTalk.Client.ViewComponents.Home
             }
             catch (Exception ex)
             {
-                ViewBag.ErrorMessage = Utility.GetMessage("msg02");
                 responseData.InitializeResponseMessage(ex.Message, null);
             }
 
