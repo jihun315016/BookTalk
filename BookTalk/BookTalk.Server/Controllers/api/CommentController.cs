@@ -23,19 +23,20 @@ public class CommentController : ControllerBase
         _userService = userService;
     }
 
-    [Route("Create")]
+    [Route("Post")]
     [HttpPost]
-    public IActionResult Create([FromBody] CommentViewModel viewMocel)
+    public IActionResult Post([FromBody] CommentViewModel viewMocel)
     {
         ResponseMessage<CommentViewModel> responseData = new ResponseMessage<CommentViewModel>();
         Comment comment;
 
         try
         {
-            comment = _commentService.CreateAndGetComment(new Comment()
+            comment = _commentService.CreateOrUpdate(new Comment()
             {
                 ReviewId = viewMocel.ReviewId,
                 UserId = _userService.GetUser(viewMocel.SessionId).Id,
+                CommentId = viewMocel.CommentId,
                 Content = viewMocel.Content
             });
 
@@ -77,35 +78,15 @@ public class CommentController : ControllerBase
         }
     }
 
-    [Route("DeleteComment")]
+    [Route("Delete")]
     [HttpDelete]
-    public IActionResult DeleteComment([FromBody] CommentViewModel viewMocel)
+    public IActionResult Delete([FromBody] CommentViewModel viewMocel)
     {
         ResponseMessage<CommentViewModel> responseData = new ResponseMessage<CommentViewModel>();
 
         try
         {
-            _commentService.DeleteComment(viewMocel.ReviewId, viewMocel.CommentId);
-            return Ok(responseData);
-        }
-        catch (Exception ex)
-        {
-            responseData.ErrorCode = Utility.GetUserStatusCodeNumber(UserStatusCode.UndefinedError);
-            responseData.ErrorMessage = ex.Message;
-            return StatusCode(StatusCodes.Status500InternalServerError, responseData);
-        }
-    }
-
-
-    [Route("PutComment")]
-    [HttpPut]
-    public IActionResult PutComment([FromBody] CommentViewModel viewMocel)
-    {
-        ResponseMessage<CommentViewModel> responseData = new ResponseMessage<CommentViewModel>();
-
-        try
-        {
-            _commentService.PutComment(viewMocel.ReviewId, viewMocel.CommentId, viewMocel.Content);
+            _commentService.Delete(viewMocel.ReviewId, viewMocel.CommentId);
             return Ok(responseData);
         }
         catch (Exception ex)
