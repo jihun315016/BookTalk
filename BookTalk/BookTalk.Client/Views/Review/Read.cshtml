@@ -144,7 +144,7 @@
             let reviewId = document.getElementById("hidId").value;
             let commentText = document.getElementById("commentText").value;
 
-            fetch(`/Comment/Create`, {
+            fetch(`/Comment/Post`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -156,9 +156,12 @@
             })
             .then(response => {
                 if (response.ok) {
+                    let currentPage = 1;
                     return response.json().then(data => {
-                        let currentPage = document.querySelector('a[data-current-page="true"]').getAttribute('data-page');
-                        getRequestComment(currentPage)
+                        if (document.querySelector('a[data-current-page="true"]')) {
+                            let currentPage = document.querySelector('a[data-current-page="true"]').getAttribute('data-page');
+                        }
+                        getRequestComment(1)
                         document.getElementById("commentText").value = ""
                     });
                 } else if (response.status === 401) {
@@ -195,10 +198,10 @@
             let reviewId = document.getElementById("hidId").value;
             let currentPage = document.querySelector('a[data-current-page="true"]').getAttribute('data-page');
 
-            let url = "@(ViewBag.baseUrl)/api/Comment/PutComment"
+            let url = "/Comment/Post"
 
             fetch(url, {
-                method: "PUT",
+                method: "POST",
                 headers: {
                     'Content-Type': 'application/json'
                 },
@@ -239,7 +242,7 @@
             let reviewId = document.getElementById("hidId").value;
             let currentPage = document.querySelector('a[data-current-page="true"]').getAttribute('data-page');
 
-            let url = "@(ViewBag.baseUrl)/api/Comment/DeleteComment"
+            let url = "@(ViewBag.baseUrl)/api/Comment/Delete"
             fetch(url, {
                 method: "DELETE",
                 headers: {

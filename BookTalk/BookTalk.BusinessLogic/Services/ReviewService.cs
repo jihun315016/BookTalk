@@ -69,9 +69,11 @@ public class ReviewService : IReviewService
     public void Delete(int reviewId)
     {
         Review review = _dbContext.Reviews.FirstOrDefault(r => r.Id == reviewId);
+        List<Comment> comments = _dbContext.Comments.Where(c => c.ReviewId == reviewId).ToList();
 
         if (review != null)
         {
+            _dbContext.Comments.RemoveRange(comments);
             _dbContext.Reviews.Remove(review);
             _dbContext.SaveChanges();
         }

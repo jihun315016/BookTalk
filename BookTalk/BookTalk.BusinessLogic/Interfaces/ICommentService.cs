@@ -6,10 +6,10 @@ namespace BookTalk.BusinessLogic.Interfaces;
 
 public interface ICommentService
 {/// <summary>
- /// 리뷰 댓글 작성 후 작성한 댓글 가져오기
+ /// 리뷰 댓글 작성 또는 수정
  /// </summary>
  /// <param name="comment"></param>
-    public Comment CreateAndGetComment(Comment comment);
+    public Comment CreateOrUpdate(Comment comment);
 
     /// <summary>
     /// 댓글 리스트 가져오기
@@ -32,13 +32,5 @@ public interface ICommentService
     /// </summary>
     /// <param name="reviewId"></param>
     /// <param name="commentId"></param>
-    public void DeleteComment(int reviewId, int commentId);
-
-    /// <summary>
-    /// 리뷰 댓글 수정
-    /// </summary>
-    /// <param name="reviewId"></param>
-    /// <param name="commentId"></param>
-    /// <param name="content"></param>
-    public void PutComment(int reviewId, int commentId, string content);
+    public void Delete(int reviewId, int commentId);
 }

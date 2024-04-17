@@ -28,7 +28,7 @@ public class CommentController : Controller
 
 
     [HttpPost]
-    public IActionResult Create([FromBody] Comment comment)
+    public IActionResult Post([FromBody] Comment comment)
     {
         ResponseMessage<Comment> responseData = new ResponseMessage<Comment>();
         CommentViewModel viewModel;
@@ -50,7 +50,8 @@ public class CommentController : Controller
                 Content = comment.Content
             };
 
-            url = Utility.GetEndpointUrl(_baseApiUrl, "Comment", "Create");
+            //url = Utility.GetEndpointUrl(_baseApiUrl, "Comment", "Create");
+            url = Utility.GetEndpointUrl(_baseApiUrl, "Comment", "Post");
             HttpClient client = new HttpClient();
             var response = client.PostAsJsonAsync(url, viewModel).Result;
             var content = response.Content.ReadAsStringAsync().Result;

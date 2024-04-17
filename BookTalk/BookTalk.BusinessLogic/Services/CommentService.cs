@@ -51,46 +51,44 @@ public class CommentService : ICommentService
     }
 
 
-    public Comment CreateAndGetComment(Comment comment)
+    public Comment CreateOrUpdate(Comment comment)
     {
-        List<Comment> list = _dbContext.Comments.Where(c => c.ReviewId == comment.ReviewId).ToList();
+        Comment newComment = _dbContext.Comments.FirstOrDefault(c => c.ReviewId == comment.ReviewId && c.CommentId == comment.CommentId);
 
-        // CommentId 가져와서 넣어주기
-        if (list.Count > 0)
+        if (newComment == null) 
         {
-            comment.CommentId = (from item in list select item.CommentId).ToList().Max() + 1;
+            // Add
+            List<Comment> list = _dbContext.Comments.Where(c => c.ReviewId == comment.ReviewId).ToList();
+            if (list.Count > 0)
+            {
+                comment.CommentId = (from item in list select item.CommentId).ToList().Max() + 1;
+            }
+            else
+            {
+                comment.CommentId = 1;
+            }
+
+            _dbContext.Comments.Add(comment);
+            _dbContext.SaveChanges();
+            return _dbContext.Comments.FirstOrDefault(c => c.ReviewId == comment.ReviewId && c.CommentId == comment.CommentId);
         }
-        else
+        else 
         {
-            comment.CommentId = 1;
+            // Update
+            newComment.Content = comment.Content;
+            _dbContext.SaveChanges();
+            return newComment;
         }
-
-        _dbContext.Comments.Add(comment);
-        _dbContext.SaveChanges();
-
-        return _dbContext.Comments.FirstOrDefault(c => c.ReviewId == comment.ReviewId && c.CommentId == comment.CommentId);
     }
 
 
-    public void DeleteComment(int reviewId, int commentId)
+    public void Delete(int reviewId, int commentId)
     {
         Comment comment = _dbContext.Comments.FirstOrDefault(c => c.ReviewId == reviewId && c.CommentId == commentId);
 
         if (comment != null)
         {
             _dbContext.Comments.Remove(comment);
-            _dbContext.SaveChanges();
-        }
-    }
-
-
-    public void PutComment(int reviewId, int commentId, string content)
-    {
-        Comment comment = _dbContext.Comments.FirstOrDefault(c => c.ReviewId == reviewId && c.CommentId == commentId);
-
-        if (comment != null)
-        {
-            comment.Content = content;
             _dbContext.SaveChanges();
         }
     }
