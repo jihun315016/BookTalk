@@ -156,9 +156,12 @@
             })
             .then(response => {
                 if (response.ok) {
+                    let currentPage = 1;
                     return response.json().then(data => {
-                        let currentPage = document.querySelector('a[data-current-page="true"]').getAttribute('data-page');
-                        getRequestComment(currentPage)
+                        if (document.querySelector('a[data-current-page="true"]')) {
+                            let currentPage = document.querySelector('a[data-current-page="true"]').getAttribute('data-page');
+                        }
+                        getRequestComment(1)
                         document.getElementById("commentText").value = ""
                     });
                 } else if (response.status === 401) {
