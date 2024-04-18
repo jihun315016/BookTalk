@@ -20,7 +20,21 @@ public class ReviewPostViewModel
     [Required(ErrorMessage = "평점을 입력해주세요.")]
     public int Rating { get; set; }
 
-    public IEnumerable<SelectListItem>? Rates { get; set; }
+    public IEnumerable<SelectListItem>? Rates 
+    { 
+        get
+        {
+            List<SelectListItem> rateItems = new List<SelectListItem>();
+            int minRate = 1;
+            int maxRate = 5;
+
+            for (int i = minRate; i <= maxRate; i++)
+            {
+                rateItems.Add(new SelectListItem { Text = i.ToString(), Value = i.ToString() });
+            }
+            return rateItems.OrderByDescending(r => r.Text);
+        }
+    }
 
     [DisplayName("도서")]
     [Required(ErrorMessage = "도서를 입력해주세요.")]

@@ -77,7 +77,6 @@ public class ReviewController : Controller
             }
 
             ViewBag.TinyMCEApiKey = _configuration.GetValue<string>("TinyMCE:ApiKey");
-            model.Rates = GetRates();
         }
         catch (Exception ex)
         {
@@ -99,7 +98,6 @@ public class ReviewController : Controller
         try
         {
             ViewBag.TinyMCEApiKey = _configuration.GetValue<string>("TinyMCE:ApiKey");
-            viewModel.Rates = GetRates();
 
             if (ModelState.IsValid)
             {
@@ -225,19 +223,5 @@ public class ReviewController : Controller
         }
 
         return View(responseData.Data);
-    }
-
-
-    private IEnumerable<SelectListItem> GetRates()
-    {
-        List<SelectListItem> rateItems = new List<SelectListItem>();
-        int minRate = _configuration.GetValue<int>("Review:minRate");
-        int maxRate = _configuration.GetValue<int>("Review:maxRate");
-
-        for (int i = minRate; i <= maxRate; i++)
-        {
-            rateItems.Add(new SelectListItem { Text = i.ToString(), Value = i.ToString() });
-        }
-        return rateItems.OrderByDescending(r => r.Text);
     }
 }
