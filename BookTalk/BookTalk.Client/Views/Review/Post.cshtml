@@ -54,7 +54,7 @@
         <div class="col-md-12">
             <div class="card mt-3">
                 <div class="card-body">
-                    @Html.TextAreaFor(m => m.Content, new { @class = "form-control review-content", @id = "txaFormContent", placeholder = "리뷰 내용을 작성하세요.", style = "height: calc(85vh);" })
+                    @Html.TextAreaFor(m => m.Content, new { @class = "form-control review-content", @id = "txaFormContent", placeholder = "", style = "height: calc(85vh);" })
                     @Html.ValidationMessageFor(m => m.Content, "", new { @class = "text-danger" })
                     <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-3">
                         <button class="btn btn-primary" type="submit">리뷰 제출하기</button>
