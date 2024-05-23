@@ -15,8 +15,7 @@
                     <div class="card-body">
                         <h5 class="card-title">@(Model.Name) 님의 프로필</h5>
                         <p class="card-text">ID: @(Model.UserId)</p>
-                        <a href="javascript:void(0)" id="btnResetPassword" class="btn btn-light btn-outline-dark">비밀번호 재설정</a>
-                        <a href="javascript:void(0)" id="btnWithdrawal" class="btn btn-dark">회원 탈퇴</a>
+                        <a href="javascript:void(0)" id="btnResetPassword" class="btn btn-dark">비밀번호 재설정</a>
                     </div>
                 </div>
             </div>
@@ -213,10 +212,5 @@
         if (event.target == resetPasswordModal) {
             resetPasswordModal.style.display = "none";
         }
-    }
-
-
-    btnWithdrawal.onclick = function () {
-        alert("Hello World")
     }
 </script>
