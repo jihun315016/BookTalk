@@ -300,13 +300,13 @@
             .then(data => {
                 if (data.data && data.data.comments.length > 0) {
                     commentsContainer.innerHTML = data.data.comments.map(item => {
-                        return getCommentElementString(item, "@(Model.UserId)", document.getElementById("hidCurrentUserId").value);
+                        return getCommentElementString(item, document.getElementById("hidCurrentUserId").value, item.userId);
                     }).join('');
 
                     if (page >= 1) {
                         updatePagination(page, data.data.page.minPage, data.data.page.maxPage, getRequestComment);
                     }
-                } 
+                }
             })
             .catch(error => {
                 alert(error.message);
