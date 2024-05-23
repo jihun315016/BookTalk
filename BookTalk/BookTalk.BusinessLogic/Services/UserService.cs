@@ -45,6 +45,7 @@ public class UserService
                       },
             Comments = from comment in _dbContext.Comments
                        join review in _dbContext.Reviews on comment.ReviewId equals review.Id
+                       where comment.UserId == user.Id
                        select new CommentViewModel
                        {
                            ReviewId = comment.ReviewId,

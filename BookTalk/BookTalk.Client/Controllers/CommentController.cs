@@ -50,7 +50,6 @@ public class CommentController : Controller
                 Content = comment.Content
             };
 
-            //url = Utility.GetEndpointUrl(_baseApiUrl, "Comment", "Create");
             url = Utility.GetEndpointUrl(_baseApiUrl, "Comment", "Post");
             HttpClient client = new HttpClient();
             var response = client.PostAsJsonAsync(url, viewModel).Result;
