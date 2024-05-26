@@ -43,6 +43,12 @@
 <br/>  
 
 
+## 개발 화면 및 기능 시연
+<video controls src="https://github.com/jihun315016/BookTalk/assets/97544861/72ac90a1-9510-4859-919f-8a7a0821729a.mp4" title="BookTalk01"></video>
+<video controls src="https://github.com/jihun315016/BookTalk/assets/97544861/0395c343-d657-4b2e-9fcd-834239c5684f.mp4" title="BookTalk02"></video>
+<br/>  
+
+
 ## 실행 방법
 ### 터미널에서 .NET EF Core CLI 설치  
 ```
